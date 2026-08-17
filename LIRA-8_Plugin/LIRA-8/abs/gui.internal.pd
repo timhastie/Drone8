@@ -1,0 +1,10 @@
+#N canvas 500 500 400 200 10;
+#X obj 12 12 r \$1-s-\$2;
+#X obj 12 35 t f f;
+#X obj 12 60 s \$1-\$2;
+#X msg 80 60 set \$1;
+#X obj 80 85 s \$1-r-\$2;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 1 1 3 0;
+#X connect 3 0 4 0;
