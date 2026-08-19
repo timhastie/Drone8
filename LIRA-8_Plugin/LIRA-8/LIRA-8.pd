@@ -550,6 +550,7 @@ HOLD 45 -7 0 14 -1 -262144 -1 0 1;
 #X connect 32 0 39 0;
 #X connect 37 0 40 0;
 #X connect 41 0 42 0;
+#X connect 41 0 43 0;
 #X connect 42 0 46 0;
 #X connect 43 0 44 0;
 #X connect 44 0 46 0;
