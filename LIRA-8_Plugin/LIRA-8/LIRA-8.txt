@@ -59,6 +59,7 @@ param -name Sensor 6 -min 0 -max 1 -nsteps 2 -default 0;
 param -name Sensor 7 -min 0 -max 1 -nsteps 2 -default 0;
 param -name Sensor 8 -min 0 -max 1 -nsteps 2 -default 0;
 param -name LFO:Sync -min 0 -max 1 -nsteps 2 -default 0;
+param -name Reset LFO -min 0 -max 1 -nsteps 2 -default 0;
 param -name Scale C -min 0 -max 1 -nsteps 2 -default 1;
 param -name Scale C# -min 0 -max 1 -nsteps 2 -default 1;
 param -name Scale D -min 0 -max 1 -nsteps 2 -default 1;
