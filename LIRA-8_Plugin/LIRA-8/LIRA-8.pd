@@ -242,7 +242,7 @@ HOLD 45 -7 0 14 -1 -262144 -1 0 1;
 -1 -228856 -1 0 1;
 #X obj 103 47 vradio 19 1 0 2 \$0-s-andor \$0-r-andor OR 2 -7 0 14 -1
 -262144 -1 1;
-#X obj 103 96 bng 19 50 10 0 empty \$0-r-led empty 17 7 0 10 -1 -4034
+#X obj 103 84 bng 19 50 10 0 empty \$0-r-led empty 17 7 0 10 -1 -4034
 -1;
 #X obj 470 226 cnv 15 15 15 empty empty ORGANISMIC 0 8 0 11 -199852
 -1 0;
@@ -273,7 +273,9 @@ HOLD 45 -7 0 14 -1 -262144 -1 0 1;
 ;
 #X text 265 297 34 > 56;
 #X text 265 307 78 > 12;
-#X obj 103 146 tgl 19 0 \$0-s-link \$0-r-link LINK -4 -8 0 14 -1 -262144
+#X obj 103 121 tgl 19 0 \$0-s-link \$0-r-link LINK -4 -8 0 14 -1 -262144
+-1 0 1;
+#X obj 103 158 tgl 19 0 \$0-s-reset-lfo \$0-r-reset-lfo RESET -4 -8 0 14 -1 -262144
 -1 0 1;
 #X obj 62 408 cnv 4 4 4 empty empty empty 20 12 0 14 -1 -66577 0;
 #X obj 103 408 cnv 4 4 4 empty empty empty 20 12 0 14 -1 -66577 0;
@@ -455,6 +457,14 @@ HOLD 45 -7 0 14 -1 -262144 -1 0 1;
 #X obj 197 360 /~ 2;
 #X obj 72 205 cos~;
 #X obj 212 381 r \$0-link;
+#X obj 310 10 r \$0-s-reset-lfo;
+#X obj 390 10 r \$0-r-reset-lfo;
+#X obj 310 50 r playhead;
+#X obj 310 80 route playing;
+#X obj 310 110 change;
+#X obj 310 140 select 1;
+#X obj 310 170 spigot 0;
+#X msg 310 200 0;
 #X connect 0 0 4 0;
 #X connect 0 0 15 0;
 #X connect 1 0 4 1;
@@ -473,6 +483,15 @@ HOLD 45 -7 0 14 -1 -262144 -1 0 1;
 #X connect 14 0 3 0;
 #X connect 15 0 6 0;
 #X connect 16 0 3 1;
+#X connect 17 0 23 1;
+#X connect 18 0 23 1;
+#X connect 19 0 20 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X connect 24 0 0 1;
+#X connect 24 0 1 1;
 #X restore 394 401 pd hyper-lfo;
 #X obj 639 448 prm.pitch \$0 1 2 3 4;
 #X obj 829 445 prm.pitch \$0 5 6 7 8;
