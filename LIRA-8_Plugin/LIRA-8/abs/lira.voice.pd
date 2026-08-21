@@ -248,3 +248,7 @@
 #X connect 62 0 63 0;
 #X connect 63 0 23 0;
 #X connect 63 1 24 0;
+#X obj 16 640 s~ \$1-voice-\$2;
+#X obj 251 650 s~ \$1-voice-\$3;
+#X connect 65 0 72 0;
+#X connect 67 0 73 0;
