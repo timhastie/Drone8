@@ -226,8 +226,6 @@ for v in range(1,9):
         idx=(v-1)*16+s
         W(page1,"#X obj {x} {y} tgl 22 0 empty \\$0-r-sq-fl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
           97+s*22,y0+9,"r-sq-fl-%d"%idx)
-    W(page1,"#X obj {x} {y} hsl 352 22 0 127 0 0 empty \\$0-r-sq-shl-t%d empty 0 -9 0 10 -58255 -58255 -58255 0 1;"%v,
-      97,y0+9,"r-sq-shl-t%d"%v)
     for s in range(16):
         idx=(v-1)*16+s
         W(page1,"#X obj {x} {y} tgl 16 0 \\$0-s-sq-t-%d \\$0-r-sq-t-%d empty 17 7 0 10 -262144 -1 -1 0 1;"%(idx,idx),
@@ -256,8 +254,6 @@ for v in range(1,9):
         idx=(v-1)*16+s
         W(page2,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-pfl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
           102+s*22,y0+54,"r-sq-pfl-%d"%idx)
-    W(page2,"#X obj {x} {y} hsl 348 16 0 127 0 0 empty \\$0-r-sq-shl-p%d empty 0 -9 0 10 -58255 -58255 -58255 0 1;"%v,
-      100,y0+52,"r-sq-shl-p%d"%v)
     W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-pe-%d \\$0-r-sq-pe-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
       460,y0+22,"r-sq-pe-%d"%v)
     W(page2,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-rn-%d \\$0-r-sq-rn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
@@ -289,8 +285,6 @@ for v in range(1,9):
         idx=(v-1)*16+s
         W(page3,"#X obj {x} {y} tgl 10 0 empty \\$0-r-sq-ffl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
           103+s*22,y0+60,"r-sq-ffl-%d"%idx)
-    W(page3,"#X obj {x} {y} hsl 348 14 0 127 0 0 empty \\$0-r-sq-shl-f%d empty 0 -9 0 10 -58255 -58255 -58255 0 1;"%v,
-      100,y0+58,"r-sq-shl-f%d"%v)
     ADSRY=y0+6
     for i,pn in enumerate(("fa","fd","fsu","fre")):
         W(page3,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(pn,v,pn,v),
@@ -318,8 +312,6 @@ for v in range(1,9):
         idx=(v-1)*16+s
         W(page4,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-mfl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
           102+s*22,y0+54,"r-sq-mfl-%d"%idx)
-    W(page4,"#X obj {x} {y} hsl 348 16 0 127 0 0 empty \\$0-r-sq-shl-m%d empty 0 -9 0 10 -58255 -58255 -58255 0 1;"%v,
-      100,y0+52,"r-sq-shl-m%d"%v)
     W(page4,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-me-%d \\$0-r-sq-me-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
       460,y0+22,"r-sq-me-%d"%v)
     W(page4,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-mrn-%d \\$0-r-sq-mrn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
@@ -345,8 +337,6 @@ for v in range(1,9):
         idx=(v-1)*16+s
         W(page5,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-m2fl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
           102+s*22,y0+54,"r-sq-m2fl-%d"%idx)
-    W(page5,"#X obj {x} {y} hsl 348 16 0 127 0 0 empty \\$0-r-sq-shl-m2%d empty 0 -9 0 10 -58255 -58255 -58255 0 1;"%v,
-      100,y0+52,"r-sq-shl-m2%d"%v)
     W(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2e-%d \\$0-r-sq-m2e-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
       460,y0+22,"r-sq-m2e-%d"%v)
     W(page5,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-m2rn-%d \\$0-r-sq-m2rn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
@@ -501,11 +491,11 @@ for pg,lampfx in (("t","fl"),("p","pfl"),("f","ffl"),("m","mfl"),("m2","m2fl")):
         addO=add("#X obj %d 1680 + %d;"%(X+60,base))
         mkO=add("#X obj %d 1710 makefilename \\$0-r-sq-%s-%%d;"%(X+60,lampfx))
         tbO=add("#X obj %d 1740 t b a;"%(X+60))
-        m0=add("#X msg %d 1770 0;"%(X+60))
+        m0=add("#X msg %d 1770 set 0;"%(X+60))
         addN=add("#X obj %d 1680 + %d;"%(X,base))
         mkN=add("#X obj %d 1710 makefilename \\$0-r-sq-%s-%%d;"%(X,lampfx))
         tbN=add("#X obj %d 1740 t b a;"%X)
-        m1=add("#X msg %d 1770 1;"%X)
+        m1=add("#X msg %d 1770 set 1;"%X)
         sd=add("#X obj %d 1810 s;"%X)
         rsc=add("#X obj %d 1440 r \\$0-sq-stopclr;"%(X+100))
         tsc=add("#X obj %d 1470 t b b;"%(X+100))
@@ -522,6 +512,40 @@ for pg,lampfx in (("t","fl"),("p","pfl"),("f","ffl"),("m","mfl"),("m2","m2fl")):
         c(tsc,0,mn,0); c(mn,0,fpv,1)
         rowclk[(pg,v)]=tspl
         _uid+=1
+
+# --- lamp click-revert: lamps are display-only cues ---
+s_lrev=add("#X obj 25000 5000 s \\$0-sq-lamprevert;")
+r_lrev=add("#X obj 25000 5040 r \\$0-sq-lamprevert;")
+uplr=add("#X obj 25000 5070 unpack f f;")
+finv=add("#X obj 25400 5100 f;")
+inv1=add("#X obj 25400 5130 * -1;")
+inv2=add("#X obj 25400 5160 + 1;")
+tgid=add("#X obj 25000 5100 t f f;")
+md128=add("#X obj 25060 5130 mod 128;")
+d128=add("#X obj 25000 5130 / 128;")
+i128=add("#X obj 25000 5160 i;")
+rt5=add("#X obj 25000 5190 route 0 1 2 3 4;")
+sdrv=add("#X obj 25000 5400 s;")
+mset=add("#X msg 25400 5220 set \\$1;")
+c(r_lrev,0,uplr,0)
+c(uplr,1,inv1,0); c(inv1,0,inv2,0); c(inv2,0,finv,1)
+c(uplr,0,tgid,0)
+c(tgid,1,md128,0)
+c(tgid,0,d128,0); c(d128,0,i128,0); c(i128,0,rt5,0)
+for _pi,_pfx in enumerate(("fl","pfl","ffl","mfl","m2fl")):
+    _fb=add("#X obj %d 5230 f;"%(25000+_pi*100))
+    _mk=add("#X obj %d 5260 makefilename \\$0-r-sq-%s-%%d;"%(25000+_pi*100,_pfx))
+    _tb=add("#X obj %d 5290 t b a;"%(25000+_pi*100))
+    c(rt5,_pi,_fb,0); c(md128,0,_fb,1)
+    c(_fb,0,_mk,0); c(_mk,0,_tb,0)
+    c(_tb,1,sdrv,1); c(_tb,0,finv,0)
+c(finv,0,mset,0); c(mset,0,sdrv,0)
+for _pi,_pfx in enumerate(("fl","pfl","ffl","mfl","m2fl")):
+    for _idx in range(128):
+        _gid=_pi*128+_idx
+        _mm=add("#X msg %d %d %d \\$1;"%(25000+(_gid%16)*70,5500+(_gid//16)*26,_gid))
+        c(wid("r-sq-%s-%d"%(_pfx,_idx)),0,_mm,0)
+        c(_mm,0,s_lrev,0)
 
 # --- trigger voices (env) ---
 lb=add("#X obj 3400 1350 loadbang;")
