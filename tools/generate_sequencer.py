@@ -26,6 +26,7 @@ for old_,new_ in base_geo:
 assert p.count("695 760")==1, "canvas height edit failed"
 
 deco_edits = [
+ ("#X connect 210 0 208 0;", ""),
  ("#X obj 25 187 cnv 19 105 20 empty empty HYPER-LFO",   "#X obj 25 187 cnv 19 105 20 empty \\$0-r-mh-hyp HYPER-LFO"),
  ("#X obj 240 187 cnv 19 115 20 empty empty MOD-DELAY",  "#X obj 240 187 cnv 19 115 20 empty \\$0-r-mh-md MOD-DELAY"),
  ("#X obj 450 187 cnv 19 110 20 empty empty DISTORTION", "#X obj 450 187 cnv 19 110 20 empty \\$0-r-mh-di DISTORTION"),
@@ -218,6 +219,7 @@ for i,lab in enumerate(("A","D","S","R")):
     W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-h%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),470+i*18,116,"r-sq-h%d"%i)
 W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL 20 9 0 10 -216373 -1 -262144;",662,710,"r-sq-trna")
 W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL 20 9 0 10 -216373 -1 -262144;",762,710,"r-sq-tcla")
+W(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -262144 -1 -262144 0 1;",788,89,"r-sq-menv")
 row_y=lambda v:120+(v-1)*74
 for v in range(1,9):
     y0=row_y(v)
@@ -563,6 +565,8 @@ for _pi,_pfx in enumerate(("fl","pfl","ffl","mfl","m2fl")):
         c(_mm,0,s_lrev,0)
 
 # --- trigger voices (env) ---
+envsel={}
+ptrans={}
 lb=add("#X obj 3400 1350 loadbang;")
 m15=add("#X msg 3400 1380 1 5;")
 c(lb,0,m15,0)
@@ -578,6 +582,7 @@ for v in range(1,9):
     tr=add("#X obj %d 2400 tabread \\$0-sq-seq-%d;"%(X,v))
     spv=add("#X obj %d 2430 spigot 0;"%X)
     sel=add("#X obj %d 2460 sel 1 0;"%X)
+    envsel[v]=sel
     tb=add("#X obj %d 2490 t b b b;"%X)
     fA=add("#X obj %d 2520 f 5;"%X)
     fD=add("#X obj %d 2550 f 120;"%(X+40))
@@ -638,7 +643,9 @@ for v in range(1,9):
     spp=add("#X obj %d 3830 spigot 0;"%X)
     stn=add("#X obj %d 3860 s \\$0-r-tune-%d;"%(X,v))
     rpe=add("#X obj %d 3890 r \\$0-s-sq-pe-%d;"%(X,v))
-    c(rowclk[("p",v)],0,trp,0); c(trp,0,spp,0); c(spp,0,stn,0); c(rpe,0,spp,1)
+    ptr=add("#X obj %d 3845 + 0;"%(X+80))
+    ptrans[v]=ptr
+    c(rowclk[("p",v)],0,trp,0); c(trp,0,spp,0); c(spp,0,ptr,0); c(ptr,0,stn,0); c(rpe,0,spp,1)
 # scale state + nearest-enabled-note map for quantized labels
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scale 12 float 3;\n#A 0 1 1 1 1 1 1 1 1 1 1 1 1;\n#X coords 0 1 12 0 100 40 1;\n#X restore 22000 1300 graph;")
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-qmap 12 float 3;\n#A 0 0 1 2 3 4 5 6 7 8 9 10 11;\n#X coords 0 11 12 0 100 40 1;\n#X restore 22200 1300 graph;")
@@ -1201,6 +1208,91 @@ c(taT,1,sdT,1); c(taT,0,fmdT,0); c(fmdT,0,selT,0)
 c(selT,0,tbT,0); c(tbT,0,rndT,0); c(rndT,0,sdT,0)
 c(selT,1,m0z,0); c(m0z,0,sdT,0)
 c(tvT,0,srd2,0)
+# --- MIDI engine: ch1-8 per-voice play, ch9 legacy sensor map ---
+_LO=(-16,-16,7,9,20,20,33,33)
+_SPAN=(109.0,109.0,102.0,98.0,96.54,96.54,93.24,98.22)
+nin=add("#X obj 20000 6000 notein;")
+mpk=add("#X obj 20000 6040 pack f f;")
+c(nin,0,mpk,0); c(nin,1,mpk,1)
+tst=add("#X obj 20400 6000 r lira8midi;")
+tup=add("#X obj 20400 6030 unpack f f f;")
+c(tst,0,tup,0)
+c(tup,0,mpk,0); c(tup,1,mpk,1)
+c(tup,0,207,0); c(tup,1,207,1)
+c9=add("#X obj 20800 6000 == 9;")
+s9=add("#X obj 20800 6030 spigot;")
+c(206,2,c9,0); c(tup,2,c9,0)
+c(c9,0,s9,1); c(210,0,s9,0); c(s9,0,208,0)
+rme=add("#X obj 21200 6000 r \\$0-s-sq-menv;")
+for v in range(1,9):
+    X=20000+(v-1)*400; _lo=_LO[v-1]; _k=127.0/_SPAN[v-1]
+    eq=add("#X obj %d 6100 == %d;"%(X,v))
+    sch=add("#X obj %d 6130 spigot;"%X)
+    c(nin,2,eq,0); c(tup,2,eq,0)
+    c(eq,0,sch,1); c(mpk,0,sch,0)
+    um=add("#X obj %d 6160 unpack f f;"%X)
+    c(sch,0,um,0)
+    vg=add("#X obj %d 6190 > 0;"%(X+140))
+    c(um,1,vg,0)
+    tvg=add("#X obj %d 6220 t f f;"%(X+140))
+    c(vg,0,tvg,0)
+    d2=add("#X obj %d 6250 * 2;"%(X+140))
+    d1=add("#X obj %d 6280 - 1;"%(X+140))
+    acc=add("#X obj %d 6310 + 0;"%(X+140))
+    tac=add("#X obj %d 6340 t f f;"%(X+140))
+    c(tvg,0,d2,0); c(d2,0,d1,0); c(d1,0,acc,0); c(acc,0,tac,0); c(tac,1,acc,1)
+    g0=add("#X obj %d 6370 > 0;"%(X+140))
+    chg=add("#X obj %d 6400 change;"%(X+140))
+    c(tac,0,g0,0); c(g0,0,chg,0)
+    tse=add("#X obj %d 6430 t f f f;"%(X+140))
+    c(chg,0,tse,0)
+    ssr=add("#X obj %d 6460 s \\$0-r-sensor-%d;"%(X+140,v))
+    sss=add("#X obj %d 6460 s \\$0-s-sensor-%d;"%(X+240,v))
+    c(tse,2,ssr,0); c(tse,1,sss,0)
+    se1=add("#X obj %d 6490 spigot;"%(X+140))
+    se2=add("#X obj %d 6520 spigot;"%(X+140))
+    rmv=add("#X obj %d 6490 r \\$0-s-sq-m-%d;"%(X+260,v))
+    c(rme,0,se1,1); c(rmv,0,se2,1)
+    c(tse,0,se1,0); c(se1,0,se2,0); c(se2,0,envsel[v],0)
+    sp=add("#X obj %d 6250 spigot;"%X)
+    c(tvg,1,sp,1)
+    c(um,0,sp,0)
+    tmode=add("#X obj %d 6280 t f f;"%X)
+    c(sp,0,tmode,0)
+    spt=add("#X obj %d 6310 spigot 0;"%(X+70))
+    c(tmode,1,spt,0)
+    sub60=add("#X obj %d 6340 - 60;"%(X+70))
+    mk1=add("#X obj %d 6370 * %.5f;"%(X+70,_k))
+    c(spt,0,sub60,0); c(sub60,0,mk1,0); c(mk1,0,ptrans[v],1)
+    spa=add("#X obj %d 6310 spigot 1;"%X)
+    c(tmode,0,spa,0)
+    tq=add("#X obj %d 6340 t f f;"%X)
+    c(spa,0,tq,0)
+    nadd=add("#X obj %d 6580 + 0;"%X)
+    c(tq,1,nadd,1)
+    md=add("#X obj %d 6370 mod 12;"%X)
+    c(tq,0,md,0)
+    tpc=add("#X obj %d 6400 t f f;"%X)
+    c(md,0,tpc,0)
+    dsub=add("#X obj %d 6490 - 0;"%X)
+    c(tpc,1,dsub,1)
+    qt=add("#X obj %d 6430 tabread \\$0-sq-qmap;"%X)
+    c(tpc,0,qt,0); c(qt,0,dsub,0)
+    a18=add("#X obj %d 6520 + 18;"%(X+70))
+    m12b=add("#X obj %d 6550 mod 12;"%(X+70))
+    s6=add("#X obj %d 6580 - 6;"%(X+70))
+    c(dsub,0,a18,0); c(a18,0,m12b,0); c(m12b,0,s6,0); c(s6,0,nadd,0)
+    slo=add("#X obj %d 6610 - %d;"%(X,_lo))
+    mk2=add("#X obj %d 6640 * %.5f;"%(X,_k))
+    clp=add("#X obj %d 6670 clip 0 127;"%X)
+    stw=add("#X obj %d 6700 s \\$0-r-tune-%d;"%(X,v))
+    c(nadd,0,slo,0); c(slo,0,mk2,0); c(mk2,0,clp,0); c(clp,0,stw,0)
+    rp2=add("#X obj %d 6100 r \\$0-s-sq-pe-%d;"%(X+200,v))
+    tpe=add("#X obj %d 6130 t f f;"%(X+200))
+    ez=add("#X obj %d 6160 == 0;"%(X+200))
+    c(rp2,0,tpe,0)
+    c(tpe,1,spt,1)
+    c(tpe,0,ez,0); c(ez,0,spa,1)
 # --- lane shift engines (rotate with wraparound via temp array) ---
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-shtmp 16 float 0;\n#X coords 0 127 16 0 140 60 1;\n#X restore 12000 4900 graph;")
 def _emit_shift(key,arr,wpre,X):
@@ -1292,8 +1384,8 @@ SCAL=[]
 for grp,dflt in (("a",11),("d",44),("su",89),("re",49),("m",0),("pe",0),("fa",11),("fd",49),("fsu",64),("fre",49),("fe",0),("rt",64),("rp",64),("rf",64),("me",0),("rm",64)):
     for v in range(1,9): SCAL.append(("%s-%d"%(grp,v),dflt))
 PANEL=[("cut-%d"%v,127) for v in range(1,9)]+[("res-%d"%v,0) for v in range(1,9)]
-EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]
-add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 170 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
+EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]
+add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 171 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
 s_scal=add("#X obj 9000 1380 s \\$0-sq-scal;")
 for slot,(suf,_) in enumerate(SCAL):
     mm=add("#X msg %d %d %d \\$1;"%(9000+(slot%8)*70,1420+(slot//8)*24,slot))
@@ -1323,7 +1415,7 @@ t_rf=add("#X obj 10500 1330 t b b b b b b b b;")
 c(r_rf,0,t_rf,0)
 c(t_rf,0,srdw,0)
 m0s=add("#X msg 10500 1360 0;")
-mNs=add("#X msg 10560 1360 170;")
+mNs=add("#X msg 10560 1360 171;")
 unts=add("#X obj 10560 1390 until;")
 cnts=add("#X obj 10500 1420 f;")
 incs=add("#X obj 10560 1420 + 1;")
