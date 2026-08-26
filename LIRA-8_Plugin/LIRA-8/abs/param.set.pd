@@ -26,3 +26,5 @@
 #X connect 11 0 8 1;
 #X connect 12 0 8 0;
 #X connect 13 0 3 0;
+#X obj 200 28 r \$2-guard;
+#X connect 14 0 8 1;
