@@ -2004,3 +2004,10 @@
 #X connect 847 0 848 0;
 #X connect 848 0 0 0;
 #X connect 732 47 849 0;
+#X obj 100 160 r lira8_new_preset;
+#X obj 950 380 t b b;
+#X msg 950 410 write /tmp/lira_new_req.token;
+#X connect 850 0 851 0;
+#X connect 851 1 561 0;
+#X connect 851 0 852 0;
+#X connect 852 0 1 0;

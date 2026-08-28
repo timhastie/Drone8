@@ -20,6 +20,7 @@
         [fm removeItemAtPath:@"/tmp/lira_save_req.token" error:nil];
         [fm removeItemAtPath:@"/tmp/lira_saveas_req.token" error:nil];
         [@"" writeToFile:@"/tmp/lira_save_done.token" atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        [fm removeItemAtPath:@"/tmp/lira_new_req.token" error:nil];
         [fm removeItemAtPath:@"/tmp/lira_prev_req.token" error:nil];
         [fm removeItemAtPath:@"/tmp/lira_next_req.token" error:nil];
         [self startWatching];
@@ -92,7 +93,14 @@
     if (self.isBusy) return;
 
     NSFileManager *fm = [NSFileManager defaultManager];
-    
+
+    NSString *newReq = @"/tmp/lira_new_req.token";
+    if ([fm fileExistsAtPath:newReq]) {
+        [fm removeItemAtPath:newReq error:nil];
+        self.currentPresetName = @"";
+        return;
+    }
+
     NSString *prevReq = @"/tmp/lira_prev_req.token";
     if ([fm fileExistsAtPath:prevReq]) {
         [fm removeItemAtPath:prevReq error:nil];
