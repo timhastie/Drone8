@@ -1442,10 +1442,26 @@ c(r_arna,0,t_arna,0)
 for _i,_nm in enumerate(("trna","rna","frna","mrna","m2rna")):
     _sx=add("#X obj %d 5060 s \\$0-s-sq-%s;"%(30000+_i*130,_nm))
     c(t_arna,_i,_sx,0)
-for _i,_tg in enumerate(["%s-%d"%(_g,_v) for _g in ("m","pe","fe","me","m2e") for _v in range(1,9)]):
-    _rd=add("#X obj %d %d random 2;"%(34400+(_i%8)*100,5000+(_i//8)*60))
-    _sd=add("#X obj %d %d s \\$0-r-sq-%s;"%(34400+(_i%8)*100,5030+(_i//8)*60,_tg))
-    c(r_arna,0,_rd,0); c(_rd,0,_sd,0)
+_PGSC=(("trna","tcla","m",(("a",11),("d",44),("su",89),("re",49))),
+       ("rna","cla","pe",()),
+       ("frna","fcla","fe",(("fa",11),("fd",49),("fsu",64),("fre",49),("famt",127))),
+       ("mrna","mcla","me",()),
+       ("m2rna","m2cla","m2e",()))
+for _pi,(_rsym,_csym,_tg,_envs) in enumerate(_PGSC):
+    _X=35000+_pi*700
+    _rr=add("#X obj %d 5000 r \\$0-s-sq-%s;"%(_X,_rsym))
+    _rc=add("#X obj %d 5400 r \\$0-s-sq-%s;"%(_X,_csym))
+    for _v in range(1,9):
+        _rd=add("#X obj %d %d random 2;"%(_X+(_v-1)*80,5030))
+        _sd=add("#X obj %d %d s \\$0-r-sq-%s-%d;"%(_X+(_v-1)*80,5060,_tg,_v))
+        c(_rr,0,_rd,0); c(_rd,0,_sd,0)
+        _m0=add("#X msg %d %d 0;"%(_X+(_v-1)*80,5430))
+        _s0=add("#X obj %d %d s \\$0-r-sq-%s-%d;"%(_X+(_v-1)*80,5460,_tg,_v))
+        c(_rc,0,_m0,0); c(_m0,0,_s0,0)
+        for _ei,(_en,_dv) in enumerate(_envs):
+            _md=add("#X msg %d %d %d;"%(_X+(_v-1)*80,5500+_ei*60,_dv))
+            _sdv=add("#X obj %d %d s \\$0-r-sq-%s-%d;"%(_X+(_v-1)*80,5530+_ei*60,_en,_v))
+            c(_rc,0,_md,0); c(_md,0,_sdv,0)
 r_aini=add("#X obj 31000 5000 r \\$0-s-sq-aini;")
 t_aini=add("#X obj 31000 5030 t b b;")
 c(r_aini,0,t_aini,0)
