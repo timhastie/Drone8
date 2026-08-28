@@ -168,6 +168,21 @@ for _v,_ix in enumerate([63,155,256,347,448,538,639,727],1):
     _iso.append("#X obj %d 740 tgl 15 0 \\$0-s-iso-%d \\$0-r-iso-%d empty 0 0 0 10 -262144 -1 -1 0 1;"%(_ix,_v,_v))
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_iso)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
+# ---- front-panel RANDOMIZE ALL! and INIT ALL circle buttons ----
+assert p.count("RANDOMIZE 17 12")==1
+p=p.replace("RANDOMIZE 17 12","RANDOMIZE 4 12")
+_M18=((0,0,18,1),(0,1,5,1),(13,1,5,1),(0,2,4,1),(14,2,4,1),(0,3,3,1),(15,3,3,1),(0,4,2,1),(16,4,2,1),(0,5,1,8),(17,5,1,8),(0,13,2,1),(16,13,2,1),(0,14,3,1),(15,14,3,1),(0,15,4,1),(14,15,4,1),(0,16,5,1),(13,16,5,1),(0,17,18,1))
+_M16=((0,0,16,1),(0,1,4,1),(12,1,4,1),(0,2,3,1),(13,2,3,1),(0,3,2,1),(14,3,2,1),(0,4,1,8),(15,4,1,8),(0,12,2,1),(14,12,2,1),(0,13,3,1),(13,13,3,1),(0,14,4,1),(12,14,4,1),(0,15,16,1))
+_fb=["#X obj 862 84 cnv 1 1 1 empty \\$0-r-mh-ral ALL! 0 0 0 11 -20806 -262144 0;",
+     "#X obj 869 106 bng 18 250 50 0 \\$0-s-sq-fral \\$0-r-mh-ranb empty 0 0 0 10 -216373 -1 -1;"]
+for _dx,_dy,_w,_h in _M18:
+    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(869+_dx,106+_dy,_w,_h))
+_fb.append("#X obj 868 724 bng 16 250 50 0 \\$0-s-sq-fial \\$0-r-mh-inab empty 0 0 0 10 -216373 -1 -1;")
+for _dx,_dy,_w,_h in _M16:
+    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(868+_dx,724+_dy,_w,_h))
+_fb.append("#X obj 866 744 cnv 1 1 1 empty \\$0-r-mh-ial ALL 0 0 0 11 -58255 -262144 0;")
+p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_fb)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+
 # ---- gui.link bindings for params 88..103 ----
 _gl=""
 for _v in range(1,9): _gl+="#X obj 642 %d gui.link %d \\$0 cut-%d;\n"%(512+_v*20,87+_v,_v)
@@ -211,6 +226,10 @@ W(chrome,"#X obj {x} {y} cnv 0 900 760 empty \\$0-r-sq-brd empty 20 12 0 14 -1 -
 W(chrome,"#X obj {x} {y} cnv 0 892 752 empty \\$0-r-sq-bg empty 20 12 0 14 -58255 -58255 0;",-96,4,"r-sq-bg")
 W(chrome,"#X obj {x} {y} cnv 0 892 24 empty \\$0-r-sq-tt SEQUENCER 400 12 0 13 -20806 -262144 0;",-96,4,"r-sq-tt")
 W(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-close \\$0-r-sq-close X 5 9 0 12 -20806 -20806 -262144;",772,8,"r-sq-close")
+W(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna empty 0 0 0 10 -216373 -1 -1;",706,46,"r-sq-srna")
+W(chrome,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-srnal RND_SEQ 0 0 0 10 -58255 -262144 0;",696,68,"r-sq-srnal")
+W(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini empty 0 0 0 10 -216373 -1 -1;",756,46,"r-sq-sini")
+W(chrome,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-sinil INI_SEQ 0 0 0 10 -58255 -262144 0;",748,68,"r-sq-sinil")
 W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgt \\$0-r-sq-pgtb empty 0 -9 0 10 -20806 -20806 -20806 0 1;",55,87,"r-sq-pgtb")
 W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-tr TRIGGER 34 9 0 11 -20806 -262144 0;",55,87,"r-sq-tr")
 W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgp \\$0-r-sq-pgpb empty 0 -9 0 10 -20806 -20806 -20806 0 1;",185,87,"r-sq-pgpb")
@@ -1392,6 +1411,44 @@ for grp,dflt in (("a",11),("d",44),("su",89),("re",49),("m",0),("pe",0),("fa",11
     for v in range(1,9): SCAL.append(("%s-%d"%(grp,v),dflt))
 PANEL=[("cut-%d"%v,127) for v in range(1,9)]+[("res-%d"%v,0) for v in range(1,9)]
 EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]
+# --- global seq randomize / seq init / front combo engines ---
+r_arna=add("#X obj 30000 5000 r \\$0-s-sq-arna;")
+t_arna=add("#X obj 30000 5030 t b b b b b;")
+c(r_arna,0,t_arna,0)
+for _i,_nm in enumerate(("trna","rna","frna","mrna","m2rna")):
+    _sx=add("#X obj %d 5060 s \\$0-s-sq-%s;"%(30000+_i*130,_nm))
+    c(t_arna,_i,_sx,0)
+r_aini=add("#X obj 31000 5000 r \\$0-s-sq-aini;")
+t_aini=add("#X obj 31000 5030 t b b;")
+c(r_aini,0,t_aini,0)
+s_rfsh=add("#X obj 31000 5800 s \\$0-sq-refresh;")
+c(t_aini,0,s_rfsh,0)
+_LDEF=[("seq",[0]*16),("pit",[64]*16),("fcut",[127]*16),("ftrg",[0]*16),("mval",[0]*16)]
+_k=0
+for _arr,_dv in _LDEF:
+    for _v in range(1,9):
+        _mm=add("#X msg %d %d 0 %s;"%(31000+(_k%8)*160,5060+(_k//8)*50," ".join(str(x) for x in _dv)))
+        _ss=add("#X obj %d %d s \\$0-sq-%s-%d;"%(31000+(_k%8)*160,5090+(_k//8)*50,_arr,_v))
+        c(t_aini,1,_mm,0); c(_mm,0,_ss,0); _k+=1
+for _v in range(1,9):
+    _dv=[_M2DEF[_v-1]]*16
+    _mm=add("#X msg %d %d 0 %s;"%(31000+(_k%8)*160,5060+(_k//8)*50," ".join(str(x) for x in _dv)))
+    _ss=add("#X obj %d %d s \\$0-sq-m2val-%d;"%(31000+(_k%8)*160,5090+(_k//8)*50,_v))
+    c(t_aini,1,_mm,0); c(_mm,0,_ss,0); _k+=1
+s_scw=add("#X obj 32600 5000 s \\$0-sq-scal;")
+for _st,_vals in ((0,[d for _,d in SCAL]),(144,[d for _,d in EXTRA[0:16]]),(162,[d for _,d in EXTRA[18:27]])):
+    _mm=add("#X msg %d %d %d %s;"%(32600,5060+_st,_st," ".join(str(x) for x in _vals)))
+    c(t_aini,1,_mm,0); c(_mm,0,s_scw,0)
+r_fral=add("#X obj 33400 5000 r \\$0-s-sq-fral;")
+t_fral=add("#X obj 33400 5030 t b b;")
+s_fr1=add("#X obj 33400 5060 s lira8rand;")
+s_fr2=add("#X obj 33500 5060 s \\$0-s-sq-arna;")
+c(r_fral,0,t_fral,0); c(t_fral,1,s_fr1,0); c(t_fral,0,s_fr2,0)
+r_fial=add("#X obj 33700 5000 r \\$0-s-sq-fial;")
+t_fial=add("#X obj 33700 5030 t b b;")
+s_fi1=add("#X obj 33700 5060 s lira8init;")
+s_fi2=add("#X obj 33800 5060 s \\$0-s-sq-aini;")
+c(r_fial,0,t_fial,0); c(t_fial,1,s_fi1,0); c(t_fial,0,s_fi2,0)
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 179 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
 s_scal=add("#X obj 9000 1380 s \\$0-sq-scal;")
 for slot,(suf,_) in enumerate(SCAL):
