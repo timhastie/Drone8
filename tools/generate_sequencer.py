@@ -169,24 +169,44 @@ for _v,_ix in enumerate([63,155,256,347,448,538,639,727],1):
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_iso)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- front-panel RANDOMIZE ALL! and INIT ALL circle buttons ----
-assert p.count("RANDOMIZE 17 12")==1
-p=p.replace("RANDOMIZE 17 12","RANDOMIZE 4 12")
+_oldb="#X obj 787 80 cnv 0 106 24 empty \\$0-r-mh-rnd RANDOMIZE 17 12 0 11 -20806 -262144 0;"
+assert p.count(_oldb)==1
+p=p.replace(_oldb,"#X obj 787 80 cnv 0 66 24 empty \\$0-r-mh-rnd RANDOMIZE 2 12 0 11 -20806 -262144 0;")
+_oldb="#X obj 787 695 cnv 0 106 24 empty \\$0-r-mh-inp INIT_PATCH 17 12 0 11 -20806 -262144 0;"
+assert p.count(_oldb)==1
+p=p.replace(_oldb,"#X obj 787 695 cnv 0 76 24 empty \\$0-r-mh-inp INIT_PATCH 2 12 0 11 -20806 -262144 0;")
 _M18=((0,0,18,1),(0,1,5,1),(13,1,5,1),(0,2,4,1),(14,2,4,1),(0,3,3,1),(15,3,3,1),(0,4,2,1),(16,4,2,1),(0,5,1,8),(17,5,1,8),(0,13,2,1),(16,13,2,1),(0,14,3,1),(15,14,3,1),(0,15,4,1),(14,15,4,1),(0,16,5,1),(13,16,5,1),(0,17,18,1))
 _M16=((0,0,16,1),(0,1,4,1),(12,1,4,1),(0,2,3,1),(13,2,3,1),(0,3,2,1),(14,3,2,1),(0,4,1,8),(15,4,1,8),(0,12,2,1),(14,12,2,1),(0,13,3,1),(13,13,3,1),(0,14,4,1),(12,14,4,1),(0,15,16,1))
-_fb=["#X obj 862 84 cnv 1 1 1 empty \\$0-r-mh-ral ALL! 0 0 0 11 -20806 -262144 0;",
-     "#X obj 869 106 bng 18 250 50 0 \\$0-s-sq-fral \\$0-r-mh-ranb empty 0 0 0 10 -216373 -1 -1;"]
+def _move(rec,ox,oy,nx,ny):
+    global p
+    _o=rec%(ox,oy)
+    assert p.count(_o)==1,_o
+    p=p.replace(_o,rec%(nx,ny))
+def _movemasks(offs,ox,oy,nx,ny,col):
+    for _dx,_dy,_w,_h in offs:
+        _move("#X obj %d %d cnv 1 "+str(_w)+" "+str(_h)+" empty empty empty 0 0 0 7 "+col+" 0;",ox+_dx,oy+_dy,nx+_dx,ny+_dy)
+_move("#X obj %d %d bng 18 250 50 0 lira8rand \\$0-r-mh-rndb empty 0 0 0 10 -216373 -1 -1;",831,106,811,106)
+_movemasks(_M18,831,106,811,106,"-58255 -58255")
+_move("#X obj %d %d bng 16 250 50 0 lira8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;",830,724,817,724)
+_movemasks(_M16,830,724,817,724,"-58255 -58255")
+_move("#X obj %d %d bng 16 250 50 0 lira8_save_preset \\$0-r-mh-sv SAVE -34 7 0 11 -216373 -1 -262144;",563,4,590,4)
+_movemasks(_M16,563,4,590,4,"-1 -1")
+_move("#X obj %d %d bng 16 250 50 0 lira8_saveas_preset \\$0-r-mh-sa SAVE_AS -52 7 0 11 -216373 -1 -262144;",674,4,685,4)
+_movemasks(_M16,674,4,685,4,"-1 -1")
+_fb=["#X obj 855 80 cnv 0 39 24 empty \\$0-r-mh-rn2 ALL! 6 12 0 11 -20806 -262144 0;",
+     "#X obj 865 695 cnv 0 29 24 empty \\$0-r-mh-in2 ALL 4 12 0 11 -20806 -262144 0;",
+     "#X obj 866 106 bng 18 250 50 0 \\$0-s-sq-fral \\$0-r-mh-ranb empty 0 0 0 10 -216373 -1 -1;"]
 for _dx,_dy,_w,_h in _M18:
-    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(869+_dx,106+_dy,_w,_h))
-_fb.append("#X obj 868 724 bng 16 250 50 0 \\$0-s-sq-fial \\$0-r-mh-inab empty 0 0 0 10 -216373 -1 -1;")
+    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(866+_dx,106+_dy,_w,_h))
+_fb.append("#X obj 871 724 bng 16 250 50 0 \\$0-s-sq-fial \\$0-r-mh-inab empty 0 0 0 10 -216373 -1 -1;")
 for _dx,_dy,_w,_h in _M16:
-    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(868+_dx,724+_dy,_w,_h))
-_fb.append("#X obj 866 744 cnv 1 1 1 empty \\$0-r-mh-ial ALL 0 0 0 11 -58255 -262144 0;")
+    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(871+_dx,724+_dy,_w,_h))
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_fb)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- NEW PATCH button in the top bar (left of SAVE) ----
-_np=["#X obj 500 4 bng 16 250 50 0 lira8_new_preset \\$0-r-mh-nw NEW -28 7 0 11 -216373 -1 -262144;"]
+_np=["#X obj 513 4 bng 16 250 50 0 lira8_new_preset \\$0-r-mh-nw NEW -28 7 0 11 -216373 -1 -262144;"]
 for _dx,_dy,_w,_h in _M16:
-    _np.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -1 -1 0;"%(500+_dx,4+_dy,_w,_h))
+    _np.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -1 -1 0;"%(513+_dx,4+_dy,_w,_h))
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_np)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- gui.link bindings for params 88..103 ----
@@ -1424,6 +1444,10 @@ c(r_arna,0,t_arna,0)
 for _i,_nm in enumerate(("trna","rna","frna","mrna","m2rna")):
     _sx=add("#X obj %d 5060 s \\$0-s-sq-%s;"%(30000+_i*130,_nm))
     c(t_arna,_i,_sx,0)
+for _i,_tg in enumerate(["%s-%d"%(_g,_v) for _g in ("m","pe","fe","me","m2e") for _v in range(1,9)]):
+    _rd=add("#X obj %d %d random 2;"%(34400+(_i%8)*100,5000+(_i//8)*60))
+    _sd=add("#X obj %d %d s \\$0-r-sq-%s;"%(34400+(_i%8)*100,5030+(_i//8)*60,_tg))
+    c(r_arna,0,_rd,0); c(_rd,0,_sd,0)
 r_aini=add("#X obj 31000 5000 r \\$0-s-sq-aini;")
 t_aini=add("#X obj 31000 5030 t b b;")
 c(r_aini,0,t_aini,0)
