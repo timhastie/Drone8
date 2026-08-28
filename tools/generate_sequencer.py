@@ -267,8 +267,8 @@ W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-m2r MOD2 40 9 0 11 -20806 
 # page1: headers + rows (halo UNDER toggles)
 for i,lab in enumerate(("A","D","S","R")):
     W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-h%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),470+i*18,116,"r-sq-h%d"%i)
-W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -111 9 0 10 -216373 -1 -262144;",672,710,"r-sq-trna")
-W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -111 9 0 10 -216373 -1 -262144;",827,710,"r-sq-tcla")
+W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",672,710,"r-sq-trna")
+W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",827,710,"r-sq-tcla")
 W(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -262144 -1 -262144 0 1;",788,89,"r-sq-menv")
 row_y=lambda v:120+(v-1)*74
 for v in range(1,9):
@@ -315,11 +315,11 @@ for v in range(1,9):
     W(page2,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rp-%d \\$0-r-sq-rp-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
       615,y0+25,"r-sq-rp-%d"%v)
 W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-q \\$0-r-sq-q QUANTIZE 19 8 0 10 -262144 -1 -262144 0 1;",720,89,"r-sq-q")
-W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -97 9 0 10 -216373 -1 -262144;",604,710,"r-sq-rna")
-W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -97 9 0 10 -216373 -1 -262144;",759,710,"r-sq-cla")
+W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",604,710,"r-sq-rna")
+W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",759,710,"r-sq-cla")
 page3=[]
-W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -104 9 0 10 -216373 -1 -262144;",656,710,"r-sq-frna")
-W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -104 9 0 10 -216373 -1 -262144;",811,710,"r-sq-fcla")
+W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",656,710,"r-sq-frna")
+W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",811,710,"r-sq-fcla")
 for i,lab in enumerate(("A","D","S","R")):
     W(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-fh%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),470+i*18,116,"r-sq-fh%d"%i)
 for v in range(1,9):
@@ -354,8 +354,8 @@ for v in range(1,9):
     W(page3,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-famt-%d \\$0-r-sq-famt-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
       540,row_y(v)+6,"r-sq-famt-%d"%v)
 page4=[]
-W(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -83 9 0 10 -216373 -1 -262144;",604,710,"r-sq-mrna")
-W(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -83 9 0 10 -216373 -1 -262144;",759,710,"r-sq-mcla")
+W(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -83 9 0 10 -216373 -1 -4034;",604,710,"r-sq-mrna")
+W(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -83 9 0 10 -216373 -1 -4034;",759,710,"r-sq-mcla")
 _MROWS=("M12","M34","M56","M78","S12","S34","S56","S78")
 for v in range(1,9):
     y0=row_y(v)
@@ -379,8 +379,8 @@ for v in range(1,9):
 page5=[]
 W(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2ls \\$0-r-sq-m2ls LFO_SYNC 19 8 0 10 -262144 -1 -262144 0 1;",680,row_y(3)+22,"r-sq-m2ls")
 W(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2vs \\$0-r-sq-m2vs VIB_SYNC 19 8 0 10 -262144 -1 -262144 0 1;",680,row_y(8)+22,"r-sq-m2vs")
-W(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -90 9 0 10 -216373 -1 -262144;",657,710,"r-sq-m2rna")
-W(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -90 9 0 10 -216373 -1 -262144;",812,710,"r-sq-m2cla")
+W(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",657,710,"r-sq-m2rna")
+W(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",812,710,"r-sq-m2cla")
 _M2ROWS=("P12","P56","LFA","LFB","DL1","DL2","FBK","VIB")
 for v in range(1,9):
     y0=row_y(v)
