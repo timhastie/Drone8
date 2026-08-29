@@ -210,7 +210,7 @@ for _dx,_dy,_w,_h in _M16:
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_np)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- Q-LFO toggle in the HYPER-LFO section ----
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 110 234 tgl 17 0 \\$0-s-squant \\$0-r-squant Q -6 -7 0 12 -262144 -1 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 122 158 tgl 19 0 \\$0-s-squant \\$0-r-squant Q 5 -8 0 14 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- gui.link bindings for params 88..103 ----
 _gl=""
