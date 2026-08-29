@@ -920,3 +920,12 @@
 #X connect 470 0 471 0;
 #X connect 471 0 472 0;
 #X connect 471 1 473 0;
+#X obj 750 5200 r lira8init;
+#X msg 750 5230 0;
+#X obj 750 5260 t f f;
+#X obj 750 5290 s \$1-s-squant;
+#X obj 780 5320 s \$1-r-squant;
+#X connect 474 0 475 0;
+#X connect 475 0 476 0;
+#X connect 476 0 477 0;
+#X connect 476 1 478 0;

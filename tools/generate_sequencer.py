@@ -209,11 +209,15 @@ for _dx,_dy,_w,_h in _M16:
     _np.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -1 -1 0;"%(513+_dx,4+_dy,_w,_h))
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_np)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
+# ---- Q-LFO toggle in the HYPER-LFO section ----
+p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 110 234 tgl 17 0 \\$0-s-squant \\$0-r-squant Q -6 -7 0 12 -262144 -1 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+
 # ---- gui.link bindings for params 88..103 ----
 _gl=""
 for _v in range(1,9): _gl+="#X obj 642 %d gui.link %d \\$0 cut-%d;\n"%(512+_v*20,87+_v,_v)
 for _v in range(1,9): _gl+="#X obj 742 %d gui.link %d \\$0 res-%d;\n"%(512+_v*20,95+_v,_v)
 for _v in range(1,9): _gl+="#X obj 842 %d gui.link %d \\$0 iso-%d;\n"%(512+_v*20,103+_v,_v)
+_gl+="#X obj 942 692 gui.link 112 \\$0 squant;\n"
 _ga="#X restore -1 746 pd gui.link;"
 assert p.count(_ga)==1
 p=p.replace(_ga,_gl+_ga)
@@ -1434,7 +1438,7 @@ SCAL=[]
 for grp,dflt in (("a",11),("d",44),("su",89),("re",49),("m",0),("pe",0),("fa",11),("fd",49),("fsu",64),("fre",49),("fe",0),("rt",64),("rp",64),("rf",64),("me",0),("rm",64)):
     for v in range(1,9): SCAL.append(("%s-%d"%(grp,v),dflt))
 PANEL=[("cut-%d"%v,127) for v in range(1,9)]+[("res-%d"%v,0) for v in range(1,9)]
-EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]+[("reset-lfo",0)]
+EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]+[("reset-lfo",0)]+[("squant",0)]
 # --- global seq randomize / seq init / front combo engines ---
 r_arna=add("#X obj 30000 5000 r \\$0-s-sq-arna;")
 t_arna=add("#X obj 30000 5030 t b b b b b;")
@@ -1500,7 +1504,7 @@ t_fial=add("#X obj 33700 5030 t b b;")
 s_fi1=add("#X obj 33700 5060 s lira8init;")
 s_fi2=add("#X obj 33800 5060 s \\$0-s-sq-aini;")
 c(r_fial,0,t_fial,0); c(t_fial,1,s_fi1,0); c(t_fial,0,s_fi2,0)
-add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 180 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
+add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 181 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
 s_scal=add("#X obj 9000 1380 s \\$0-sq-scal;")
 for slot,(suf,_) in enumerate(SCAL):
     mm=add("#X msg %d %d %d \\$1;"%(9000+(slot%8)*70,1420+(slot//8)*24,slot))
@@ -1530,7 +1534,7 @@ t_rf=add("#X obj 10500 1330 t b b b b b b b b;")
 c(r_rf,0,t_rf,0)
 c(t_rf,0,srdw,0)
 m0s=add("#X msg 10500 1360 0;")
-mNs=add("#X msg 10560 1360 180;")
+mNs=add("#X msg 10560 1360 181;")
 unts=add("#X obj 10560 1390 until;")
 cnts=add("#X obj 10500 1420 f;")
 incs=add("#X obj 10560 1420 + 1;")
