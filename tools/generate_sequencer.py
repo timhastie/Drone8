@@ -1477,6 +1477,12 @@ for _pdsuf in ("tpd","ppd","fpd"):
     for _v in range(1,9):
         _sv=add("#X obj %d %d s \\$0-r-sq-%s-%d;"%(55000+("tpf".index(_pdsuf[0]))*500,6030+_v*30,_pdsuf,_v))
         c(_rma,0,_sv,0)
+# --- pair SHARP sliders act as macros driving the per-voice S sliders ---
+for _pi,(_pr,_va,_vb) in enumerate((("12",1,2),("34",3,4),("56",5,6),("78",7,8))):
+    _rsh2=add("#X obj %d 6300 r \\$0-s-sharp-%s;"%(56000+_pi*300,_pr))
+    _sa2=add("#X obj %d 6330 s \\$0-r-sharpv-%d;"%(56000+_pi*300,_va))
+    _sb2=add("#X obj %d 6360 s \\$0-r-sharpv-%d;"%(56100+_pi*300,_vb))
+    c(_rsh2,0,_sa2,0); c(_rsh2,0,_sb2,0)
 # --- lane shift engines (rotate with wraparound via temp array) ---
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-shtmp 16 float 0;\n#X coords 0 127 16 0 140 60 1;\n#X restore 12000 4900 graph;")
 def _emit_shift(key,arr,wpre,X):
