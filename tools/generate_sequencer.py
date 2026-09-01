@@ -1418,7 +1418,7 @@ for v in range(1,9):
     rpam=add("#X obj %d 5400 r \\$0-s-sq-pamt-%d;"%(Xp+160,v))
     sb64=add("#X obj %d 5430 - 64;"%(Xp+160))
     dv63=add("#X obj %d 5460 / 63.5;"%(Xp+160))
-    m24=add("#X obj %d 5490 * 24;"%(Xp+160))
+    m24=add("#X obj %d 5490 * 48;"%(Xp+160))
     pk20=add("#X obj %d 5520 pack f 20;"%(Xp+160))
     lnam=add("#X obj %d 5550 line~;"%(Xp+160))
     c(rpam,0,sb64,0); c(sb64,0,dv63,0); c(dv63,0,m24,0); c(m24,0,pk20,0); c(pk20,0,lnam,0)
