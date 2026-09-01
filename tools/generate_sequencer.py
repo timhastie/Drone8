@@ -213,7 +213,13 @@ p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_np)+"\n#X coords 0 -
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 122 158 tgl 19 0 \\$0-s-squant \\$0-r-squant Q 5 -8 0 14 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- MOD-DELAY randomize-lock toggle ----
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 300 108 tgl 15 0 \\$0-s-mdlock \\$0-r-mdlock RND_LOCK 18 3 0 10 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 306 109 tgl 15 0 \\$0-s-mdlock \\$0-r-mdlock LOCK 18 3 0 10 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+
+# ---- per-voice sharp trim mini-sliders ----
+_shp=[]
+for _v,_tx in enumerate([66,151,252,337,438,523,624,709],1):
+    _shp.append("#X obj %d 520 vsl 9 38 0 127 0 0 \\$0-s-sharpv-%d \\$0-r-sharpv-%d S 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-39,_v,_v))
+p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_shp)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
 # ---- gui.link bindings for params 88..103 ----
 _gl=""
@@ -222,6 +228,7 @@ for _v in range(1,9): _gl+="#X obj 742 %d gui.link %d \\$0 res-%d;\n"%(512+_v*20
 for _v in range(1,9): _gl+="#X obj 842 %d gui.link %d \\$0 iso-%d;\n"%(512+_v*20,103+_v,_v)
 _gl+="#X obj 942 692 gui.link 112 \\$0 squant;\n"
 _gl+="#X obj 942 712 gui.link 113 \\$0 mdlock;\n"
+for _v in range(1,9): _gl+="#X obj 1042 %d gui.link %d \\$0 sharpv-%d;\n"%(512+_v*20,113+_v,_v)
 _ga="#X restore -1 746 pd gui.link;"
 assert p.count(_ga)==1
 p=p.replace(_ga,_gl+_ga)
@@ -1406,22 +1413,27 @@ for v in range(1,9):
     c(fpS,0,pkp,2); c(fpD,0,pkp,1); c(fpA,0,pkp,0)
     c(pkp,0,mOnp,0); c(mOnp,0,vlp,0)
     c(psel,1,fpR,0); c(fpR,0,mOffp,0); c(mOffp,0,vlp,0)
-    for pn,tgt,curve,scale in (("pea",fpA,True,499),("ped",fpD,True,999),("pes",fpS,False,None),("per",fpR,True,1999)):
+    for pn,tgt,curve,scale in (("pea",fpA,2,499),("ped",fpD,3,999),("pes",fpS,None,None),("per",fpR,3,1999)):
         rr=add("#X obj %d 5250 r \\$0-s-sq-%s-%d;"%(Xp,pn,v))
         dv=add("#X obj %d 5280 / 127;"%Xp)
         c(rr,0,dv,0)
         if curve:
-            pw=add("#X obj %d 5310 pow 2;"%Xp); ml=add("#X obj %d 5340 * %d;"%(Xp,scale)); adx=add("#X obj %d 5370 + 1;"%Xp)
+            pw=add("#X obj %d 5310 pow %d;"%(Xp,curve)); ml=add("#X obj %d 5340 * %d;"%(Xp,scale)); adx=add("#X obj %d 5370 + 1;"%Xp)
             c(dv,0,pw,0); c(pw,0,ml,0); c(ml,0,adx,0); c(adx,0,tgt,1)
         else:
             c(dv,0,tgt,1)
     rpam=add("#X obj %d 5400 r \\$0-s-sq-pamt-%d;"%(Xp+160,v))
     sb64=add("#X obj %d 5430 - 64;"%(Xp+160))
     dv63=add("#X obj %d 5460 / 63.5;"%(Xp+160))
-    m24=add("#X obj %d 5490 * 48;"%(Xp+160))
-    pk20=add("#X obj %d 5520 pack f 20;"%(Xp+160))
-    lnam=add("#X obj %d 5550 line~;"%(Xp+160))
-    c(rpam,0,sb64,0); c(sb64,0,dv63,0); c(dv63,0,m24,0); c(m24,0,pk20,0); c(pk20,0,lnam,0)
+    tsq=add("#X obj %d 5480 t f f;"%(Xp+160))
+    absq=add("#X obj %d 5510 abs;"%(Xp+220))
+    mlsq=add("#X obj %d 5540 *;"%(Xp+160))
+    m24=add("#X obj %d 5570 * 96;"%(Xp+160))
+    pk20=add("#X obj %d 5600 pack f 20;"%(Xp+160))
+    lnam=add("#X obj %d 5630 line~;"%(Xp+160))
+    c(rpam,0,sb64,0); c(sb64,0,dv63,0); c(dv63,0,tsq,0)
+    c(tsq,1,absq,0); c(absq,0,mlsq,1); c(tsq,0,mlsq,0)
+    c(mlsq,0,m24,0); c(m24,0,pk20,0); c(pk20,0,lnam,0)
     mulp=add("#X obj %d 5580 *~;"%Xp)
     mst=add("#X obj %d 5610 *~ 0.057762265;"%Xp)
     exq=add("#X obj %d 5640 exp~;"%Xp)
@@ -1556,7 +1568,7 @@ SCAL=[]
 for grp,dflt in (("a",11),("d",44),("su",89),("re",49),("m",0),("pe",0),("fa",11),("fd",49),("fsu",64),("fre",49),("fe",0),("rt",64),("rp",64),("rf",64),("me",0),("rm",64)):
     for v in range(1,9): SCAL.append(("%s-%d"%(grp,v),dflt))
 PANEL=[("cut-%d"%v,127) for v in range(1,9)]+[("res-%d"%v,0) for v in range(1,9)]
-EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]+[("reset-lfo",0)]+[("squant",0)]+[("mdlock",0)]+[("sq-pea-%d"%v,11) for v in range(1,9)]+[("sq-ped-%d"%v,49) for v in range(1,9)]+[("sq-pes-%d"%v,64) for v in range(1,9)]+[("sq-per-%d"%v,49) for v in range(1,9)]+[("sq-pamt-%d"%v,64) for v in range(1,9)]+[("sq-pv-%d"%v,0) for v in range(1,9)]
+EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]+[("reset-lfo",0)]+[("squant",0)]+[("mdlock",0)]+[("sq-pea-%d"%v,11) for v in range(1,9)]+[("sq-ped-%d"%v,49) for v in range(1,9)]+[("sq-pes-%d"%v,64) for v in range(1,9)]+[("sq-per-%d"%v,49) for v in range(1,9)]+[("sq-pamt-%d"%v,64) for v in range(1,9)]+[("sq-pv-%d"%v,0) for v in range(1,9)]+[("sharpv-%d"%v,0) for v in range(1,9)]
 # --- global seq randomize / seq init / front combo engines ---
 r_arna=add("#X obj 30000 5000 r \\$0-s-sq-arna;")
 t_arna=add("#X obj 30000 5030 t b b b b b;")
@@ -1622,7 +1634,7 @@ t_fial=add("#X obj 33700 5030 t b b;")
 s_fi1=add("#X obj 33700 5060 s lira8init;")
 s_fi2=add("#X obj 33800 5060 s \\$0-s-sq-aini;")
 c(r_fial,0,t_fial,0); c(t_fial,1,s_fi1,0); c(t_fial,0,s_fi2,0)
-add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 230 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
+add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 238 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
 s_scal=add("#X obj 9000 1380 s \\$0-sq-scal;")
 for slot,(suf,_) in enumerate(SCAL):
     mm=add("#X msg %d %d %d \\$1;"%(9000+(slot%8)*70,1420+(slot//8)*24,slot))
@@ -1652,7 +1664,7 @@ t_rf=add("#X obj 10500 1330 t b b b b b b b b;")
 c(r_rf,0,t_rf,0)
 c(t_rf,0,srdw,0)
 m0s=add("#X msg 10500 1360 0;")
-mNs=add("#X msg 10560 1360 230;")
+mNs=add("#X msg 10560 1360 238;")
 unts=add("#X obj 10560 1390 until;")
 cnts=add("#X obj 10500 1420 f;")
 incs=add("#X obj 10560 1420 + 1;")
