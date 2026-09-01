@@ -212,12 +212,16 @@ p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_np)+"\n#X coords 0 -
 # ---- Q-LFO toggle in the HYPER-LFO section ----
 p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 122 158 tgl 19 0 \\$0-s-squant \\$0-r-squant Q 5 -8 0 14 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
 
+# ---- MOD-DELAY randomize-lock toggle ----
+p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 300 108 tgl 15 0 \\$0-s-mdlock \\$0-r-mdlock RND_LOCK 18 3 0 10 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+
 # ---- gui.link bindings for params 88..103 ----
 _gl=""
 for _v in range(1,9): _gl+="#X obj 642 %d gui.link %d \\$0 cut-%d;\n"%(512+_v*20,87+_v,_v)
 for _v in range(1,9): _gl+="#X obj 742 %d gui.link %d \\$0 res-%d;\n"%(512+_v*20,95+_v,_v)
 for _v in range(1,9): _gl+="#X obj 842 %d gui.link %d \\$0 iso-%d;\n"%(512+_v*20,103+_v,_v)
 _gl+="#X obj 942 692 gui.link 112 \\$0 squant;\n"
+_gl+="#X obj 942 712 gui.link 113 \\$0 mdlock;\n"
 _ga="#X restore -1 746 pd gui.link;"
 assert p.count(_ga)==1
 p=p.replace(_ga,_gl+_ga)
@@ -275,6 +279,12 @@ W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TR
 W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",827,710,"r-sq-tcla")
 W(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -262144 -1 -262144 0 1;",788,89,"r-sq-menv")
 row_y=lambda v:120+(v-1)*74
+W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-th4 PD 2 0 0 10 -58255 -262144 0;",539,116,"r-sq-th4")
+for v in range(1,9):
+    W(page1,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-tpd-%d \\$0-r-sq-tpd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      542,row_y(v)+12,"r-sq-tpd-%d"%v)
+W(page1,"#X obj {x} {y} hsl 60 12 0 127 0 0 \\$0-s-sq-tpda \\$0-r-sq-tpda PD_ALL 66 3 0 10 -262144 -1 -262144 0 1;",632,89,"r-sq-tpda")
+
 for v in range(1,9):
     y0=row_y(v)
     W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-rl-%d %d 0 8 0 12 -58255 -262144 0;"%(v,v),60,y0+12,"r-sq-rl-%d"%v)
@@ -318,10 +328,31 @@ for v in range(1,9):
       550,y0+22,"r-sq-cl-%d"%v)
     W(page2,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rp-%d \\$0-r-sq-rp-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
       615,y0+25,"r-sq-rp-%d"%v)
+for _i,_lab in enumerate(("A","D","S","R")):
+    W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph%d %s 2 0 0 10 -58255 -262144 0;"%(_i,_lab),654+_i*18,116,"r-sq-ph%d"%_i)
+W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph4 AMT 2 0 0 10 -58255 -262144 0;",727,116,"r-sq-ph4")
+W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph5 PD 2 0 0 10 -58255 -262144 0;",751,116,"r-sq-ph5")
+W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph6 ON 2 0 0 10 -58255 -262144 0;",776,116,"r-sq-ph6")
+for v in range(1,9):
+    for _i,_pn in enumerate(("pea","ped","pes","per")):
+        W(page2,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(_pn,v,_pn,v),
+          654+_i*18,row_y(v)+6,"r-sq-%s-%d"%(_pn,v))
+    W(page2,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-pamt-%d \\$0-r-sq-pamt-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      730,row_y(v)+6,"r-sq-pamt-%d"%v)
+    W(page2,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-ppd-%d \\$0-r-sq-ppd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      754,row_y(v)+6,"r-sq-ppd-%d"%v)
+    W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-pv-%d \\$0-r-sq-pv-%d empty 0 0 0 10 -262144 -1 -1 0 1;"%(v,v),
+      778,row_y(v)+22,"r-sq-pv-%d"%v)
+W(page2,"#X obj {x} {y} hsl 60 12 0 127 0 0 \\$0-s-sq-ppda \\$0-r-sq-ppda PD_ALL 66 3 0 10 -262144 -1 -262144 0 1;",564,89,"r-sq-ppda")
 W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-q \\$0-r-sq-q QUANTIZE 19 8 0 10 -262144 -1 -262144 0 1;",720,89,"r-sq-q")
 W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",604,710,"r-sq-rna")
 W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",759,710,"r-sq-cla")
 page3=[]
+W(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-fh5 PD 2 0 0 10 -58255 -262144 0;",769,116,"r-sq-fh5")
+for v in range(1,9):
+    W(page3,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-fpd-%d \\$0-r-sq-fpd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      772,row_y(v)+6,"r-sq-fpd-%d"%v)
+W(page3,"#X obj {x} {y} hsl 60 12 0 127 0 0 \\$0-s-sq-fpda \\$0-r-sq-fpda PD_ALL 66 3 0 10 -262144 -1 -262144 0 1;",616,89,"r-sq-fpda")
 W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",656,710,"r-sq-frna")
 W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",811,710,"r-sq-fcla")
 for i,lab in enumerate(("A","D","S","R")):
@@ -620,6 +651,8 @@ for _pi,_pfx in enumerate(("fl","pfl","ffl","mfl","m2fl")):
 
 # --- trigger voices (env) ---
 envsel={}
+spvd={}
+se2d={}
 ptrans={}
 lb=add("#X obj 3400 1350 loadbang;")
 m15=add("#X msg 3400 1380 1 5;")
@@ -637,6 +670,7 @@ for v in range(1,9):
     spv=add("#X obj %d 2430 spigot 0;"%X)
     sel=add("#X obj %d 2460 sel 1 0;"%X)
     envsel[v]=sel
+    spvd[v]=spv
     tb=add("#X obj %d 2490 t b b b;"%X)
     fA=add("#X obj %d 2520 f 5;"%X)
     fD=add("#X obj %d 2550 f 120;"%(X+40))
@@ -1308,6 +1342,7 @@ for v in range(1,9):
     rmv=add("#X obj %d 6490 r \\$0-s-sq-m-%d;"%(X+260,v))
     c(rme,0,se1,1); c(rmv,0,se2,1)
     c(tse,0,se1,0); c(se1,0,se2,0); c(se2,0,envsel[v],0)
+    se2d[v]=se2
     sp=add("#X obj %d 6250 spigot;"%X)
     c(tvg,1,sp,1)
     c(um,0,sp,0)
@@ -1347,6 +1382,89 @@ for v in range(1,9):
     c(rp2,0,tpe,0)
     c(tpe,1,spt,1)
     c(tpe,0,ez,0); c(ez,0,spa,1)
+# --- pitch envelope engine (per voice, triggered with the amp env) ---
+for v in range(1,9):
+    Xp=40000+(v-1)*300
+    rpv=add("#X obj %d 5000 r \\$0-s-sq-pv-%d;"%(Xp+200,v))
+    psp=add("#X obj %d 5030 spigot 0;"%Xp)
+    c(rpv,0,psp,1)
+    c(spvd[v],0,psp,0)
+    c(se2d[v],0,psp,0)
+    psel=add("#X obj %d 5060 sel 1 0;"%Xp)
+    c(psp,0,psel,0)
+    tbp=add("#X obj %d 5090 t b b b;"%Xp)
+    fpA=add("#X obj %d 5120 f 5;"%Xp)
+    fpD=add("#X obj %d 5120 f 150;"%(Xp+40))
+    fpS=add("#X obj %d 5120 f 0.5;"%(Xp+80))
+    pkp=add("#X obj %d 5150 pack 5 150 0.5;"%Xp)
+    mOnp=add("#X msg %d 5180 1 \\$1 \\, \\$3 \\$2 \\$1;"%Xp)
+    fpR=add("#X obj %d 5150 f 300;"%(Xp+120))
+    mOffp=add("#X msg %d 5180 0 \\$1;"%(Xp+120))
+    vlp=add("#X obj %d 5210 vline~;"%Xp)
+    c(psel,0,tbp,0)
+    c(tbp,2,fpS,0); c(tbp,1,fpD,0); c(tbp,0,fpA,0)
+    c(fpS,0,pkp,2); c(fpD,0,pkp,1); c(fpA,0,pkp,0)
+    c(pkp,0,mOnp,0); c(mOnp,0,vlp,0)
+    c(psel,1,fpR,0); c(fpR,0,mOffp,0); c(mOffp,0,vlp,0)
+    for pn,tgt,curve,scale in (("pea",fpA,True,499),("ped",fpD,True,999),("pes",fpS,False,None),("per",fpR,True,1999)):
+        rr=add("#X obj %d 5250 r \\$0-s-sq-%s-%d;"%(Xp,pn,v))
+        dv=add("#X obj %d 5280 / 127;"%Xp)
+        c(rr,0,dv,0)
+        if curve:
+            pw=add("#X obj %d 5310 pow 2;"%Xp); ml=add("#X obj %d 5340 * %d;"%(Xp,scale)); adx=add("#X obj %d 5370 + 1;"%Xp)
+            c(dv,0,pw,0); c(pw,0,ml,0); c(ml,0,adx,0); c(adx,0,tgt,1)
+        else:
+            c(dv,0,tgt,1)
+    rpam=add("#X obj %d 5400 r \\$0-s-sq-pamt-%d;"%(Xp+160,v))
+    sb64=add("#X obj %d 5430 - 64;"%(Xp+160))
+    dv63=add("#X obj %d 5460 / 63.5;"%(Xp+160))
+    m24=add("#X obj %d 5490 * 24;"%(Xp+160))
+    pk20=add("#X obj %d 5520 pack f 20;"%(Xp+160))
+    lnam=add("#X obj %d 5550 line~;"%(Xp+160))
+    c(rpam,0,sb64,0); c(sb64,0,dv63,0); c(dv63,0,m24,0); c(m24,0,pk20,0); c(pk20,0,lnam,0)
+    mulp=add("#X obj %d 5580 *~;"%Xp)
+    mst=add("#X obj %d 5610 *~ 0.057762265;"%Xp)
+    exq=add("#X obj %d 5640 exp~;"%Xp)
+    spfac=add("#X obj %d 5670 s~ \\$0-pfac-%d;"%(Xp,v))
+    c(vlp,0,mulp,0); c(lnam,0,mulp,1)
+    c(mulp,0,mst,0); c(mst,0,exq,0); c(exq,0,spfac,0)
+# pitch page RND randomizes env params + pv toggles; CLR resets pv
+_rpr=add("#X obj 43000 5000 r \\$0-s-sq-rna;")
+for _i,(_pn,_v) in enumerate([(p_,v_) for p_ in ("pea","ped","pes","per","pamt","pv") for v_ in range(1,9)]):
+    _rng=2 if _pn=="pv" else 128
+    _rd=add("#X obj %d %d random %d;"%(43000+(_i%8)*90,5030+(_i//8)*60,_rng))
+    _sd=add("#X obj %d %d s \\$0-r-sq-%s-%d;"%(43000+(_i%8)*90,5060+(_i//8)*60,_pn,_v))
+    c(_rpr,0,_rd,0); c(_rd,0,_sd,0)
+_rpc=add("#X obj 44000 5000 r \\$0-s-sq-cla;")
+for _v in range(1,9):
+    _m0=add("#X msg %d 5030 0;"%(44000+_v*80))
+    _s0=add("#X obj %d 5060 s \\$0-r-sq-pv-%d;"%(44000+_v*80,_v))
+    c(_rpc,0,_m0,0); c(_m0,0,_s0,0)
+# --- plucky/drone macro engines ---
+for _pg,_pdsuf,_grps in (("t","tpd",("a","d","su","re")),("p","ppd",("pea","ped","pes","per")),("f","fpd",("fa","fd","fsu","fre"))):
+    for _v in range(1,9):
+        _Xm=45000+("tpf".index(_pg[0]) if _pg[0] in "tpf" else 0)*3000+(_v-1)*300
+        _rpd=add("#X obj %d 5000 r \\$0-s-sq-%s-%d;"%(_Xm,_pdsuf,_v))
+        _tf4=add("#X obj %d 5030 t f f f f;"%_Xm)
+        c(_rpd,0,_tf4,0)
+        _ma=add("#X obj %d 5060 * 0.63;"%_Xm)
+        _sa=add("#X obj %d 5090 s \\$0-r-sq-%s-%d;"%(_Xm,_grps[0],_v))
+        c(_tf4,3,_ma,0); c(_ma,0,_sa,0)
+        _md=add("#X obj %d 5060 * 0.9606;"%(_Xm+70))
+        _ad=add("#X obj %d 5090 + 5;"%(_Xm+70))
+        _sdd=add("#X obj %d 5120 s \\$0-r-sq-%s-%d;"%(_Xm+70,_grps[1],_v))
+        c(_tf4,2,_md,0); c(_md,0,_ad,0); c(_ad,0,_sdd,0)
+        _ss=add("#X obj %d 5060 s \\$0-r-sq-%s-%d;"%(_Xm+140,_grps[2],_v))
+        c(_tf4,1,_ss,0)
+        _mr=add("#X obj %d 5060 * 0.9606;"%(_Xm+210))
+        _ar=add("#X obj %d 5090 + 5;"%(_Xm+210))
+        _sr=add("#X obj %d 5120 s \\$0-r-sq-%s-%d;"%(_Xm+210,_grps[3],_v))
+        c(_tf4,0,_mr,0); c(_mr,0,_ar,0); c(_ar,0,_sr,0)
+for _pdsuf in ("tpd","ppd","fpd"):
+    _rma=add("#X obj %d 6000 r \\$0-s-sq-%sa;"%(55000+("tpf".index(_pdsuf[0]))*500,_pdsuf))
+    for _v in range(1,9):
+        _sv=add("#X obj %d %d s \\$0-r-sq-%s-%d;"%(55000+("tpf".index(_pdsuf[0]))*500,6030+_v*30,_pdsuf,_v))
+        c(_rma,0,_sv,0)
 # --- lane shift engines (rotate with wraparound via temp array) ---
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-shtmp 16 float 0;\n#X coords 0 127 16 0 140 60 1;\n#X restore 12000 4900 graph;")
 def _emit_shift(key,arr,wpre,X):
@@ -1438,7 +1556,7 @@ SCAL=[]
 for grp,dflt in (("a",11),("d",44),("su",89),("re",49),("m",0),("pe",0),("fa",11),("fd",49),("fsu",64),("fre",49),("fe",0),("rt",64),("rp",64),("rf",64),("me",0),("rm",64)):
     for v in range(1,9): SCAL.append(("%s-%d"%(grp,v),dflt))
 PANEL=[("cut-%d"%v,127) for v in range(1,9)]+[("res-%d"%v,0) for v in range(1,9)]
-EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]+[("reset-lfo",0)]+[("squant",0)]
+EXTRA=[("sq-m2e-%d"%v,0) for v in range(1,9)]+[("sq-rm2-%d"%v,64) for v in range(1,9)]+[("vib-speed",76),("vib-sync",0)]+[("sq-famt-%d"%v,127) for v in range(1,9)]+[("sq-menv",0)]+[("iso-%d"%v,0) for v in range(1,9)]+[("reset-lfo",0)]+[("squant",0)]+[("mdlock",0)]+[("sq-pea-%d"%v,11) for v in range(1,9)]+[("sq-ped-%d"%v,49) for v in range(1,9)]+[("sq-pes-%d"%v,64) for v in range(1,9)]+[("sq-per-%d"%v,49) for v in range(1,9)]+[("sq-pamt-%d"%v,64) for v in range(1,9)]+[("sq-pv-%d"%v,0) for v in range(1,9)]
 # --- global seq randomize / seq init / front combo engines ---
 r_arna=add("#X obj 30000 5000 r \\$0-s-sq-arna;")
 t_arna=add("#X obj 30000 5030 t b b b b b;")
@@ -1447,7 +1565,7 @@ for _i,_nm in enumerate(("trna","rna","frna","mrna","m2rna")):
     _sx=add("#X obj %d 5060 s \\$0-s-sq-%s;"%(30000+_i*130,_nm))
     c(t_arna,_i,_sx,0)
 _PGSC=(("trna","tcla","m",(("a",11),("d",44),("su",89),("re",49))),
-       ("rna","cla","pe",()),
+       ("rna","cla","pe",(("pea",11),("ped",49),("pes",64),("per",49),("pamt",64))),
        ("frna","fcla","fe",(("fa",11),("fd",49),("fsu",64),("fre",49),("famt",127))),
        ("mrna","mcla","me",()),
        ("m2rna","m2cla","m2e",()))
@@ -1484,7 +1602,7 @@ for _v in range(1,9):
     _ss=add("#X obj %d %d s \\$0-sq-m2val-%d;"%(31000+(_k%8)*160,5090+(_k//8)*50,_v))
     c(t_aini,1,_mm,0); c(_mm,0,_ss,0); _k+=1
 s_scw=add("#X obj 32600 5000 s \\$0-sq-scal;")
-for _st,_vals in ((0,[d for _,d in SCAL]),(144,[d for _,d in EXTRA[0:16]]),(162,[d for _,d in EXTRA[18:27]])):
+for _st,_vals in ((0,[d for _,d in SCAL]),(144,[d for _,d in EXTRA[0:16]]),(162,[d for _,d in EXTRA[18:27]]),(182,[d for _,d in EXTRA[38:86]])):
     _mm=add("#X msg %d %d %d %s;"%(32600,5060+_st,_st," ".join(str(x) for x in _vals)))
     c(t_aini,1,_mm,0); c(_mm,0,s_scw,0)
 r_fral=add("#X obj 33400 5000 r \\$0-s-sq-fral;")
@@ -1504,7 +1622,7 @@ t_fial=add("#X obj 33700 5030 t b b;")
 s_fi1=add("#X obj 33700 5060 s lira8init;")
 s_fi2=add("#X obj 33800 5060 s \\$0-s-sq-aini;")
 c(r_fial,0,t_fial,0); c(t_fial,1,s_fi1,0); c(t_fial,0,s_fi2,0)
-add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 181 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
+add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 230 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")
 s_scal=add("#X obj 9000 1380 s \\$0-sq-scal;")
 for slot,(suf,_) in enumerate(SCAL):
     mm=add("#X msg %d %d %d \\$1;"%(9000+(slot%8)*70,1420+(slot//8)*24,slot))
@@ -1534,7 +1652,7 @@ t_rf=add("#X obj 10500 1330 t b b b b b b b b;")
 c(r_rf,0,t_rf,0)
 c(t_rf,0,srdw,0)
 m0s=add("#X msg 10500 1360 0;")
-mNs=add("#X msg 10560 1360 181;")
+mNs=add("#X msg 10560 1360 230;")
 unts=add("#X obj 10560 1390 until;")
 cnts=add("#X obj 10500 1420 f;")
 incs=add("#X obj 10560 1420 + 1;")

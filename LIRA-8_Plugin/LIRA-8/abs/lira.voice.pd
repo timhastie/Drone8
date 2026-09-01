@@ -196,10 +196,6 @@
 #X connect 20 0 21 0;
 #X connect 21 0 4 1;
 #X connect 22 0 10 0;
-#X connect 23 0 33 0;
-#X connect 23 0 35 0;
-#X connect 24 0 34 0;
-#X connect 24 0 36 0;
 #X connect 28 0 31 1;
 #X connect 29 0 31 0;
 #X connect 30 0 0 1;
@@ -446,7 +442,6 @@
 #X obj 1200 1730 *~;
 #X obj 1200 1760 +~;
 #X obj 1200 1790 +~;
-#X connect 23 0 11 0;
 #X connect 11 0 33 1;
 #X connect 146 0 147 0;
 #X connect 147 0 148 0;
@@ -485,7 +480,6 @@
 #X connect 174 0 175 0;
 #X connect 35 0 175 1;
 #X connect 175 0 0 0;
-#X connect 24 0 13 1;
 #X connect 13 0 34 1;
 #X connect 34 0 176 0;
 #X connect 176 0 177 0;
@@ -519,3 +513,17 @@
 #X connect 197 0 198 0;
 #X connect 36 0 198 1;
 #X connect 198 0 7 0;
+#X obj 16 250 *~;
+#X obj 66 232 r~ \$1-pfac-\$2;
+#X obj 266 250 *~;
+#X obj 316 232 r~ \$1-pfac-\$3;
+#X connect 23 0 199 0;
+#X connect 200 0 199 1;
+#X connect 199 0 33 0;
+#X connect 199 0 35 0;
+#X connect 199 0 11 0;
+#X connect 24 0 201 0;
+#X connect 202 0 201 1;
+#X connect 201 0 34 0;
+#X connect 201 0 36 0;
+#X connect 201 0 13 1;
