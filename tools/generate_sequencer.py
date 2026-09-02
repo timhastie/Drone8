@@ -241,6 +241,50 @@ _ga="#X restore -1 746 pd gui.link;"
 assert p.count(_ga)==1
 p=p.replace(_ga,_gl+_ga)
 
+# ---- Path A hardware front: rotary knobs, centered sensors, M/V labels ----
+# Square vsl widgets render as rotary knobs in the custom editor (>=52px = silver dial).
+def _knobify(recv,X,Y,S,fs=10):
+    global p
+    m=re.search(r'#X obj\s+-?\d+\s+-?\d+\s+(vsl|hsl)\s+\d+\s+\d+\s+(-?[\d.]+\s+-?[\d.]+\s+-?[\d.]+\s+\d+)\s+(\\\$0-s-'+recv+r')\s+(\\\$0-r-'+recv+r')\s+([^\s]+)\s+(-?\d+)\s+(-?\d+)\s+(\d+)\s+(\d+)\s+(-?\d+\s+-?\d+\s+-?\d+)((?:.|\n)*?)(?<!\\);',p)
+    assert m, "knobify: no widget for "+recv
+    lab=m.group(5)
+    ldx=S//2-int(3.4*len(lab)) if lab!="empty" else 0
+    new="#X obj %d %d vsl %d %d %s %s %s %s %d %d %s %d %s%s;"%(X,Y,S,S,re.sub(r"\s+"," ",m.group(2)),m.group(3),m.group(4),lab,ldx,S+9,m.group(8),fs,re.sub(r"\s+"," ",m.group(10)),m.group(11))
+    p=p[:m.start()]+new+p[m.end():]
+_KNOBS=[("f-a",18,56,46),("f-b",95,56,46),
+ ("mod-1",335,34,44),("mod-2",403,34,44),("time-1",471,34,44),("time-2",539,34,44),
+ ("feedback",607,34,44),("del-mix",675,34,44),
+ ("drv",849,44,46),("dst-mix",920,44,46),("vol",991,44,46),
+ ("hold-1234",252,250,46),("hold-5678",837,250,46),
+ ("pitch-1234",252,332,46),("pitch-5678",837,332,46),
+ ("mod-12",100,476,44),("sharp-12",190,476,44),("mod-34",360,476,44),("sharp-34",450,476,44),
+ ("mod-56",620,476,44),("sharp-56",710,476,44),("mod-78",880,476,44),("sharp-78",970,476,44)]
+for _r,_x,_y,_s in _KNOBS: _knobify(_r,_x,_y,_s)
+for _v,_tx in enumerate((78,208,338,468,598,728,858,980),start=1):
+    _knobify("tune-%d"%_v,_tx,636,56)
+# center sensor pads + mute toggles under each voice number plate
+for _v in range(1,9):
+    _mp=re.search(r'#X obj (\d+) (\d+) cnv 19 28 46 empty \\\$0-r-mh-sn%d '%_v,p)
+    assert _mp, "no plate %d"%_v
+    _px=int(_mp.group(1))
+    p=re.sub(r'#X obj -?\d+ -?\d+ (tgl 18 0 \\\$0-s-sensor-%d )'%_v,"#X obj %d 853 \\g<1>"%(_px+5),p,count=1)
+    p=re.sub(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-iso-%d )'%_v,"#X obj %d 880 \\g<1>"%(_px+6),p,count=1)
+# M/V labels on the per-voice mod/volume mini sliders (match the S/F/R style)
+for _v in range(1,9):
+    p=re.sub(r'(\\\$0-s-vmod-%d\s+\\\$0-r-vmod-%d)\s+empty\s+0\s+-9'%(_v,_v),r'\g<1> M 1 -9',p,count=1)
+    p=re.sub(r'(\\\$0-s-vol-%d\s+\\\$0-r-vol-%d)\s+empty\s+0\s+-9'%(_v,_v),r'\g<1> V 1 -9',p,count=1)
+# park the orphaned slider tick dots (anonymous small cnv squares on the front)
+_dots=0
+def _parkdot(m):
+    global _dots
+    x,y=int(m.group(1)),int(m.group(2))
+    if 0<=x<=1160 and 0<=y<=920:
+        _dots+=1
+        return "#X obj -650 %d cnv 4 %s %s empty empty empty "%(y,m.group(3),m.group(4))
+    return m.group(0)
+p=re.sub(r'#X obj (-?\d+) (-?\d+) cnv [1-6] ([1-6]) ([1-6]) empty empty empty ',_parkdot,p)
+print("knobified %d widgets, parked %d tick dots"%(len(_KNOBS)+8,_dots))
+
 mains=[]; seen=set()
 for m in re.finditer(r'#X obj (-?\d+) (-?\d+) (vsl|hsl|tgl|bng|hradio|vradio|cnv) .*?\\\$0-r-([a-z0-9-]+)', p):
     x,y,suf=int(m.group(1)),int(m.group(2)),'r-'+m.group(4)

@@ -1,0 +1,173 @@
+From 60a61d86d38fbd74d802d8d800eda88253624b26 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Tue, 1 Sep 2026 21:52:34 -0700
+Subject: [PATCH 4/4] LiraSkin v3: rotary knobs for square sliders, silver TUNE
+ dials, knob drag feel, Futura labels
+
+---
+ Source/LiraSkin.hpp           | 76 +++++++++++++++++++++++++++++++++++
+ Source/PluginEditorObject.cpp | 18 ++++++++-
+ Source/PluginLookAndFeel.cpp  | 10 ++---
+ 3 files changed, 97 insertions(+), 7 deletions(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index 23a05a7..9115ec3 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -28,6 +28,82 @@ namespace LiraSkin
+         g.setGradientFill(juce::ColourGradient(left, r.getX(), r.getY(), right, r.getRight(), r.getY(), false));
+     }
+ 
++    // ------------------------------------------------------------------ rotary knobs
++    // A square vsl/hsl is drawn as a rotary knob (>=52px: silver knurled dial).
++    inline bool isKnob(int w, int h) { return std::abs(w - h) <= 6 && juce::jmin(w, h) >= 24; } // Pd pads slider rects by 5px
++
++    inline void drawKnob(juce::Graphics& g, juce::Rectangle<float> b, float pos)
++    {
++        const float side = juce::jmin(b.getWidth(), b.getHeight());
++        juce::Rectangle<float> sq(b.getCentreX() - side * 0.5f, b.getCentreY() - side * 0.5f, side, side);
++        auto d = sq.reduced(side * 0.06f);
++        const float r = d.getWidth() * 0.5f;
++        const float cx = d.getCentreX(), cy = d.getCentreY();
++        const float ang = juce::degreesToRadians(-135.f + 270.f * juce::jlimit(0.f, 1.f, pos));
++        // drop shadow
++        g.setColour(juce::Colours::black.withAlpha(0.35f));
++        g.fillEllipse(d.translated(0.f, r * 0.10f));
++        // skirt
++        vgrad(g, d, juce::Colour(0xff3a3a3a), juce::Colour(0xff0d0d0d));
++        g.fillEllipse(d);
++        // scalloped skirt ridges
++        g.setColour(juce::Colours::black.withAlpha(0.45f));
++        for(int i = 0; i < 8; ++i)
++        {
++            const float a = ang + juce::MathConstants<float>::pi * 0.25f * i + juce::MathConstants<float>::pi / 8.f;
++            g.drawLine(cx + std::sin(a) * r * 0.74f, cy - std::cos(a) * r * 0.74f,
++                       cx + std::sin(a) * r * 0.97f, cy - std::cos(a) * r * 0.97f, 2.2f);
++        }
++        // cap
++        juce::Rectangle<float> cap(cx - r * 0.66f, cy - r * 0.66f, r * 1.32f, r * 1.32f);
++        vgrad(g, cap, juce::Colour(0xff444444), juce::Colour(0xff181818));
++        g.fillEllipse(cap);
++        g.setColour(juce::Colours::white.withAlpha(0.10f));
++        g.fillEllipse(cap.reduced(r * 0.10f).withHeight(r * 0.55f));
++        // pointer
++        g.setColour(juce::Colours::white);
++        g.drawLine(cx + std::sin(ang) * r * 0.18f, cy - std::cos(ang) * r * 0.18f,
++                   cx + std::sin(ang) * r * 0.90f, cy - std::cos(ang) * r * 0.90f, 2.4f);
++        g.setColour(juce::Colours::black.withAlpha(0.7f));
++        g.drawEllipse(d, 1.f);
++    }
++
++    inline void drawTuneDial(juce::Graphics& g, juce::Rectangle<float> b, float pos)
++    {
++        const float side = juce::jmin(b.getWidth(), b.getHeight());
++        juce::Rectangle<float> sq(b.getCentreX() - side * 0.5f, b.getCentreY() - side * 0.5f, side, side);
++        auto d = sq.reduced(side * 0.06f);
++        const float r = d.getWidth() * 0.5f;
++        const float cx = d.getCentreX(), cy = d.getCentreY();
++        const float ang = juce::degreesToRadians(-135.f + 270.f * juce::jlimit(0.f, 1.f, pos));
++        g.setColour(juce::Colours::black.withAlpha(0.35f));
++        g.fillEllipse(d.translated(0.f, r * 0.09f));
++        // brushed silver face
++        g.setGradientFill(juce::ColourGradient(juce::Colour(0xfff2f2f2), cx - r * 0.5f, cy - r * 0.6f,
++                                               juce::Colour(0xff9a9a9a), cx + r * 0.7f, cy + r * 0.8f, true));
++        g.fillEllipse(d);
++        // knurled rim
++        g.setColour(juce::Colours::black.withAlpha(0.40f));
++        for(int i = 0; i < 24; ++i)
++        {
++            const float a = ang + juce::MathConstants<float>::twoPi * i / 24.f;
++            g.drawLine(cx + std::sin(a) * r * 0.86f, cy - std::cos(a) * r * 0.86f,
++                       cx + std::sin(a) * r * 0.99f, cy - std::cos(a) * r * 0.99f, 1.4f);
++        }
++        // inner face
++        juce::Rectangle<float> face(cx - r * 0.72f, cy - r * 0.72f, r * 1.44f, r * 1.44f);
++        vgrad(g, face, juce::Colour(0xffe8e8e8), juce::Colour(0xffb0b0b0));
++        g.fillEllipse(face);
++        g.setColour(juce::Colours::white.withAlpha(0.5f));
++        g.fillEllipse(face.reduced(r * 0.08f).withHeight(r * 0.6f));
++        // pointer
++        g.setColour(juce::Colour(0xff1c1c1c));
++        g.drawLine(cx + std::sin(ang) * r * 0.20f, cy - std::cos(ang) * r * 0.20f,
++                   cx + std::sin(ang) * r * 0.94f, cy - std::cos(ang) * r * 0.94f, 2.6f);
++        g.setColour(juce::Colours::black.withAlpha(0.75f));
++        g.drawEllipse(d, 1.f);
++    }
++
+     // ------------------------------------------------------------------ faders
+     inline void drawVFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour /*fg*/)
+     {
+diff --git a/Source/PluginEditorObject.cpp b/Source/PluginEditorObject.cpp
+index 955bb84..665b69b 100755
+--- a/Source/PluginEditorObject.cpp
++++ b/Source/PluginEditorObject.cpp
+@@ -310,6 +310,12 @@ void GuiToggle::mouseDown(const MouseEvent& e)
+ void GuiSliderHorizontal::paint(Graphics& g)
+ {
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
++    if(LiraSkin::isKnob(getWidth(), getHeight()))
++    {
++        if(getWidth() >= 52) LiraSkin::drawTuneDial(g, getLocalBounds().toFloat(), val);
++        else                 LiraSkin::drawKnob(g, getLocalBounds().toFloat(), val);
++    }
++    else
+     LiraSkin::drawHFader(g, getLocalBounds().toFloat(), val,
+                          LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+@@ -361,7 +367,8 @@ void GuiSliderHorizontal::mouseDrag(const MouseEvent& e)
+     }
+     else
+     {
+-        const float val = static_cast<float>(e.x - e.getMouseDownX()) / static_cast<float>(getWidth() - 7) * (m_shift ? 0.01f : 1.0f);
++        const float span = LiraSkin::isKnob(getWidth(), getHeight()) ? 200.f : static_cast<float>(getWidth() - 7);
++        const float val = static_cast<float>(e.x - e.getMouseDownX()) / span * (m_shift ? 0.01f : 1.0f);
+         if(gui.isLogScale())
+         {
+             setValueOriginal(exp((m_temp + val) * log(max / min)) * min);
+@@ -386,6 +393,12 @@ void GuiSliderHorizontal::mouseUp(const MouseEvent& e)
+ void GuiSliderVertical::paint(Graphics& g)
+ {
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
++    if(LiraSkin::isKnob(getWidth(), getHeight()))
++    {
++        if(getWidth() >= 52) LiraSkin::drawTuneDial(g, getLocalBounds().toFloat(), val);
++        else                 LiraSkin::drawKnob(g, getLocalBounds().toFloat(), val);
++    }
++    else
+     LiraSkin::drawVFader(g, getLocalBounds().toFloat(), val,
+                          LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+@@ -437,7 +450,8 @@ void GuiSliderVertical::mouseDrag(const MouseEvent& e)
+     }
+     else
+     {
+-        const float val = static_cast<float>(e.getMouseDownY() - e.y) / static_cast<float>(getHeight() - 7) * (m_shift ? 0.01f : 1.0f);
++        const float span = LiraSkin::isKnob(getWidth(), getHeight()) ? 200.f : static_cast<float>(getHeight() - 7);
++        const float val = static_cast<float>(e.getMouseDownY() - e.y) / span * (m_shift ? 0.01f : 1.0f);
+         if(gui.isLogScale())
+         {
+             setValueOriginal(exp((m_temp + val) * log(max / min)) * min);
+diff --git a/Source/PluginLookAndFeel.cpp b/Source/PluginLookAndFeel.cpp
+index af6384e..fc28937 100755
+--- a/Source/PluginLookAndFeel.cpp
++++ b/Source/PluginLookAndFeel.cpp
+@@ -87,11 +87,11 @@ Font CamoLookAndFeel::getDefaultFont()
+ 
+ Font CamoLookAndFeel::getFont(const std::string& name)
+ {
+-    if(name == "DejaVu Sans Mono")
+-    {
+-        return getDefaultFont();
+-    }
+-    return Font(String(name), Font::plain, 12.f);
++    // LIRA fork: hardware-style geometric face for all labels (falls back to
++    // the platform default sans when Futura is unavailable).
++    juce::ignoreUnused(name);
++    static Font lira = Font("Futura", 12.f, Font::plain);
++    return lira;
+ }
+ 
+ Image const& CamoLookAndFeel::getImage()
+-- 
+2.39.2 (Apple Git-143)
+
