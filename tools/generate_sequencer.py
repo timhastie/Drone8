@@ -257,8 +257,8 @@ _KNOBS=[("f-a",28,88,56),("f-b",140,88,56),
  ("drv",720,60,56),("dst-mix",830,60,56),("vol",940,60,56),
  ("hold-1234",247,250,56),("hold-5678",832,250,56),
  ("pitch-1234",247,332,56),("pitch-5678",832,332,56),
- ("mod-12",100,476,50),("sharp-12",190,476,50),("mod-34",360,476,50),("sharp-34",450,476,50),
- ("mod-56",620,476,50),("sharp-56",710,476,50),("mod-78",880,476,50),("sharp-78",966,476,50)]
+ ("mod-12",73,476,50),("sharp-12",163,476,50),("mod-34",339,476,50),("sharp-34",429,476,50),
+ ("mod-56",602,476,50),("sharp-56",692,476,50),("mod-78",852,476,50),("sharp-78",942,476,50)]
 for _r,_x,_y,_s in _KNOBS: _knobify(_r,_x,_y,_s)
 for _v,_tx in enumerate((72,202,332,462,592,722,852,975),start=1):
     _knobify("tune-%d"%_v,_tx,618,62)
@@ -276,9 +276,9 @@ _mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_next_preset )',r'#X obj 192 
 # HYPER-LFO cluster: spread the toggle row, knobs below
 _mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 36 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (bng 19 50 10 0 empty \\\$0-r-led )',r'#X obj 100 46 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 134 38 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 176 38 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 218 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 122 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 180 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 214 38 \g<1>')
 
 # MOD-DELAY toggle cluster
 _mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-del-mod )',r'#X obj 480 38 \g<1>')
@@ -298,6 +298,22 @@ _mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-di) DISTORTION -?\d+',r
 for _i,_fx2 in enumerate((159,419,679,935)):
     _mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-fast-%d%d )'%(_i*2+1,_i*2+2),r'#X obj %d 712 \g<1>'%_fx2)
 
+# center the source-select switches in their pair zones
+for _x2,_n in ((115,"12"),(381,"34"),(644,"56"),(894,"78")):
+    _mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-source-%s )'%_n,r'#X obj %d 420 \g<1>'%_x2)
+# vibrato cluster pulled together: toggle, sync, speed, divider display
+_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vibrato )',r'#X obj 614 234 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vib-sync )',r'#X obj 678 234 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ hsl \d+ 12 (0 127 0 0 \\\$0-s-vib-speed )',r'#X obj 718 238 hsl 70 12 \g<1>')
+_mv(r'#X symbolatom -?\d+ -?\d+ (\d+ 0 0 0 - \\\$0-vib-div )',r'#X symbolatom 792 236 \g<1>')
+# FAST toggles start unlit
+for _pr in ("12","34","56","78"):
+    _fm=re.search(r'#X obj -?\d+ -?\d+ tgl 17 0 \\\$0-s-fast-%s (?:.|\n)*?(?<!\\);'%_pr,p)
+    assert _fm, "fast "+_pr
+    _tok=re.sub(r'\s+',' ',_fm.group(0)[:-1]).split(' ')
+    _tok[-2]='0'
+    p=p[:_fm.start()]+' '.join(_tok)+';'+p[_fm.end():]
+
 # voice sensor strips: taller plates, centered pads/mutes
 for _v in range(1,9):
     _mp=re.search(r'#X obj (\d+) (\d+) cnv 19 28 46 empty (\\\$0-r-mh-sn%d) 1?%d \d+ \d+'%(_v,_v%10),p)
@@ -306,6 +322,8 @@ for _v in range(1,9):
     _mv(r'#X obj \d+ \d+ cnv 19 28 46 empty (\\\$0-r-mh-sn%d) (1?%d) \d+ \d+'%(_v,_v%10),
         r'#X obj %d 820 cnv 19 34 70 empty \g<1> \g<2> 13 12'%_px)
     _mv(r'#X obj -?\d+ -?\d+ tgl 18 0 (\\\$0-s-sensor-%d )'%_v,r'#X obj %d 860 tgl 22 0 \g<1>'%(_px+6))
+    _mv(r'#X obj -?\d+ -?\d+ (vsl 9 38 0 127 0 0 \\\$0-s-vmod-%d )'%_v,r'#X obj %d 836 \g<1>'%(_px-50))
+    _mv(r'#X obj -?\d+ -?\d+ (vsl 9 38 0 127 0 0 \\\$0-s-vol-%d )'%_v,r'#X obj %d 836 \g<1>'%(_px-26))
     _mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-iso-%d )'%_v,r'#X obj %d 894 \g<1>'%(_px+9))
 
 # M/V labels on the per-voice mod/volume mini sliders (match the S/F/R style)
@@ -332,6 +350,18 @@ def _retile(m):
     return "#X obj 1047 %d cnv 15 106 42 empty empty empty "%y
 p=re.sub(r'#X obj 1047 \d+ cnv 15 106 36 empty empty empty ',_retile,p)
 assert _ti[0]==12, _ti[0]
+
+# Michroma is wider: pull the top-bar button captions further left
+for _fn,_dx in (("lira8_new_preset","NEW -34"),("lira8_save_preset","SAVE -42"),
+                ("lira8_saveas_preset","SAVE_AS -64"),("lira8_load_preset","LOAD -42")):
+    _lb=_dx.split(" ")[0]
+    _mv(r'(%s \\\$0-r-mh-\w+) %s -?\d+ '%(_fn,_lb),r'\g<1> %s '%_dx)
+# sidebar bars: smaller caption size so labels fit their narrow bars
+p=re.sub(r'(\\\$0-r-mh-(?:lfs|rnd|rn2|scl|clr|sel|inp|in2) [A-Z_!#]+ -?\d+ \d+ 0) 11 ',r'\g<1> 8 ',p)
+# hyper-lfo toggle captions: size 11 so LINK/RESET/Q don't collide
+p=re.sub(r'((?:\\\$0-s-link \\\$0-r-link LINK|\\\$0-s-reset-lfo \\\$0-r-reset-lfo RESET|\\\$0-s-squant \\\$0-r-squant Q|\\\$0-s-andor \\\$0-r-andor OR) -?\d+ -?\d+ 0) 14 ',r'\g<1> 11 ',p)
+# top-bar buttons: caption size 10
+p=re.sub(r'((?:NEW -34|SAVE -42|SAVE_AS -64|LOAD -42) -?\d+ 0) 11 ',r'\g<1> 10 ',p)
 
 # park ALL old front line decorations (the editor draws uniform lines/arrows now)
 _lines=0
@@ -589,11 +619,11 @@ def shift_page(group,dx,dy=0):
         group[gi]=(suf,x+dx,y+dy)
 # launcher (visible at home)
 launcher=[
- ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 13 -1 -262144 0;",244,187,"r-mh-seqb"),
+ ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 11 -1 -262144 0;",244,187,"r-mh-seqb"),
  ("#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -1 -1 -1;",248,190,"r-sq-open"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",250,192,"r-mh-d1"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",250,196,"r-mh-d2"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",250,200,"r-mh-d3"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",-700,192,"r-mh-d1"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",-700,196,"r-mh-d2"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",-700,200,"r-mh-d3"),
 ]
 for rec,x,y,suf in launcher:
     widgets.append(rec.format(x=x,y=y)); mains.append((suf,x,y))
