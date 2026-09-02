@@ -4,9 +4,9 @@ p = open('pdtest/base.pd').read()
 base_geo = [
  ("#X coords 0 -1 1 1 695 702 2 -1 0;", "#X coords 0 -1 1 1 695 760 2 -1 0;"),
  ("#X obj 581 0 cnv 0 114 702 empty empty empty 20 12 0 14 -58255 -58255 0;",
-  "#X obj 581 0 cnv 0 114 760 empty empty empty 20 12 0 14 -58255 -58255 0;"),
+  "#X obj 581 0 cnv 0 114 920 empty empty empty 20 12 0 14 -58255 -58255 0;"),
  ("#X obj 0 26 cnv 19 580 675 empty empty empty 20 12 0 14 -199852",
-  "#X obj 0 26 cnv 19 580 734 empty empty empty 20 12 0 14 -199852"),
+  "#X obj 0 26 cnv 19 580 894 empty empty empty 20 12 0 14 -199852"),
  ("#X obj 378 216 hsl 56 10 0 127 0 0 \\$0-s-vib-speed \\$0-r-vib-speed SPEED 0 -7 0 10 -262144 -1 -1 0 1;",
   "#X obj 446 236 hsl 86 12 0 127 0 0 \\$0-s-vib-speed \\$0-r-vib-speed SPEED 0 -9 0 10 -262144 -1 -1 0 1;"),
  ("#X obj 366 216 hsl 56 10 0 127 0 0 \\$0-s-vib-speed \\$0-r-vib-speed SPEED 0 -7 0 10 -262144 -1 -1 0 1;",
@@ -69,7 +69,7 @@ def _shift(mm):
 p=_re.sub(r'^#X (obj|text|floatatom|symbolatom) (-?\d+) (-?\d+) (.*)$', _shift, p, flags=_re.M)
 
 # ---- piecewise vertical re-flow: spread the 50px across all rows ----
-_MAIN_ANCHORS=[(255,255),(311,280),(354,326),(398,378),(438,426),(478,472),(523,520),(669,668),(698,692),(741,735),(760,754)]
+_MAIN_ANCHORS=[(255,255),(311,292),(354,352),(398,420),(438,490),(478,558),(523,620),(669,800),(698,830),(741,885),(760,912)]
 def _fmain(y):
     a=_MAIN_ANCHORS
     if y<=a[0][0]: return y
@@ -79,7 +79,7 @@ def _fmain(y):
         if x0<=y<=x1:
             return int(round(y0+(y-x0)*(y1-y0)/(x1-x0)))
     return y
-_SIDE_BANDS=[(612,637,22),(638,657,27),(658,682,37),(683,699,41)]
+_SIDE_BANDS=[(612,637,182),(638,657,187),(658,682,197),(683,699,201)]
 def _fside(y):
     for lo,hi,d in _SIDE_BANDS:
         if lo<=y<=hi: return y+d
@@ -104,7 +104,7 @@ def _reflow(line):
 p="\n".join(_reflow(l) for l in p.split("\n"))
 
 # ---- horizontal re-flow: widen main panel 580->784, insert filter columns ----
-_XA=[(0,0),(10,14),(41,66),(101,151),(177,252),(237,337),(313,438),(373,523),(449,624),(509,709),(537,741),(580,784)]
+_XA=[(0,0),(10,14),(41,78),(101,208),(177,338),(237,468),(313,598),(373,728),(449,858),(509,988),(537,1001),(580,1044)]
 def _fx(x):
     if x<0: return x
     a=_XA
@@ -134,7 +134,7 @@ def _xflow(line):
             if x==bx+12:
                 return "#X %s %d %d %s"%(kind,_fx(bx)+12,y,rest)
     if x>=581:
-        return "#X %s %d %d %s"%(kind,x+204,y,rest)
+        return "#X %s %d %d %s"%(kind,x+464,y,rest)
     nx=_fx(x)
     cnv=_re.match(r'cnv (\d+) (\d+) (\d+) (.*)$',rest)
     if cnv and int(cnv.group(2))>=40:
@@ -151,30 +151,36 @@ _parts=_tl.split()
 _li=_parts.index("13")-2   # label token sits two before the '13' font-size token pair? locate via receive
 _ri=[i for i,t in enumerate(_parts) if t.endswith("mh-top")][0]
 _parts[_ri+1]="LIRA-8_V2"
-_parts[_ri+2]="334"
+_parts[_ri+2]="430"
 p=p.replace(_tl," ".join(_parts))
-p=p.replace("#X coords 0 -1 1 1 695 760 2 -1 0;","#X coords 0 -1 1 1 900 760 2 -1 0;")
+p=p.replace("#X coords 0 -1 1 1 695 760 2 -1 0;","#X coords 0 -1 1 1 1160 920 2 -1 0;")
+for _oldv,_newv in (("#X obj 294 575 cnv 3 3 247","#X obj 263 575 cnv 3 3 247"),
+                    ("#X obj 554 510 cnv 3 3 312","#X obj 523 510 cnv 3 3 312"),
+                    ("#X obj 814 575 cnv 3 3 247","#X obj 783 575 cnv 3 3 247")):
+    assert p.count(_oldv)==1,_oldv
+    p=p.replace(_oldv,_newv)
+
 
 # ---- inject 16 filter mini-sliders left of each tune column ----
 _flt=[]
-for _v,_tx in enumerate([66,151,252,337,438,523,624,709],1):
-    _flt.append("#X obj %d 520 vsl 9 38 0 127 0 0 \\$0-s-cut-%d \\$0-r-cut-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-27,_v,_v))
-    _flt.append("#X obj %d 520 vsl 9 38 0 127 0 0 \\$0-s-res-%d \\$0-r-res-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-15,_v,_v))
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_flt)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+for _v,_tx in enumerate([78,208,338,468,598,728,858,988],1):
+    _flt.append("#X obj %d 620 vsl 9 38 0 127 0 0 \\$0-s-cut-%d \\$0-r-cut-%d F 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-27,_v,_v))
+    _flt.append("#X obj %d 620 vsl 9 38 0 127 0 0 \\$0-s-res-%d \\$0-r-res-%d R 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-15,_v,_v))
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_flt)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- inject 8 per-voice main-out isolation toggles under the sensors ----
 _iso=[]
-for _v,_ix in enumerate([63,155,256,347,448,538,639,727],1):
-    _iso.append("#X obj %d 740 tgl 15 0 \\$0-s-iso-%d \\$0-r-iso-%d empty 0 0 0 10 -262144 -1 -1 0 1;"%(_ix,_v,_v))
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_iso)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+for _v,_ix in enumerate([_fx(bx)+7 for bx in (35,99,175,239,315,379,455,519)],1):
+    _iso.append("#X obj %d 880 tgl 15 0 \\$0-s-iso-%d \\$0-r-iso-%d empty 0 0 0 10 -262144 -1 -1 0 1;"%(_ix,_v,_v))
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_iso)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- front-panel RANDOMIZE ALL! and INIT ALL circle buttons ----
-_oldb="#X obj 787 80 cnv 0 106 24 empty \\$0-r-mh-rnd RANDOMIZE 17 12 0 11 -20806 -262144 0;"
+_oldb="#X obj 1047 80 cnv 0 106 24 empty \\$0-r-mh-rnd RANDOMIZE 17 12 0 11 -20806 -262144 0;"
 assert p.count(_oldb)==1
-p=p.replace(_oldb,"#X obj 787 80 cnv 0 66 24 empty \\$0-r-mh-rnd RANDOMIZE 2 12 0 11 -20806 -262144 0;")
-_oldb="#X obj 787 695 cnv 0 106 24 empty \\$0-r-mh-inp INIT_PATCH 17 12 0 11 -20806 -262144 0;"
+p=p.replace(_oldb,"#X obj 1047 80 cnv 0 66 24 empty \\$0-r-mh-rnd RANDOMIZE 2 12 0 11 -20806 -262144 0;")
+_oldb="#X obj 1047 855 cnv 0 106 24 empty \\$0-r-mh-inp INIT_PATCH 17 12 0 11 -20806 -262144 0;"
 assert p.count(_oldb)==1
-p=p.replace(_oldb,"#X obj 787 695 cnv 0 76 24 empty \\$0-r-mh-inp INIT_PATCH 2 12 0 11 -20806 -262144 0;")
+p=p.replace(_oldb,"#X obj 1047 855 cnv 0 76 24 empty \\$0-r-mh-inp INIT_PATCH 2 12 0 11 -20806 -262144 0;")
 _M18=((0,0,18,1),(0,1,5,1),(13,1,5,1),(0,2,4,1),(14,2,4,1),(0,3,3,1),(15,3,3,1),(0,4,2,1),(16,4,2,1),(0,5,1,8),(17,5,1,8),(0,13,2,1),(16,13,2,1),(0,14,3,1),(15,14,3,1),(0,15,4,1),(14,15,4,1),(0,16,5,1),(13,16,5,1),(0,17,18,1))
 _M16=((0,0,16,1),(0,1,4,1),(12,1,4,1),(0,2,3,1),(13,2,3,1),(0,3,2,1),(14,3,2,1),(0,4,1,8),(15,4,1,8),(0,12,2,1),(14,12,2,1),(0,13,3,1),(13,13,3,1),(0,14,4,1),(12,14,4,1),(0,15,16,1))
 def _move(rec,ox,oy,nx,ny):
@@ -185,41 +191,41 @@ def _move(rec,ox,oy,nx,ny):
 def _movemasks(offs,ox,oy,nx,ny,col):
     for _dx,_dy,_w,_h in offs:
         _move("#X obj %d %d cnv 1 "+str(_w)+" "+str(_h)+" empty empty empty 0 0 0 7 "+col+" 0;",ox+_dx,oy+_dy,nx+_dx,ny+_dy)
-_move("#X obj %d %d bng 18 250 50 0 lira8rand \\$0-r-mh-rndb empty 0 0 0 10 -216373 -1 -1;",831,106,811,106)
-_movemasks(_M18,831,106,811,106,"-58255 -58255")
-_move("#X obj %d %d bng 16 250 50 0 lira8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;",830,724,817,724)
-_movemasks(_M16,830,724,817,724,"-58255 -58255")
-_move("#X obj %d %d bng 16 250 50 0 lira8_save_preset \\$0-r-mh-sv SAVE -34 7 0 11 -216373 -1 -262144;",563,4,590,4)
-_movemasks(_M16,563,4,590,4,"-1 -1")
-_move("#X obj %d %d bng 16 250 50 0 lira8_saveas_preset \\$0-r-mh-sa SAVE_AS -52 7 0 11 -216373 -1 -262144;",674,4,685,4)
-_movemasks(_M16,674,4,685,4,"-1 -1")
-_fb=["#X obj 855 80 cnv 0 39 24 empty \\$0-r-mh-rn2 ALL! 6 12 0 11 -20806 -262144 0;",
-     "#X obj 865 695 cnv 0 29 24 empty \\$0-r-mh-in2 ALL 4 12 0 11 -20806 -262144 0;",
-     "#X obj 866 106 bng 18 250 50 0 \\$0-s-sq-fral \\$0-r-mh-ranb empty 0 0 0 10 -216373 -1 -1;"]
+_move("#X obj %d %d bng 18 250 50 0 lira8rand \\$0-r-mh-rndb empty 0 0 0 10 -216373 -1 -1;",1091,106,1071,106)
+_movemasks(_M18,1091,106,1071,106,"-58255 -58255")
+_move("#X obj %d %d bng 16 250 50 0 lira8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;",1090,884,1077,884)
+_movemasks(_M16,1090,884,1077,884,"-58255 -58255")
+_move("#X obj %d %d bng 16 250 50 0 lira8_save_preset \\$0-r-mh-sv SAVE -34 7 0 11 -216373 -1 -262144;",_fx(403),4,850,4)
+_movemasks(_M16,_fx(403),4,850,4,"-1 -1")
+_move("#X obj %d %d bng 16 250 50 0 lira8_saveas_preset \\$0-r-mh-sa SAVE_AS -52 7 0 11 -216373 -1 -262144;",_fx(484),4,945,4)
+_movemasks(_M16,_fx(484),4,945,4,"-1 -1")
+_fb=["#X obj 1115 80 cnv 0 39 24 empty \\$0-r-mh-rn2 ALL! 6 12 0 11 -20806 -262144 0;",
+     "#X obj 1125 855 cnv 0 29 24 empty \\$0-r-mh-in2 ALL 4 12 0 11 -20806 -262144 0;",
+     "#X obj 1126 106 bng 18 250 50 0 \\$0-s-sq-fral \\$0-r-mh-ranb empty 0 0 0 10 -216373 -1 -1;"]
 for _dx,_dy,_w,_h in _M18:
-    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(866+_dx,106+_dy,_w,_h))
-_fb.append("#X obj 871 724 bng 16 250 50 0 \\$0-s-sq-fial \\$0-r-mh-inab empty 0 0 0 10 -216373 -1 -1;")
+    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(1126+_dx,106+_dy,_w,_h))
+_fb.append("#X obj 1131 884 bng 16 250 50 0 \\$0-s-sq-fial \\$0-r-mh-inab empty 0 0 0 10 -216373 -1 -1;")
 for _dx,_dy,_w,_h in _M16:
-    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(871+_dx,724+_dy,_w,_h))
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_fb)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+    _fb.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -58255 -58255 0;"%(1131+_dx,884+_dy,_w,_h))
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_fb)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- NEW PATCH button in the top bar (left of SAVE) ----
-_np=["#X obj 513 4 bng 16 250 50 0 lira8_new_preset \\$0-r-mh-nw NEW -28 7 0 11 -216373 -1 -262144;"]
+_np=["#X obj 773 4 bng 16 250 50 0 lira8_new_preset \\$0-r-mh-nw NEW -28 7 0 11 -216373 -1 -262144;"]
 for _dx,_dy,_w,_h in _M16:
-    _np.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -1 -1 0;"%(513+_dx,4+_dy,_w,_h))
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_np)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+    _np.append("#X obj %d %d cnv 1 %d %d empty empty empty 0 0 0 7 -1 -1 0;"%(773+_dx,4+_dy,_w,_h))
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_np)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- Q-LFO toggle in the HYPER-LFO section ----
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 122 158 tgl 19 0 \\$0-s-squant \\$0-r-squant Q 5 -8 0 14 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","#X obj 122 158 tgl 19 0 \\$0-s-squant \\$0-r-squant Q 5 -8 0 14 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- MOD-DELAY randomize-lock toggle ----
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","#X obj 306 109 tgl 15 0 \\$0-s-mdlock \\$0-r-mdlock LOCK 18 3 0 10 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","#X obj 306 109 tgl 15 0 \\$0-s-mdlock \\$0-r-mdlock LOCK 18 3 0 10 -1 -262144 -1 0 1;\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- per-voice sharp trim mini-sliders ----
 _shp=[]
-for _v,_tx in enumerate([66,151,252,337,438,523,624,709],1):
-    _shp.append("#X obj %d 520 vsl 9 38 0 127 0 0 \\$0-s-sharpv-%d \\$0-r-sharpv-%d S 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-39,_v,_v))
-p=p.replace("#X coords 0 -1 1 1 900 760 2 -1 0;","\n".join(_shp)+"\n#X coords 0 -1 1 1 900 760 2 -1 0;")
+for _v,_tx in enumerate([78,208,338,468,598,728,858,988],1):
+    _shp.append("#X obj %d 620 vsl 9 38 0 127 0 0 \\$0-s-sharpv-%d \\$0-r-sharpv-%d S 0 -9 0 10 -262144 -1 -1 0 1;"%(_tx-39,_v,_v))
+p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_shp)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- gui.link bindings for params 88..103 ----
 _gl=""
@@ -237,7 +243,7 @@ mains=[]; seen=set()
 for m in re.finditer(r'#X obj (-?\d+) (-?\d+) (vsl|hsl|tgl|bng|hradio|vradio|cnv) .*?\\\$0-r-([a-z0-9-]+)', p):
     x,y,suf=int(m.group(1)),int(m.group(2)),'r-'+m.group(4)
     if suf in seen: continue
-    if 0<=x<=900 and 0<=y<=760: mains.append((suf,x,y)); seen.add(suf)
+    if 0<=x<=1160 and 0<=y<=920: mains.append((suf,x,y)); seen.add(suf)
 
 HIDE=1500
 chrome=[]; page1=[]; page2=[]; widgets=[]
@@ -259,200 +265,186 @@ def emit_masks():
         sl += [(0,4,1,N-8),(N-1,4,1,N-8)]
         for i,(dx,dy,w,h) in enumerate(sl):
             suf="r-sq-msk-%d-%d"%(k,i)
-            widgets.append("#X obj %d %d cnv 1 %d %d empty \\$0-%s empty 0 0 0 7 -58255 -58255 0;"%(bx+dx,by+dy+HIDE,w,h,suf))
+            _mc="-49933" if any(abs(by-(172+(vv-1)*88))<=80 for vv in range(1,9)) and by>140 else "-58255"
+            widgets.append("#X obj %d %d cnv 1 %d %d empty \\$0-%s empty 0 0 0 7 %s %s 0;"%(bx+dx,by+dy+HIDE,w,h,suf,_mc,_mc))
             grp.append((suf,bx+dx,by+dy)); IDX[suf]=len(widgets)-1
 
-# chrome (both pages)
-W(chrome,"#X obj {x} {y} cnv 0 900 760 empty \\$0-r-sq-brd empty 20 12 0 14 -1 -1 0;",-100,0,"r-sq-brd")
-W(chrome,"#X obj {x} {y} cnv 0 892 752 empty \\$0-r-sq-bg empty 20 12 0 14 -58255 -58255 0;",-96,4,"r-sq-bg")
-W(chrome,"#X obj {x} {y} cnv 0 892 24 empty \\$0-r-sq-tt SEQUENCER 400 12 0 13 -20806 -262144 0;",-96,4,"r-sq-tt")
-W(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-close \\$0-r-sq-close X 5 9 0 12 -20806 -20806 -262144;",772,8,"r-sq-close")
-W(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna RND_ALL! -72 8 0 10 -216373 -1 -262144;",630,52,"r-sq-srna")
-W(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini INIT_ALL! -80 8 0 10 -216373 -1 -262144;",766,52,"r-sq-sini")
-W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgt \\$0-r-sq-pgtb empty 0 -9 0 10 -20806 -20806 -20806 0 1;",55,87,"r-sq-pgtb")
-W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-tr TRIGGER 34 9 0 11 -20806 -262144 0;",55,87,"r-sq-tr")
-W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgp \\$0-r-sq-pgpb empty 0 -9 0 10 -20806 -20806 -20806 0 1;",185,87,"r-sq-pgpb")
-W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-pr PITCH 40 9 0 11 -20806 -262144 0;",185,87,"r-sq-pr")
-W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgf \\$0-r-sq-pgfb empty 0 -9 0 10 -20806 -20806 -20806 0 1;",315,87,"r-sq-pgfb")
-W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-fr FILTER 36 9 0 11 -20806 -262144 0;",315,87,"r-sq-fr")
-W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgm \\$0-r-sq-pgmb empty 0 -9 0 10 -20806 -20806 -20806 0 1;",445,87,"r-sq-pgmb")
-W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-mr MOD 46 9 0 11 -20806 -262144 0;",445,87,"r-sq-mr")
-W(chrome,"#X obj {x} {y} hsl 120 18 0 127 0 0 \\$0-s-sq-pgm2 \\$0-r-sq-pgm2b empty 0 -9 0 10 -20806 -20806 -20806 0 1;",575,87,"r-sq-pgm2b")
-W(chrome,"#X obj {x} {y} cnv 0 120 18 empty \\$0-r-sq-m2r MOD2 40 9 0 11 -20806 -262144 0;",575,87,"r-sq-m2r")
-# page1: headers + rows (halo UNDER toggles)
-for i,lab in enumerate(("A","D","S","R")):
-    W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-h%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),470+i*18,116,"r-sq-h%d"%i)
-W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",672,710,"r-sq-trna")
-W(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",827,710,"r-sq-tcla")
-W(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -262144 -1 -262144 0 1;",788,89,"r-sq-menv")
-row_y=lambda v:120+(v-1)*74
-W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-th4 PD 2 0 0 10 -58255 -262144 0;",539,116,"r-sq-th4")
-for v in range(1,9):
-    W(page1,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-tpd-%d \\$0-r-sq-tpd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
-      542,row_y(v)+12,"r-sq-tpd-%d"%v)
-W(page1,"#X obj {x} {y} hsl 60 12 0 127 0 0 \\$0-s-sq-tpda \\$0-r-sq-tpda PD_ALL 66 3 0 10 -262144 -1 -262144 0 1;",632,89,"r-sq-tpda")
+# chrome (both pages) - 1160x920 relayout
+page3=[];page4=[];page5=[]
+def WF(group,rec,x,y,suf): W(group,rec,x-100,y,suf)
+WF(chrome,"#X obj {x} {y} cnv 0 1160 920 empty \\$0-r-sq-brd empty 20 12 0 14 -1 -1 0;",0,0,"r-sq-brd")
+WF(chrome,"#X obj {x} {y} cnv 0 1152 912 empty \\$0-r-sq-bg empty 20 12 0 14 -58255 -58255 0;",4,4,"r-sq-bg")
+WF(chrome,"#X obj {x} {y} cnv 0 1152 26 empty \\$0-r-sq-tt SEQUENCER 530 13 0 13 -20806 -262144 0;",4,4,"r-sq-tt")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-close \\$0-r-sq-close X 5 9 0 12 -20806 -20806 -262144;",1128,8,"r-sq-close")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna RND_ALL! -72 8 0 10 -216373 -1 -262144;",988,52,"r-sq-srna")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini INIT_ALL! -80 8 0 10 -216373 -1 -262144;",1124,52,"r-sq-sini")
+_TABS=(("pgt","tr","TRIGGER",64),("pgp","pr","PITCH",71),("pgf","fr","FILTER",68),("pgm","mr","MOD",79),("pgm2","m2r","MOD2",75))
+for _ti,(_snd,_lb,_txt,_lx) in enumerate(_TABS):
+    _tx=85+_ti*200
+    WF(chrome,"#X obj {x} {y} hsl 180 22 0 127 0 0 \\$0-s-sq-%s \\$0-r-sq-%sb empty 0 -9 0 10 -20806 -20806 -20806 0 1;"%(_snd,_snd),_tx,96,"r-sq-%sb"%_snd)
+    WF(chrome,"#X obj {x} {y} cnv 0 180 22 empty \\$0-r-sq-%s %s %d 11 0 11 -20806 -262144 0;"%(_lb,_txt,_lx),_tx,96,"r-sq-%s"%_lb)
+row_y=lambda v:172+(v-1)*88
+_BSCOL="-49933"
+def lane_strips(pg,pfx):
+    for v in range(1,9):
+        WF(pg,"#X obj {x} {y} cnv 1 1128 80 empty \\$0-r-sq-%s-%d empty 0 0 0 7 %s %s 0;"%(pfx,v,_BSCOL,_BSCOL),16,row_y(v)-6,"r-sq-%s-%d"%(pfx,v))
 
-for v in range(1,9):
-    y0=row_y(v)
-    W(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-rl-%d %d 0 8 0 12 -58255 -262144 0;"%(v,v),60,y0+12,"r-sq-rl-%d"%v)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page1,"#X obj {x} {y} tgl 22 0 empty \\$0-r-sq-fl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
-          97+s*22,y0+9,"r-sq-fl-%d"%idx)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page1,"#X obj {x} {y} tgl 16 0 \\$0-s-sq-t-%d \\$0-r-sq-t-%d empty 17 7 0 10 -262144 -1 -1 0 1;"%(idx,idx),
-          100+s*22,y0+12,"r-sq-t-%d"%idx)
-    ADSRY=y0+12
-    for i,pn in enumerate(("a","d","su","re")):
-        W(page1,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(pn,v,pn,v),
-          470+i*18,ADSRY,"r-sq-%s-%d"%(pn,v))
-    W(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m-%d \\$0-r-sq-m-%d OFF 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
-      560,y0+12,"r-sq-m-%d"%v)
-    W(page1,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rt-%d \\$0-r-sq-rt-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
-      618,y0+15,"r-sq-rt-%d"%v)
-    W(page1,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-trn-%d \\$0-r-sq-trn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      690,y0+12,"r-sq-trn-%d"%v)
-    W(page1,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-tcl-%d \\$0-r-sq-tcl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      745,y0+12,"r-sq-tcl-%d"%v)
-# page2: pitch rows
-for v in range(1,9):
-    y0=row_y(v)
-    W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-prl-%d %d 0 8 0 12 -58255 -262144 0;"%(v,v),60,y0+26,"r-sq-prl-%d"%v)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page2,"#X obj {x} {y} vsl 16 40 0 127 0 0 \\$0-s-sq-p-%d \\$0-r-sq-p-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(idx,idx),
-          100+s*22,y0+10,"r-sq-p-%d"%idx)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page2,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-pfl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
-          102+s*22,y0+54,"r-sq-pfl-%d"%idx)
-    W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-pe-%d \\$0-r-sq-pe-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
-      460,y0+22,"r-sq-pe-%d"%v)
-    W(page2,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-rn-%d \\$0-r-sq-rn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      505,y0+22,"r-sq-rn-%d"%v)
-    W(page2,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-cl-%d \\$0-r-sq-cl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      550,y0+22,"r-sq-cl-%d"%v)
-    W(page2,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rp-%d \\$0-r-sq-rp-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
-      615,y0+25,"r-sq-rp-%d"%v)
-for _i,_lab in enumerate(("A","D","S","R")):
-    W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph%d %s 2 0 0 10 -58255 -262144 0;"%(_i,_lab),654+_i*18,116,"r-sq-ph%d"%_i)
-W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph4 AMT 2 0 0 10 -58255 -262144 0;",727,116,"r-sq-ph4")
-W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph5 PD 2 0 0 10 -58255 -262144 0;",751,116,"r-sq-ph5")
-W(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph6 ON 2 0 0 10 -58255 -262144 0;",776,116,"r-sq-ph6")
-for v in range(1,9):
-    for _i,_pn in enumerate(("pea","ped","pes","per")):
-        W(page2,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(_pn,v,_pn,v),
-          654+_i*18,row_y(v)+6,"r-sq-%s-%d"%(_pn,v))
-    W(page2,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-pamt-%d \\$0-r-sq-pamt-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
-      730,row_y(v)+6,"r-sq-pamt-%d"%v)
-    W(page2,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-ppd-%d \\$0-r-sq-ppd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
-      754,row_y(v)+6,"r-sq-ppd-%d"%v)
-    W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-pv-%d \\$0-r-sq-pv-%d empty 0 0 0 10 -262144 -1 -1 0 1;"%(v,v),
-      778,row_y(v)+22,"r-sq-pv-%d"%v)
-W(page2,"#X obj {x} {y} hsl 60 12 0 127 0 0 \\$0-s-sq-ppda \\$0-r-sq-ppda PD_ALL 66 3 0 10 -262144 -1 -262144 0 1;",564,89,"r-sq-ppda")
-W(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-q \\$0-r-sq-q QUANTIZE 19 8 0 10 -262144 -1 -262144 0 1;",720,89,"r-sq-q")
-W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",604,710,"r-sq-rna")
-W(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",759,710,"r-sq-cla")
-page3=[]
-W(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-fh5 PD 2 0 0 10 -58255 -262144 0;",769,116,"r-sq-fh5")
-for v in range(1,9):
-    W(page3,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-fpd-%d \\$0-r-sq-fpd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
-      772,row_y(v)+6,"r-sq-fpd-%d"%v)
-W(page3,"#X obj {x} {y} hsl 60 12 0 127 0 0 \\$0-s-sq-fpda \\$0-r-sq-fpda PD_ALL 66 3 0 10 -262144 -1 -262144 0 1;",616,89,"r-sq-fpda")
-W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",656,710,"r-sq-frna")
-W(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",811,710,"r-sq-fcla")
+# ---- page1 TRIGGER ----
+lane_strips(page1,"bst")
 for i,lab in enumerate(("A","D","S","R")):
-    W(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-fh%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),470+i*18,116,"r-sq-fh%d"%i)
+    WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-h%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),584+i*24,150,"r-sq-h%d"%i)
+WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-th4 PD 2 0 0 10 -58255 -262144 0;",680,150,"r-sq-th4")
+WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",880,880,"r-sq-trna")
+WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-tcla")
+WF(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -262144 -1 -262144 0 1;",1040,134,"r-sq-menv")
+WF(page1,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-tpda \\$0-r-sq-tpda PD_ALL 76 4 0 10 -262144 -1 -262144 0 1;",600,132,"r-sq-tpda")
 for v in range(1,9):
     y0=row_y(v)
-    W(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-frl-%d %d 0 8 0 12 -58255 -262144 0;"%(v,v),60,y0+22,"r-sq-frl-%d"%v)
+    WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-rl-%d %d 0 8 0 13 %s -262144 0;"%(v,v,_BSCOL),36,y0+26,"r-sq-rl-%d"%v)
     for s in range(16):
         idx=(v-1)*16+s
-        W(page3,"#X obj {x} {y} vsl 16 34 0 127 0 0 \\$0-s-sq-fc-%d \\$0-r-sq-fc-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(idx,idx),
-          100+s*22,y0+6,"r-sq-fc-%d"%idx)
+        WF(page1,"#X obj {x} {y} tgl 26 0 empty \\$0-r-sq-fl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
+          92+s*28,y0+16,"r-sq-fl-%d"%idx)
     for s in range(16):
         idx=(v-1)*16+s
-        W(page3,"#X obj {x} {y} tgl 14 0 \\$0-s-sq-ft-%d \\$0-r-sq-ft-%d empty 17 7 0 10 -262144 -1 -1 0 1;"%(idx,idx),
-          101+s*22,y0+44,"r-sq-ft-%d"%idx)
+        WF(page1,"#X obj {x} {y} tgl 20 0 \\$0-s-sq-t-%d \\$0-r-sq-t-%d empty 17 7 0 10 -262144 -1 -1 0 1;"%(idx,idx),
+          95+s*28,y0+19,"r-sq-t-%d"%idx)
+    for i,pn in enumerate(("a","d","su","re")):
+        WF(page1,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(pn,v,pn,v),
+          580+i*24,y0+8,"r-sq-%s-%d"%(pn,v))
+    WF(page1,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-tpd-%d \\$0-r-sq-tpd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      676,y0+8,"r-sq-tpd-%d"%v)
+    WF(page1,"#X obj {x} {y} tgl 17 0 \\$0-s-sq-m-%d \\$0-r-sq-m-%d OFF 20 9 0 10 -262144 -1 -262144 0 1;"%(v,v),
+      724,y0+26,"r-sq-m-%d"%v)
+    WF(page1,"#X obj {x} {y} hsl 44 12 0 127 0 0 \\$0-s-sq-rt-%d \\$0-r-sq-rt-%d x1 16 24 0 9 -262144 -1 -262144 0 1;"%(v,v),
+      790,y0+28,"r-sq-rt-%d"%v)
+    WF(page1,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-trn-%d \\$0-r-sq-trn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
+      880,y0+24,"r-sq-trn-%d"%v)
+    WF(page1,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-tcl-%d \\$0-r-sq-tcl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
+      960,y0+24,"r-sq-tcl-%d"%v)
+
+# ---- page2 PITCH ----
+lane_strips(page2,"bsp")
+for _i,_lab in enumerate(("A","D","S","R")):
+    WF(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph%d %s 2 0 0 10 -58255 -262144 0;"%(_i,_lab),587+_i*24,150,"r-sq-ph%d"%_i)
+WF(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph4 AMT 2 0 0 10 -58255 -262144 0;",680,150,"r-sq-ph4")
+WF(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph5 PD 2 0 0 10 -58255 -262144 0;",712,150,"r-sq-ph5")
+WF(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-ph6 ON 2 0 0 10 -58255 -262144 0;",740,150,"r-sq-ph6")
+for v in range(1,9):
+    y0=row_y(v)
+    WF(page2,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-prl-%d %d 0 8 0 13 %s -262144 0;"%(v,v,_BSCOL),36,y0+30,"r-sq-prl-%d"%v)
     for s in range(16):
         idx=(v-1)*16+s
-        W(page3,"#X obj {x} {y} tgl 10 0 empty \\$0-r-sq-ffl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
-          103+s*22,y0+60,"r-sq-ffl-%d"%idx)
-    ADSRY=y0+6
+        WF(page2,"#X obj {x} {y} vsl 18 56 0 127 0 0 \\$0-s-sq-p-%d \\$0-r-sq-p-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(idx,idx),
+          92+s*28,y0+6,"r-sq-p-%d"%idx)
+    for s in range(16):
+        idx=(v-1)*16+s
+        WF(page2,"#X obj {x} {y} tgl 14 0 empty \\$0-r-sq-pfl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
+          94+s*28,y0+66,"r-sq-pfl-%d"%idx)
+    for _i,_pn in enumerate(("pea","ped","pes","per")):
+        WF(page2,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(_pn,v,_pn,v),
+          584+_i*24,y0+8,"r-sq-%s-%d"%(_pn,v))
+    WF(page2,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-pamt-%d \\$0-r-sq-pamt-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      678,y0+8,"r-sq-pamt-%d"%v)
+    WF(page2,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-ppd-%d \\$0-r-sq-ppd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      710,y0+8,"r-sq-ppd-%d"%v)
+    WF(page2,"#X obj {x} {y} tgl 17 0 \\$0-s-sq-pv-%d \\$0-r-sq-pv-%d empty 0 0 0 10 -262144 -1 -1 0 1;"%(v,v),
+      741,y0+26,"r-sq-pv-%d"%v)
+    WF(page2,"#X obj {x} {y} tgl 17 0 \\$0-s-sq-pe-%d \\$0-r-sq-pe-%d ON 20 9 0 10 -262144 -1 -262144 0 1;"%(v,v),
+      786,y0+26,"r-sq-pe-%d"%v)
+    WF(page2,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-rn-%d \\$0-r-sq-rn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
+      856,y0+24,"r-sq-rn-%d"%v)
+    WF(page2,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-cl-%d \\$0-r-sq-cl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
+      926,y0+24,"r-sq-cl-%d"%v)
+    WF(page2,"#X obj {x} {y} hsl 44 12 0 127 0 0 \\$0-s-sq-rp-%d \\$0-r-sq-rp-%d x1 16 24 0 9 -262144 -1 -262144 0 1;"%(v,v),
+      1000,y0+28,"r-sq-rp-%d"%v)
+WF(page2,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-ppda \\$0-r-sq-ppda PD_ALL 76 4 0 10 -262144 -1 -262144 0 1;",600,132,"r-sq-ppda")
+WF(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-q \\$0-r-sq-q QUANTIZE 19 8 0 10 -262144 -1 -262144 0 1;",1040,134,"r-sq-q")
+WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",880,880,"r-sq-rna")
+WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-cla")
+
+# ---- page3 FILTER ----
+lane_strips(page3,"bsf")
+for i,lab in enumerate(("A","D","S","R")):
+    WF(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-fh%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),587+i*24,150,"r-sq-fh%d"%i)
+WF(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-famth AMT 2 0 0 10 -58255 -262144 0;",680,150,"r-sq-famth")
+WF(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-fh5 PD 2 0 0 10 -58255 -262144 0;",712,150,"r-sq-fh5")
+for v in range(1,9):
+    y0=row_y(v)
+    WF(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-frl-%d %d 0 8 0 13 %s -262144 0;"%(v,v,_BSCOL),36,y0+26,"r-sq-frl-%d"%v)
+    for s in range(16):
+        idx=(v-1)*16+s
+        WF(page3,"#X obj {x} {y} vsl 18 48 0 127 0 0 \\$0-s-sq-fc-%d \\$0-r-sq-fc-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(idx,idx),
+          92+s*28,y0+2,"r-sq-fc-%d"%idx)
+    for s in range(16):
+        idx=(v-1)*16+s
+        WF(page3,"#X obj {x} {y} tgl 16 0 \\$0-s-sq-ft-%d \\$0-r-sq-ft-%d empty 17 7 0 10 -262144 -1 -1 0 1;"%(idx,idx),
+          93+s*28,y0+54,"r-sq-ft-%d"%idx)
+    for s in range(16):
+        idx=(v-1)*16+s
+        WF(page3,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-ffl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
+          95+s*28,y0+72,"r-sq-ffl-%d"%idx)
     for i,pn in enumerate(("fa","fd","fsu","fre")):
-        W(page3,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(pn,v,pn,v),
-          470+i*18,ADSRY,"r-sq-%s-%d"%(pn,v))
-    W(page3,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-fe-%d \\$0-r-sq-fe-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
-      560,y0+22,"r-sq-fe-%d"%v)
-    W(page3,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-frn-%d \\$0-r-sq-frn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      608,y0+22,"r-sq-frn-%d"%v)
-    W(page3,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-fcl-%d \\$0-r-sq-fcl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      662,y0+22,"r-sq-fcl-%d"%v)
-    W(page3,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rf-%d \\$0-r-sq-rf-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
-      722,y0+25,"r-sq-rf-%d"%v)
-W(page3,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-famth AMT 2 0 0 10 -58255 -262144 0;",537,116,"r-sq-famth")
-for v in range(1,9):
-    W(page3,"#X obj {x} {y} vsl 12 44 0 127 0 0 \\$0-s-sq-famt-%d \\$0-r-sq-famt-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
-      540,row_y(v)+6,"r-sq-famt-%d"%v)
-page4=[]
-W(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -83 9 0 10 -216373 -1 -4034;",604,710,"r-sq-mrna")
-W(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -83 9 0 10 -216373 -1 -4034;",759,710,"r-sq-mcla")
+        WF(page3,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(pn,v,pn,v),
+          584+i*24,y0+8,"r-sq-%s-%d"%(pn,v))
+    WF(page3,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-famt-%d \\$0-r-sq-famt-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      678,y0+8,"r-sq-famt-%d"%v)
+    WF(page3,"#X obj {x} {y} vsl 14 60 0 127 0 0 \\$0-s-sq-fpd-%d \\$0-r-sq-fpd-%d empty 0 -9 0 10 -262144 -1 -1 0 1;"%(v,v),
+      710,y0+8,"r-sq-fpd-%d"%v)
+    WF(page3,"#X obj {x} {y} tgl 17 0 \\$0-s-sq-fe-%d \\$0-r-sq-fe-%d ON 20 9 0 10 -262144 -1 -262144 0 1;"%(v,v),
+      756,y0+26,"r-sq-fe-%d"%v)
+    WF(page3,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-frn-%d \\$0-r-sq-frn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
+      826,y0+24,"r-sq-frn-%d"%v)
+    WF(page3,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-fcl-%d \\$0-r-sq-fcl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
+      896,y0+24,"r-sq-fcl-%d"%v)
+    WF(page3,"#X obj {x} {y} hsl 44 12 0 127 0 0 \\$0-s-sq-rf-%d \\$0-r-sq-rf-%d x1 16 24 0 9 -262144 -1 -262144 0 1;"%(v,v),
+      970,y0+28,"r-sq-rf-%d"%v)
+WF(page3,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-fpda \\$0-r-sq-fpda PD_ALL 76 4 0 10 -262144 -1 -262144 0 1;",600,132,"r-sq-fpda")
+WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",880,880,"r-sq-frna")
+WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-fcla")
+
+# ---- page4 MOD / page5 MOD2 ----
 _MROWS=("M12","M34","M56","M78","S12","S34","S56","S78")
-for v in range(1,9):
-    y0=row_y(v)
-    W(page4,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-mrl-%d %s 0 8 0 11 -58255 -262144 0;"%(v,_MROWS[v-1]),52,y0+22,"r-sq-mrl-%d"%v)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page4,"#X obj {x} {y} vsl 16 40 0 127 0 0 \\$0-s-sq-mv-%d \\$0-r-sq-mv-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(idx,idx),
-          100+s*22,y0+10,"r-sq-mv-%d"%idx)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page4,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-mfl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
-          102+s*22,y0+54,"r-sq-mfl-%d"%idx)
-    W(page4,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-me-%d \\$0-r-sq-me-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
-      460,y0+22,"r-sq-me-%d"%v)
-    W(page4,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-mrn-%d \\$0-r-sq-mrn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      505,y0+22,"r-sq-mrn-%d"%v)
-    W(page4,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-mcl-%d \\$0-r-sq-mcl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      550,y0+22,"r-sq-mcl-%d"%v)
-    W(page4,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rm-%d \\$0-r-sq-rm-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
-      615,y0+25,"r-sq-rm-%d"%v)
-page5=[]
-W(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2ls \\$0-r-sq-m2ls LFO_SYNC 19 8 0 10 -262144 -1 -262144 0 1;",680,row_y(3)+22,"r-sq-m2ls")
-W(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2vs \\$0-r-sq-m2vs VIB_SYNC 19 8 0 10 -262144 -1 -262144 0 1;",680,row_y(8)+22,"r-sq-m2vs")
-W(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",657,710,"r-sq-m2rna")
-W(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",812,710,"r-sq-m2cla")
 _M2ROWS=("P12","P56","LFA","LFB","DL1","DL2","FBK","VIB")
-for v in range(1,9):
-    y0=row_y(v)
-    W(page5,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-m2rl-%d %s 0 8 0 11 -58255 -262144 0;"%(v,_M2ROWS[v-1]),52,y0+22,"r-sq-m2rl-%d"%v)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page5,"#X obj {x} {y} vsl 16 40 0 127 0 0 \\$0-s-sq-m2v-%d \\$0-r-sq-m2v-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(idx,idx),
-          100+s*22,y0+10,"r-sq-m2v-%d"%idx)
-    for s in range(16):
-        idx=(v-1)*16+s
-        W(page5,"#X obj {x} {y} tgl 12 0 empty \\$0-r-sq-m2fl-%d empty 17 7 0 10 -58255 -4034 -1 0 1;"%idx,
-          102+s*22,y0+54,"r-sq-m2fl-%d"%idx)
-    W(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2e-%d \\$0-r-sq-m2e-%d ON 18 8 0 10 -262144 -1 -262144 0 1;"%(v,v),
-      460,y0+22,"r-sq-m2e-%d"%v)
-    W(page5,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-m2rn-%d \\$0-r-sq-m2rn-%d RND 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      505,y0+22,"r-sq-m2rn-%d"%v)
-    W(page5,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-m2cl-%d \\$0-r-sq-m2cl-%d CLR 17 8 0 10 -216373 -1 -262144;"%(v,v),
-      550,y0+22,"r-sq-m2cl-%d"%v)
-    W(page5,"#X obj {x} {y} hsl 34 10 0 127 0 0 \\$0-s-sq-rm2-%d \\$0-r-sq-rm2-%d x1 10 18 0 9 -262144 -1 -262144 0 1;"%(v,v),
-      615,y0+25,"r-sq-rm2-%d"%v)
-# --- per-lane shift arrows ---
-_ARROWS=((page1,"tsl","tsr",78,453,14),(page2,"psl","psr",76,447,24),
-         (page3,"fsl","fsr",72,452,26),(page4,"msl","msr",82,447,24),
-         (page5,"m2sl","m2sr",81,447,24))
+for _pg,_bs,_rl,_rows,_sv,_lv,_env,_rn,_cl,_rt in (
+    (page4,"bsm","mrl",_MROWS,"mv","mfl","me","mrn","mcl","rm"),
+    (page5,"bsm2","m2rl",_M2ROWS,"m2v","m2fl","m2e","m2rn","m2cl","rm2")):
+    lane_strips(_pg,_bs)
+    for v in range(1,9):
+        y0=row_y(v)
+        WF(_pg,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-%s-%d %s 0 8 0 12 %s -262144 0;"%(_rl,v,_rows[v-1],_BSCOL),30,y0+30,"r-sq-%s-%d"%(_rl,v))
+        for s in range(16):
+            idx=(v-1)*16+s
+            WF(_pg,"#X obj {x} {y} vsl 18 56 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 1 -5 0 9 -262144 -1 -262144 0 1;"%(_sv,idx,_sv,idx),
+              92+s*28,y0+6,"r-sq-%s-%d"%(_sv,idx))
+        for s in range(16):
+            idx=(v-1)*16+s
+            WF(_pg,"#X obj {x} {y} tgl 14 0 empty \\$0-r-sq-%s-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(_lv,idx,_BSCOL),
+              94+s*28,y0+66,"r-sq-%s-%d"%(_lv,idx))
+        WF(_pg,"#X obj {x} {y} tgl 17 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d ON 20 9 0 10 -262144 -1 -262144 0 1;"%(_env,v,_env,v),
+          600,y0+26,"r-sq-%s-%d"%(_env,v))
+        WF(_pg,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d RND 17 8 0 10 -216373 -1 -262144;"%(_rn,v,_rn,v),
+          670,y0+24,"r-sq-%s-%d"%(_rn,v))
+        WF(_pg,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d CLR 17 8 0 10 -216373 -1 -262144;"%(_cl,v,_cl,v),
+          740,y0+24,"r-sq-%s-%d"%(_cl,v))
+        WF(_pg,"#X obj {x} {y} hsl 44 12 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d x1 16 24 0 9 -262144 -1 -262144 0 1;"%(_rt,v,_rt,v),
+          820,y0+28,"r-sq-%s-%d"%(_rt,v))
+WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -83 9 0 10 -216373 -1 -4034;",880,880,"r-sq-mrna")
+WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -83 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-mcla")
+WF(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2ls \\$0-r-sq-m2ls LFO_SYNC 19 8 0 10 -262144 -1 -262144 0 1;",920,row_y(3)+26,"r-sq-m2ls")
+WF(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2vs \\$0-r-sq-m2vs VIB_SYNC 19 8 0 10 -262144 -1 -262144 0 1;",920,row_y(8)+26,"r-sq-m2vs")
+WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",880,880,"r-sq-m2rna")
+WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-m2cla")
+# ---- per-lane shift arrows ----
+_ARROWS=((page1,"tsl","tsr",62,548,22),(page2,"psl","psr",62,540,26),
+         (page3,"fsl","fsr",62,540,22),(page4,"msl","msr",62,540,26),
+         (page5,"m2sl","m2sr",62,540,26))
 for _pg,_ls,_rs,_lx,_rx,_dy in _ARROWS:
     for v in range(1,9):
         y0=row_y(v)
-        W(_pg,"#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d < 4 8 0 12 -58255 -58255 -262144;"%(_ls,v,_ls,v),
+        WF(_pg,"#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d < 4 8 0 12 %s %s -262144;"%(_ls,v,_ls,v,_BSCOL,_BSCOL),
           _lx,y0+_dy,"r-sq-%s-%d"%(_ls,v))
-        W(_pg,"#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d > 4 8 0 12 -58255 -58255 -262144;"%(_rs,v,_rs,v),
+        WF(_pg,"#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d > 4 8 0 12 %s %s -262144;"%(_rs,v,_rs,v,_BSCOL,_BSCOL),
           _rx,y0+_dy,"r-sq-%s-%d"%(_rs,v))
 emit_masks()
 def shift_page(group,dx,dy=0):
@@ -464,18 +456,13 @@ def shift_page(group,dx,dy=0):
         t[3]=str(int(t[3])+dy)
         widgets[wi]=" ".join(t)
         group[gi]=(suf,x+dx,y+dy)
-shift_page(page1,-72,24)
-shift_page(page2,-4,24)
-shift_page(page3,-56,24)
-shift_page(page4,-4,24)
-shift_page(page5,-57,24)
 # launcher (visible at home)
 launcher=[
- ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 13 -1 -262144 0;",216,187,"r-mh-seqb"),
- ("#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -1 -1 -1;",220,190,"r-sq-open"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",222,192,"r-mh-d1"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",222,196,"r-mh-d2"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",222,200,"r-mh-d3"),
+ ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 13 -1 -262144 0;",288,187,"r-mh-seqb"),
+ ("#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -1 -1 -1;",292,190,"r-sq-open"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",294,192,"r-mh-d1"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",294,196,"r-mh-d2"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",294,200,"r-mh-d3"),
 ]
 for rec,x,y,suf in launcher:
     widgets.append(rec.format(x=x,y=y)); mains.append((suf,x,y))
@@ -730,7 +717,7 @@ for v in range(1,9):
         wm=add("#X msg %d %d %d \\$1;"%(X,3410+s*22,s))
         lm=add("#X msg %d %d %d \\$1;"%(X+110,3410+s*22,idx))
         pi=wid("r-sq-p-%d"%idx)
-        assert 'vsl 16 40' in objs[pi-BASE] and ('sq-p-%d '%idx) in objs[pi-BASE], objs[pi-BASE][:80]
+        assert 'vsl 18 56' in objs[pi-BASE] and ('sq-p-%d '%idx) in objs[pi-BASE], objs[pi-BASE][:80]
         c(pi,0,wm,0); c(wm,0,s_par,0)
         c(pi,0,lm,0); c(lm,0,splab_live,0)
     # apply at step
@@ -1714,7 +1701,7 @@ sr2=add("#X obj 10620 1250 s \\$0-sq-refresh;")
 c(lb2,0,dl2,0); c(dl2,0,sr2,0)
 
 block="\n".join(objs)+"\n"+"\n".join("#X connect %d %d %d %d;"%t for t in conns)+"\n"
-anchor="#X coords 0 -1 1 1 900 760 2 -1 0;"
+anchor="#X coords 0 -1 1 1 1160 920 2 -1 0;"
 assert p.count(anchor)==1
 p=p.replace(anchor,block+anchor)
 open('work.pd','w').write(p)
