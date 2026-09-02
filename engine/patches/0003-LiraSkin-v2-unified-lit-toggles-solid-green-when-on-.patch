@@ -1,0 +1,127 @@
+From 3cde1b7871a1835b503a549eeb1acc238e4e5512 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Tue, 1 Sep 2026 21:20:58 -0700
+Subject: [PATCH 3/3] LiraSkin v2: unified lit toggles (solid green when on),
+ true white circle bangs
+
+---
+ Source/LiraSkin.hpp           | 57 ++++++++++++-----------------------
+ Source/PluginEditorObject.cpp |  9 ++----
+ 2 files changed, 23 insertions(+), 43 deletions(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index f41facc..23a05a7 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -12,6 +12,12 @@ namespace LiraSkin
+ {
+     inline juce::Colour pdc(unsigned int c) { return juce::Colour(static_cast<juce::uint32>(c)); }
+     inline bool isDark(juce::Colour c) { return c.getPerceivedBrightness() < 0.55f; }
++    // pick the lit color: keep a deliberately colorful fg, otherwise house green
++    inline juce::Colour accentFor(juce::Colour fg)
++    {
++        return (fg.getSaturation() > 0.25f && fg.getPerceivedBrightness() > 0.15f)
++             ? fg : juce::Colour(0xff57d465);
++    }
+ 
+     inline void vgrad(juce::Graphics& g, juce::Rectangle<float> r, juce::Colour top, juce::Colour bot)
+     {
+@@ -165,28 +171,6 @@ namespace LiraSkin
+         g.drawRoundedRectangle(r, 3.f, 1.f);
+     }
+ 
+-    inline void drawRocker(juce::Graphics& g, juce::Rectangle<float> b, bool on)
+-    {
+-        auto r = b.reduced(0.5f);
+-        // recessed dark plate
+-        vgrad(g, r, juce::Colour(0xff1d1e1a), juce::Colour(0xff30322b));
+-        g.fillRoundedRectangle(r, 3.f);
+-        g.setColour(juce::Colours::black.withAlpha(0.7f));
+-        g.drawRoundedRectangle(r, 3.f, 1.f);
+-        // lever knob: top when on, bottom when off
+-        const float kd = juce::jmin(r.getWidth(), r.getHeight() * 0.55f) - 3.f;
+-        const float kx = r.getCentreX() - kd * 0.5f;
+-        const float ky = on ? r.getY() + 1.5f : r.getBottom() - kd - 1.5f;
+-        g.setColour(juce::Colours::black.withAlpha(0.5f));
+-        g.fillEllipse(kx, ky + 1.f, kd, kd);
+-        juce::Rectangle<float> knob(kx, ky, kd, kd);
+-        vgrad(g, knob, on ? juce::Colour(0xfff2f2f2) : juce::Colour(0xffb5b5b5),
+-                       on ? juce::Colour(0xff9d9d9d) : juce::Colour(0xff6f6f6f));
+-        g.fillEllipse(knob);
+-        g.setColour(juce::Colours::black.withAlpha(0.6f));
+-        g.drawEllipse(knob, 1.f);
+-    }
+-
+     // ------------------------------------------------------------------ bang
+     inline void drawBang(juce::Graphics& g, juce::Rectangle<float> b, bool flash, juce::Colour bg, juce::Colour fg)
+     {
+@@ -200,27 +184,26 @@ namespace LiraSkin
+             g.drawEllipse(d, 1.f);
+             return;
+         }
+-        juce::Colour accent = fg.getPerceivedBrightness() < 0.2f ? juce::Colour(0xff57d465) : fg;
+-        // metal rim
+-        vgrad(g, d, juce::Colour(0xffe8e8e8), juce::Colour(0xff888888));
+-        g.fillEllipse(d);
+-        auto inner = d.reduced(w * 0.16f);
+-        vgrad(g, inner, juce::Colour(0xff3a3a3a), juce::Colour(0xff181818));
+-        g.fillEllipse(inner);
++        juce::Colour accent = accentFor(fg);
++        // white circle push button
++        g.setColour(juce::Colours::black.withAlpha(0.35f));
++        g.fillEllipse(d.translated(0.f, 1.2f));
+         if(flash)
+         {
+-            g.setColour(accent.withAlpha(0.45f));
+-            g.fillEllipse(inner.expanded(1.5f));
+-            g.setColour(accent);
+-            g.fillEllipse(inner.reduced(1.f));
++            g.setColour(accent.withAlpha(0.40f));
++            g.fillEllipse(d.expanded(1.5f));
++            vgrad(g, d, accent.brighter(0.35f), accent.darker(0.2f));
++            g.fillEllipse(d);
+         }
+         else
+         {
+-            g.setColour(juce::Colours::white.withAlpha(0.12f));
+-            g.fillEllipse(inner.reduced(1.f).withHeight(inner.getHeight() * 0.45f));
++            vgrad(g, d, juce::Colour(0xffffffff), juce::Colour(0xffd0d0d0));
++            g.fillEllipse(d);
+         }
+-        g.setColour(juce::Colours::black.withAlpha(0.75f));
+-        g.drawEllipse(d, 1.f);
++        g.setColour(juce::Colours::white.withAlpha(flash ? 0.35f : 0.75f));
++        g.fillEllipse(d.reduced(w * 0.16f).withHeight(w * 0.30f).translated(0.f, w * 0.06f));
++        g.setColour(juce::Colour(0xff262626));
++        g.drawEllipse(d, 1.2f);
+     }
+ 
+     // ------------------------------------------------------------------ radios
+diff --git a/Source/PluginEditorObject.cpp b/Source/PluginEditorObject.cpp
+index 69f5dcd..955bb84 100755
+--- a/Source/PluginEditorObject.cpp
++++ b/Source/PluginEditorObject.cpp
+@@ -284,17 +284,14 @@ void GuiToggle::paint(Graphics& g)
+     auto const bg = LiraSkin::pdc(gui.getBackgroundColor());
+     auto const fg = LiraSkin::pdc(gui.getForegroundColor());
+     auto const b = getLocalBounds().toFloat();
++    ignoreUnused(bg);
+     if(jmax(getWidth(), getHeight()) <= 11)
+     {
+-        LiraSkin::drawLED(g, b, on, fg.getPerceivedBrightness() < 0.2f ? Colour(0xff57d465) : fg);
+-    }
+-    else if(LiraSkin::isDark(bg))
+-    {
+-        LiraSkin::drawStepPad(g, b, on, fg.getPerceivedBrightness() < 0.2f ? Colour(0xff57d465) : fg);
++        LiraSkin::drawLED(g, b, on, LiraSkin::accentFor(fg));
+     }
+     else
+     {
+-        LiraSkin::drawRocker(g, b, on);
++        LiraSkin::drawStepPad(g, b, on, LiraSkin::accentFor(fg));
+     }
+ }
+ 
+-- 
+2.39.2 (Apple Git-143)
+
