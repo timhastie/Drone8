@@ -1,0 +1,175 @@
+From 43b4843fe2f265d5426888822280465fe27cc04e Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Tue, 1 Sep 2026 19:24:49 -0700
+Subject: [PATCH 1/2] Standalone loads patch (.app localize branch), snapshot
+ loop, no-audio guard
+
+---
+ CMakeLists.txt               |  8 ++++----
+ Source/PluginEditor.cpp      | 20 ++++++++++++++++++--
+ Source/PluginEnvironment.cpp |  8 ++++++++
+ Source/PluginProcessor.cpp   | 23 ++++++++++++++++++-----
+ Source/PluginProcessor.h     |  1 +
+ 5 files changed, 49 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a57ef15..5a1d26a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.12)
+ 
+-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment version")
+-set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)" CACHE STRING "" FORCE)
++set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum OS X deployment version")
++set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "" FORCE)
+ set(JUCE_ENABLE_MODULE_SOURCE_GROUPS ON CACHE BOOL "" FORCE)
+ set_property(GLOBAL PROPERTY USE_FOLDERS YES)
+ 
+@@ -87,7 +87,7 @@ juce_add_plugin(Camomile
+     COPY_PLUGIN_AFTER_BUILD     TRUE
+     PLUGIN_MANUFACTURER_CODE    PIGU
+     PLUGIN_CODE                 Kpq8
+-    FORMATS                     AU VST3 # AAX Unity AUv3
++    FORMATS                     VST3 Standalone # LIRA fork
+     PRODUCT_NAME                "Camomile"
+     AU_MAIN_TYPE                kAudioUnitType_MusicDevice
+     VST3_CATEGORIES             Instrument
+@@ -111,7 +111,7 @@ juce_add_plugin(CamomileFx
+     COPY_PLUGIN_AFTER_BUILD     TRUE
+     PLUGIN_MANUFACTURER_CODE    PIGU
+     PLUGIN_CODE                 Kpq9
+-    FORMATS                     AU VST3 # AAX Unity AUv3
++    FORMATS                     VST3 # LIRA fork
+     PRODUCT_NAME                "CamomileFx"
+     AU_MAIN_TYPE                kAudioUnitType_MusicEffect
+     VST3_CATEGORIES             Fx
+diff --git a/Source/PluginEditor.cpp b/Source/PluginEditor.cpp
+index 3931ebd..f1b18a8 100644
+--- a/Source/PluginEditor.cpp
++++ b/Source/PluginEditor.cpp
+@@ -5,6 +5,7 @@
+  */
+ #include "PluginProcessor.h"
+ #include "PluginEditor.h"
++#include <cstdlib>
+ #include "PluginConfig.h"
+ #include "PluginLookAndFeel.hpp"
+ #include "Pd/PdPatch.hpp"
+@@ -25,8 +26,9 @@ AudioProcessorEditor (&p), CamomileEditorInteractionManager(p), m_processor (p),
+                         "background image " + CamomileEnvironment::getImageName() +
+                         " is invalid or doesn't exist.");
+     }
+-    addAndMakeVisible(m_button);
+-    m_button.setAlwaysOnTop(true);
++    if(std::getenv("LIRA_SNAPSHOT")) { p.suspendProcessing(true); }
++    // LIRA fork: console flower button hidden
++    // addAndMakeVisible(m_button);
+     reloadPatch();
+     startTimer(25);
+ }
+@@ -40,6 +42,20 @@ void CamomileEditor::timerCallback()
+     {
+         m_patch->updateObjectsValues();
+     }
++    // LIRA fork: offscreen snapshot mode for automated UI iteration
++    if(auto* snap = std::getenv("LIRA_SNAPSHOT"))
++    {
++        static int ticks = 0;
++        if(++ticks == 8)
++        {
++            auto img = createComponentSnapshot(getLocalBounds());
++            juce::File f{juce::String{snap}};
++            f.deleteFile();
++            juce::FileOutputStream os(f);
++            if(os.openedOk()) { juce::PNGImageFormat png; png.writeImageToStream(img, os); }
++            if(auto* app = juce::JUCEApplicationBase::getInstance()) { app->systemRequestedQuit(); }
++        }
++    }
+ }
+ 
+ void CamomileEditor::paint(Graphics& g)
+diff --git a/Source/PluginEnvironment.cpp b/Source/PluginEnvironment.cpp
+index c90882b..e58ddbe 100644
+--- a/Source/PluginEnvironment.cpp
++++ b/Source/PluginEnvironment.cpp
+@@ -106,6 +106,14 @@ bool CamomileEnvironment::localize()
+ {
+ #ifdef JUCE_MAC
+     File plugin(File::getSpecialLocation(File::currentApplicationFile));
++    if(plugin.exists() && plugin.hasFileExtension("app")) // LIRA fork: standalone
++    {
++        plugin_name = plugin.getFileNameWithoutExtension().toStdString();
++        plugin_path = plugin.getParentDirectory().getFullPathName().toStdString();
++        patch_name = plugin_name + std::string(".pd");
++        patch_path = plugin.getFullPathName().toStdString() + std::string("/Contents/Resources");
++        return true;
++    }
+     if(plugin.exists() && plugin.hasFileExtension("dylib"))
+     {
+         
+diff --git a/Source/PluginProcessor.cpp b/Source/PluginProcessor.cpp
+index 11b114b..689c044 100644
+--- a/Source/PluginProcessor.cpp
++++ b/Source/PluginProcessor.cpp
+@@ -5,6 +5,8 @@
+ */
+ 
+ #include "PluginProcessor.h"
++#include <limits>
++#include <cstdlib>
+ #include "PluginParameter.h"
+ #include "PluginEditor.h"
+ #include "PluginConfig.h"
+@@ -181,13 +183,23 @@ void CamomileAudioProcessor::releaseResources()
+ 
+ void CamomileAudioProcessor::sendParameters()
+ {
++    // LIRA fork: only send parameters whose value changed since the last tick
++    // (a full resend happens whenever the cache is resized/cleared).
+     auto const& parameters = AudioProcessor::getParameters();
+-    for(int i = 0; i < parameters.size(); ++i)
++    const size_t n = static_cast<size_t>(parameters.size());
++    const bool full = m_params_cache.size() != n;
++    if(full) { m_params_cache.assign(n, std::numeric_limits<float>::quiet_NaN()); }
++    for(size_t i = 0; i < n; ++i)
+     {
+-        auto const* param = static_cast<CamomileAudioParameter const*>(parameters.getUnchecked(i));
+-        m_atoms_param[0] = static_cast<float>(i+1);
+-        m_atoms_param[1] = param->convertFrom0to1(param->getValue());
+-        sendList("param", m_atoms_param);
++        auto const* param = static_cast<CamomileAudioParameter const*>(parameters.getUnchecked(static_cast<int>(i)));
++        const float v = param->convertFrom0to1(param->getValue());
++        if(full || v != m_params_cache[i])
++        {
++            m_params_cache[i] = v;
++            m_atoms_param[0] = static_cast<float>(i+1);
++            m_atoms_param[1] = v;
++            sendList("param", m_atoms_param);
++        }
+     }
+ }
+ 
+@@ -296,6 +308,7 @@ void CamomileAudioProcessor::processInternal()
+ 
+ void CamomileAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+ {
++    if(std::getenv("LIRA_SNAPSHOT")) { buffer.clear(); return; } // LIRA fork: no audio in snapshot mode
+     ScopedNoDenormals noDenormals;
+     const int blocksize = Instance::getBlockSize();
+     const int nsamples  = buffer.getNumSamples();
+diff --git a/Source/PluginProcessor.h b/Source/PluginProcessor.h
+index f334bb7..cd3529b 100644
+--- a/Source/PluginProcessor.h
++++ b/Source/PluginProcessor.h
+@@ -115,6 +115,7 @@ private:
+     
+     void processInternal();
+     void sendParameters();
++    std::vector<float> m_params_cache; // LIRA fork: send-on-change
+     void sendPlayhead();
+     void sendMidiBuffer();
+     
+-- 
+2.39.2 (Apple Git-143)
+

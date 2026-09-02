@@ -1,0 +1,543 @@
+From 4ca8343240956a675abf1c52ade2e67bcb6cd8b4 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Tue, 1 Sep 2026 19:38:02 -0700
+Subject: [PATCH 2/2] LiraSkin: hardware-style rendering for all Pd widgets;
+ channel-adapter processBlock fix
+
+---
+ Source/LiraSkin.hpp           | 291 ++++++++++++++++++++++++++++++++++
+ Source/PluginEditor.cpp       |   4 +-
+ Source/PluginEditorObject.cpp | 100 ++++--------
+ Source/PluginProcessor.cpp    |  19 ++-
+ Source/PluginProcessor.h      |   1 +
+ 5 files changed, 341 insertions(+), 74 deletions(-)
+ create mode 100644 Source/LiraSkin.hpp
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+new file mode 100644
+index 0000000..f41facc
+--- /dev/null
++++ b/Source/LiraSkin.hpp
+@@ -0,0 +1,291 @@
++/*
++ // LIRA fork: hardware-style widget rendering (Lyra-8 front / 303-style sequencer).
++ // Style is selected from each widget's declared Pd colors + geometry, so the
++ // patch stays the single source of truth for layout and behavior.
++*/
++
++#pragma once
++
++#include "PluginEditorInteraction.h"
++
++namespace LiraSkin
++{
++    inline juce::Colour pdc(unsigned int c) { return juce::Colour(static_cast<juce::uint32>(c)); }
++    inline bool isDark(juce::Colour c) { return c.getPerceivedBrightness() < 0.55f; }
++
++    inline void vgrad(juce::Graphics& g, juce::Rectangle<float> r, juce::Colour top, juce::Colour bot)
++    {
++        g.setGradientFill(juce::ColourGradient(top, r.getX(), r.getY(), bot, r.getX(), r.getBottom(), false));
++    }
++    inline void hgrad(juce::Graphics& g, juce::Rectangle<float> r, juce::Colour left, juce::Colour right)
++    {
++        g.setGradientFill(juce::ColourGradient(left, r.getX(), r.getY(), right, r.getRight(), r.getY(), false));
++    }
++
++    // ------------------------------------------------------------------ faders
++    inline void drawVFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour /*fg*/)
++    {
++        const bool front = !isDark(bg); // white-bg sliders live on the mint front panel
++        const float w = b.getWidth(), h = b.getHeight();
++        const float capH = juce::jlimit(9.f, 20.f, h * (h < 70.f ? 0.24f : 0.13f));
++        // groove
++        const float gw = juce::jlimit(3.f, 9.f, w * 0.28f);
++        juce::Rectangle<float> groove((w - gw) * 0.5f, capH * 0.5f, gw, h - capH);
++        vgrad(g, groove, juce::Colour(0xff101010), juce::Colour(0xff2b2b2b));
++        g.fillRoundedRectangle(groove, gw * 0.5f);
++        g.setColour(juce::Colours::white.withAlpha(front ? 0.35f : 0.12f));
++        g.drawLine(groove.getX(), groove.getBottom() + 0.5f, groove.getRight(), groove.getBottom() + 0.5f, 1.f);
++        // cap
++        pos = juce::jlimit(0.f, 1.f, pos);
++        const float cy = (1.f - pos) * (h - capH - 2.f) + 1.f;
++        juce::Rectangle<float> cap(1.f, cy, w - 2.f, capH);
++        g.setColour(juce::Colours::black.withAlpha(0.35f));
++        g.fillRoundedRectangle(cap.translated(0.f, 1.5f).expanded(0.4f, 0.f), 2.f);
++        if(front) // black skirted cap, Lyra knob colors
++        {
++            vgrad(g, cap, juce::Colour(0xff4d4d4d), juce::Colour(0xff161616));
++            g.fillRoundedRectangle(cap, 2.f);
++            g.setColour(juce::Colours::white.withAlpha(0.16f));
++            for(int i = 1; i <= 2; ++i)
++            {
++                const float ry = cap.getY() + cap.getHeight() * (0.5f + 0.24f * i / 2.f);
++                g.drawLine(cap.getX() + 2.f, ry, cap.getRight() - 2.f, ry, 1.f);
++                const float ry2 = cap.getY() + cap.getHeight() * (0.5f - 0.24f * i / 2.f);
++                g.drawLine(cap.getX() + 2.f, ry2, cap.getRight() - 2.f, ry2, 1.f);
++            }
++            g.setColour(juce::Colours::white);
++            g.fillRect(cap.getX() + 1.5f, cap.getCentreY() - 1.f, cap.getWidth() - 3.f, 2.f);
++        }
++        else      // silver ridged cap on dark sections
++        {
++            vgrad(g, cap, juce::Colour(0xffe2e2e2), juce::Colour(0xff8f8f8f));
++            g.fillRoundedRectangle(cap, 2.f);
++            g.setColour(juce::Colours::black.withAlpha(0.28f));
++            for(int i = 1; i <= 2; ++i)
++            {
++                const float ry = cap.getY() + cap.getHeight() * (0.5f + 0.24f * i / 2.f);
++                g.drawLine(cap.getX() + 2.f, ry, cap.getRight() - 2.f, ry, 1.f);
++                const float ry2 = cap.getY() + cap.getHeight() * (0.5f - 0.24f * i / 2.f);
++                g.drawLine(cap.getX() + 2.f, ry2, cap.getRight() - 2.f, ry2, 1.f);
++            }
++            g.setColour(juce::Colour(0xff1a1a1a));
++            g.fillRect(cap.getX() + 1.5f, cap.getCentreY() - 1.f, cap.getWidth() - 3.f, 2.f);
++        }
++        g.setColour(juce::Colours::black.withAlpha(0.65f));
++        g.drawRoundedRectangle(cap, 2.f, 1.f);
++    }
++
++    inline void drawHFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour /*fg*/)
++    {
++        const bool front = !isDark(bg);
++        const float w = b.getWidth(), h = b.getHeight();
++        const float capW = juce::jlimit(9.f, 20.f, w * (w < 90.f ? 0.24f : 0.09f));
++        const float gh = juce::jlimit(3.f, 9.f, h * 0.28f);
++        juce::Rectangle<float> groove(capW * 0.5f, (h - gh) * 0.5f, w - capW, gh);
++        vgrad(g, groove, juce::Colour(0xff101010), juce::Colour(0xff2b2b2b));
++        g.fillRoundedRectangle(groove, gh * 0.5f);
++        g.setColour(juce::Colours::white.withAlpha(front ? 0.35f : 0.12f));
++        g.drawLine(groove.getX(), groove.getBottom() + 0.5f, groove.getRight(), groove.getBottom() + 0.5f, 1.f);
++        pos = juce::jlimit(0.f, 1.f, pos);
++        const float cx = pos * (w - capW - 2.f) + 1.f;
++        juce::Rectangle<float> cap(cx, 1.f, capW, h - 2.f);
++        g.setColour(juce::Colours::black.withAlpha(0.35f));
++        g.fillRoundedRectangle(cap.translated(0.f, 1.5f), 2.f);
++        if(front)
++        {
++            vgrad(g, cap, juce::Colour(0xff4d4d4d), juce::Colour(0xff161616));
++            g.fillRoundedRectangle(cap, 2.f);
++            g.setColour(juce::Colours::white.withAlpha(0.16f));
++        }
++        else
++        {
++            vgrad(g, cap, juce::Colour(0xffe2e2e2), juce::Colour(0xff8f8f8f));
++            g.fillRoundedRectangle(cap, 2.f);
++            g.setColour(juce::Colours::black.withAlpha(0.28f));
++        }
++        for(int i = 1; i <= 2; ++i)
++        {
++            const float rx = cap.getX() + cap.getWidth() * (0.5f + 0.24f * i / 2.f);
++            g.drawLine(rx, cap.getY() + 2.f, rx, cap.getBottom() - 2.f, 1.f);
++            const float rx2 = cap.getX() + cap.getWidth() * (0.5f - 0.24f * i / 2.f);
++            g.drawLine(rx2, cap.getY() + 2.f, rx2, cap.getBottom() - 2.f, 1.f);
++        }
++        g.setColour(front ? juce::Colours::white : juce::Colour(0xff1a1a1a));
++        g.fillRect(cap.getCentreX() - 1.f, cap.getY() + 1.5f, 2.f, cap.getHeight() - 3.f);
++        g.setColour(juce::Colours::black.withAlpha(0.65f));
++        g.drawRoundedRectangle(cap, 2.f, 1.f);
++    }
++
++    // ------------------------------------------------------------------ toggles
++    inline void drawLED(juce::Graphics& g, juce::Rectangle<float> b, bool on, juce::Colour accent)
++    {
++        auto d = b.reduced(juce::jmax(1.f, b.getWidth() * 0.12f));
++        g.setColour(juce::Colour(0xff141414));
++        g.fillEllipse(d);
++        if(on)
++        {
++            g.setColour(accent.withAlpha(0.35f));
++            g.fillEllipse(d.expanded(1.5f));
++            g.setColour(accent);
++            g.fillEllipse(d.reduced(1.f));
++            g.setColour(juce::Colours::white.withAlpha(0.55f));
++            g.fillEllipse(d.reduced(d.getWidth() * 0.32f).translated(-d.getWidth() * 0.08f, -d.getWidth() * 0.08f));
++        }
++        else
++        {
++            g.setColour(accent.withAlpha(0.22f));
++            g.fillEllipse(d.reduced(1.f));
++        }
++        g.setColour(juce::Colours::black.withAlpha(0.7f));
++        g.drawEllipse(d, 1.f);
++    }
++
++    inline void drawStepPad(juce::Graphics& g, juce::Rectangle<float> b, bool on, juce::Colour accent)
++    {
++        auto r = b.reduced(0.5f);
++        g.setColour(juce::Colours::black.withAlpha(0.5f));
++        g.fillRoundedRectangle(r.translated(0.f, 1.f), 3.f);
++        if(on)
++        {
++            g.setColour(accent.withAlpha(0.30f));
++            g.fillRoundedRectangle(r.expanded(1.f), 3.5f);
++            vgrad(g, r, accent.brighter(0.25f), accent.darker(0.35f));
++            g.fillRoundedRectangle(r, 3.f);
++            g.setColour(juce::Colours::white.withAlpha(0.30f));
++            g.fillRoundedRectangle(r.withHeight(r.getHeight() * 0.42f).reduced(1.5f, 1.5f), 2.f);
++        }
++        else
++        {
++            vgrad(g, r, juce::Colour(0xff2c2c2c), juce::Colour(0xff191919));
++            g.fillRoundedRectangle(r, 3.f);
++            g.setColour(juce::Colours::white.withAlpha(0.06f));
++            g.fillRoundedRectangle(r.withHeight(r.getHeight() * 0.42f).reduced(1.5f, 1.5f), 2.f);
++        }
++        g.setColour(juce::Colours::black.withAlpha(0.8f));
++        g.drawRoundedRectangle(r, 3.f, 1.f);
++    }
++
++    inline void drawRocker(juce::Graphics& g, juce::Rectangle<float> b, bool on)
++    {
++        auto r = b.reduced(0.5f);
++        // recessed dark plate
++        vgrad(g, r, juce::Colour(0xff1d1e1a), juce::Colour(0xff30322b));
++        g.fillRoundedRectangle(r, 3.f);
++        g.setColour(juce::Colours::black.withAlpha(0.7f));
++        g.drawRoundedRectangle(r, 3.f, 1.f);
++        // lever knob: top when on, bottom when off
++        const float kd = juce::jmin(r.getWidth(), r.getHeight() * 0.55f) - 3.f;
++        const float kx = r.getCentreX() - kd * 0.5f;
++        const float ky = on ? r.getY() + 1.5f : r.getBottom() - kd - 1.5f;
++        g.setColour(juce::Colours::black.withAlpha(0.5f));
++        g.fillEllipse(kx, ky + 1.f, kd, kd);
++        juce::Rectangle<float> knob(kx, ky, kd, kd);
++        vgrad(g, knob, on ? juce::Colour(0xfff2f2f2) : juce::Colour(0xffb5b5b5),
++                       on ? juce::Colour(0xff9d9d9d) : juce::Colour(0xff6f6f6f));
++        g.fillEllipse(knob);
++        g.setColour(juce::Colours::black.withAlpha(0.6f));
++        g.drawEllipse(knob, 1.f);
++    }
++
++    // ------------------------------------------------------------------ bang
++    inline void drawBang(juce::Graphics& g, juce::Rectangle<float> b, bool flash, juce::Colour bg, juce::Colour fg)
++    {
++        const float w = juce::jmin(b.getWidth(), b.getHeight());
++        juce::Rectangle<float> d(b.getX() + (b.getWidth() - w) * 0.5f, b.getY() + (b.getHeight() - w) * 0.5f, w, w);
++        d = d.reduced(1.f);
++        const bool ghost = isDark(bg) && isDark(fg); // invisible arrow-style bangs keep their painted label
++        if(ghost)
++        {
++            g.setColour(juce::Colours::white.withAlpha(flash ? 0.30f : 0.10f));
++            g.drawEllipse(d, 1.f);
++            return;
++        }
++        juce::Colour accent = fg.getPerceivedBrightness() < 0.2f ? juce::Colour(0xff57d465) : fg;
++        // metal rim
++        vgrad(g, d, juce::Colour(0xffe8e8e8), juce::Colour(0xff888888));
++        g.fillEllipse(d);
++        auto inner = d.reduced(w * 0.16f);
++        vgrad(g, inner, juce::Colour(0xff3a3a3a), juce::Colour(0xff181818));
++        g.fillEllipse(inner);
++        if(flash)
++        {
++            g.setColour(accent.withAlpha(0.45f));
++            g.fillEllipse(inner.expanded(1.5f));
++            g.setColour(accent);
++            g.fillEllipse(inner.reduced(1.f));
++        }
++        else
++        {
++            g.setColour(juce::Colours::white.withAlpha(0.12f));
++            g.fillEllipse(inner.reduced(1.f).withHeight(inner.getHeight() * 0.45f));
++        }
++        g.setColour(juce::Colours::black.withAlpha(0.75f));
++        g.drawEllipse(d, 1.f);
++    }
++
++    // ------------------------------------------------------------------ radios
++    inline void drawRadio(juce::Graphics& g, juce::Rectangle<float> b, int n, int sel, bool horizontal, juce::Colour bg, juce::Colour fg)
++    {
++        juce::ignoreUnused(bg);
++        auto r = b.reduced(0.5f);
++        vgrad(g, r, juce::Colour(0xff191919), juce::Colour(0xff262626));
++        g.fillRoundedRectangle(r, 2.5f);
++        juce::Colour accent = fg.getPerceivedBrightness() < 0.2f ? juce::Colour(0xffd8d8d8) : fg;
++        const float cw = horizontal ? r.getWidth() / n : r.getWidth();
++        const float ch = horizontal ? r.getHeight() : r.getHeight() / n;
++        for(int i = 1; i < n; ++i)
++        {
++            g.setColour(juce::Colours::black.withAlpha(0.6f));
++            if(horizontal) g.drawLine(r.getX() + cw * i, r.getY() + 1.f, r.getX() + cw * i, r.getBottom() - 1.f, 1.f);
++            else           g.drawLine(r.getX() + 1.f, r.getY() + ch * i, r.getRight() - 1.f, r.getY() + ch * i, 1.f);
++        }
++        juce::Rectangle<float> cell(horizontal ? r.getX() + cw * sel : r.getX(),
++                                    horizontal ? r.getY() : r.getY() + ch * sel, cw, ch);
++        cell = cell.reduced(2.f);
++        g.setColour(accent.withAlpha(0.25f));
++        g.fillRoundedRectangle(cell.expanded(1.f), 2.f);
++        vgrad(g, cell, accent.brighter(0.15f), accent.darker(0.3f));
++        g.fillRoundedRectangle(cell, 2.f);
++        g.setColour(juce::Colours::white.withAlpha(0.25f));
++        g.fillRoundedRectangle(cell.withHeight(cell.getHeight() * 0.45f).reduced(1.f, 1.f), 1.5f);
++        g.setColour(juce::Colours::black.withAlpha(0.7f));
++        g.drawRoundedRectangle(r, 2.5f, 1.f);
++    }
++
++    // ------------------------------------------------------------------ panels
++    inline void drawScrew(juce::Graphics& g, float cx, float cy, float rad)
++    {
++        juce::Rectangle<float> d(cx - rad, cy - rad, rad * 2.f, rad * 2.f);
++        g.setColour(juce::Colours::black.withAlpha(0.35f));
++        g.fillEllipse(d.expanded(1.f).translated(0.f, 0.8f));
++        vgrad(g, d, juce::Colour(0xffd0d0d0), juce::Colour(0xff707070));
++        g.fillEllipse(d);
++        g.setColour(juce::Colours::black.withAlpha(0.65f));
++        g.drawEllipse(d, 1.f);
++        g.drawLine(cx - rad * 0.55f, cy + rad * 0.3f, cx + rad * 0.55f, cy - rad * 0.3f, 1.2f);
++    }
++
++    inline void drawPanel(juce::Graphics& g, juce::Rectangle<float> b, juce::Colour bg)
++    {
++        const float w = b.getWidth(), h = b.getHeight();
++        if(w < 7.f || h < 7.f) { g.fillAll(bg); return; }              // bracket/line decorations: exact
++        if(w >= 700.f && h >= 500.f)                                    // full plate (front panel / overlay page)
++        {
++            vgrad(g, b, bg.brighter(0.045f), bg.darker(0.055f));
++            g.fillRect(b);
++            g.setGradientFill(juce::ColourGradient(juce::Colours::transparentBlack, b.getCentreX(), b.getCentreY(),
++                                                   juce::Colours::black.withAlpha(0.10f), b.getX(), b.getY(), true));
++            g.fillRect(b);
++            g.setColour(juce::Colours::black.withAlpha(0.55f));
++            g.drawRect(b, 1.f);
++            return;
++        }
++        if(h >= 7.f && h <= 30.f && w > 3.f * h)                        // label bar: subtle gloss
++        {
++            vgrad(g, b, bg.brighter(0.35f), bg.darker(0.25f));
++            g.fillRoundedRectangle(b, 2.f);
++            return;
++        }
++        g.fillAll(bg);                                                  // everything else (masks!) exact
++    }
++}
+diff --git a/Source/PluginEditor.cpp b/Source/PluginEditor.cpp
+index f1b18a8..abfe93f 100644
+--- a/Source/PluginEditor.cpp
++++ b/Source/PluginEditor.cpp
+@@ -26,7 +26,6 @@ AudioProcessorEditor (&p), CamomileEditorInteractionManager(p), m_processor (p),
+                         "background image " + CamomileEnvironment::getImageName() +
+                         " is invalid or doesn't exist.");
+     }
+-    if(std::getenv("LIRA_SNAPSHOT")) { p.suspendProcessing(true); }
+     // LIRA fork: console flower button hidden
+     // addAndMakeVisible(m_button);
+     reloadPatch();
+@@ -46,7 +45,8 @@ void CamomileEditor::timerCallback()
+     if(auto* snap = std::getenv("LIRA_SNAPSHOT"))
+     {
+         static int ticks = 0;
+-        if(++ticks == 8)
++        static int target = [](){ auto* t = std::getenv("LIRA_SNAPSHOT_TICKS"); return t ? atoi(t) : 8; }();
++        if(++ticks == target)
+         {
+             auto img = createComponentSnapshot(getLocalBounds());
+             juce::File f{juce::String{snap}};
+diff --git a/Source/PluginEditorObject.cpp b/Source/PluginEditorObject.cpp
+index 677909e..69f5dcd 100755
+--- a/Source/PluginEditorObject.cpp
++++ b/Source/PluginEditorObject.cpp
+@@ -6,6 +6,7 @@
+ 
+ #include "PluginEditorObject.hpp"
+ #include "PluginLookAndFeel.hpp"
++#include "LiraSkin.hpp"
+ #include <algorithm>
+ 
+ //////////////////////////////////////////////////////////////////////////////////////////
+@@ -252,17 +253,9 @@ pd::Gui PluginEditorObject::getGUI()
+ 
+ void GuiBang::paint(Graphics& g)
+ {
+-    const float border = 1.f;
+-    const float w = static_cast<float>(getWidth() - border * 2);
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
+-    if(getValueOriginal() > std::numeric_limits<float>::epsilon())
+-    {
+-        g.setColour(Colour(static_cast<uint32>(gui.getForegroundColor())));
+-        g.fillEllipse(border, border, w, w);
+-    }
+-    g.setColour(Colours::black);
+-    g.drawEllipse(border, border, w, w, border);
+-    g.drawRect(getLocalBounds(), static_cast<int>(border));
++    LiraSkin::drawBang(g, getLocalBounds().toFloat(),
++                       getValueOriginal() > std::numeric_limits<float>::epsilon(),
++                       LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+ 
+ void GuiBang::mouseDown(const MouseEvent& e)
+@@ -287,17 +280,22 @@ void GuiBang::mouseUp(const MouseEvent& e)
+ 
+ void GuiToggle::paint(Graphics& g)
+ {
+-    const float border = 1.f;
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
+-    if(getValueOriginal() > std::numeric_limits<float>::epsilon())
++    const bool on = getValueOriginal() > std::numeric_limits<float>::epsilon();
++    auto const bg = LiraSkin::pdc(gui.getBackgroundColor());
++    auto const fg = LiraSkin::pdc(gui.getForegroundColor());
++    auto const b = getLocalBounds().toFloat();
++    if(jmax(getWidth(), getHeight()) <= 11)
+     {
+-        const float w = static_cast<float>(getWidth()) - border * 2.f;
+-        g.setColour(Colour(static_cast<uint32>(gui.getForegroundColor())));
+-        g.drawLine(1.f + border, 1.f + border, w, w, border);
+-        g.drawLine(w, 1.f + border, 1.f + border, w, border);
++        LiraSkin::drawLED(g, b, on, fg.getPerceivedBrightness() < 0.2f ? Colour(0xff57d465) : fg);
++    }
++    else if(LiraSkin::isDark(bg))
++    {
++        LiraSkin::drawStepPad(g, b, on, fg.getPerceivedBrightness() < 0.2f ? Colour(0xff57d465) : fg);
++    }
++    else
++    {
++        LiraSkin::drawRocker(g, b, on);
+     }
+-    g.setColour(Colours::black);
+-    g.drawRect(getLocalBounds(), static_cast<int>(border));
+ }
+ 
+ void GuiToggle::mouseDown(const MouseEvent& e)
+@@ -314,17 +312,9 @@ void GuiToggle::mouseDown(const MouseEvent& e)
+ 
+ void GuiSliderHorizontal::paint(Graphics& g)
+ {
+-    const float border = 1.f;
+-    const float crsor  = 3.f;
+-    const float w = static_cast<float>(getWidth()) - border * 2.f;
+-    const float h = static_cast<float>(getHeight()) - border * 2.f;
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
+-    const float pos = val * (w - crsor - border) + crsor;
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
+-    g.setColour(Colour(static_cast<uint32>(gui.getForegroundColor())));
+-    g.drawLine(pos, border + 0.5f, pos, h + 0.5f, crsor);
+-    g.setColour(Colours::black);
+-    g.drawRect(getLocalBounds(), static_cast<int>(border));
++    LiraSkin::drawHFader(g, getLocalBounds().toFloat(), val,
++                         LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+ 
+ void GuiSliderHorizontal::mouseDown(const MouseEvent& e)
+@@ -398,17 +388,9 @@ void GuiSliderHorizontal::mouseUp(const MouseEvent& e)
+     
+ void GuiSliderVertical::paint(Graphics& g)
+ {
+-    const float border = 1.f;
+-    const float crsor = 3.f;
+-    const float w = static_cast<float>(getWidth() - border * 2);
+-    const float h = static_cast<float>(getHeight() - border * 2);
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
+-    const float pos = (1.f - val) * (h - crsor - border) + crsor;
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
+-    g.setColour(Colour(static_cast<uint32>(gui.getForegroundColor())));
+-    g.drawLine(border + 0.5f, pos, w + 0.5f, pos, crsor);
+-    g.setColour(Colours::black);
+-    g.drawRect(getLocalBounds(), static_cast<int>(border));
++    LiraSkin::drawVFader(g, getLocalBounds().toFloat(), val,
++                         LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+ 
+ void GuiSliderVertical::mouseDown(const MouseEvent& e)
+@@ -482,21 +464,9 @@ void GuiSliderVertical::mouseUp(const MouseEvent& e)
+ 
+ void GuiRadioHorizontal::paint(Graphics& g)
+ {
+-    const float border = 1.f;
+-    const float extra  = 2.f;
+-    const float h  = static_cast<float>(getHeight());
+-    const float hs = h - 2.f * (border + extra);
+-    const float w = static_cast<float>(getWidth()) / static_cast<float>(max + 1);
+-    const float ws = w - 2.f * (border + extra);
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
+-    g.setColour(Colour(static_cast<uint32>(gui.getForegroundColor())));
+-    g.fillRect(w * getValueOriginal() + border + extra, border + extra, ws, hs);
+-    g.setColour(Colours::black);
+-    for(size_t i = 1; i < size_t(max) + 1; ++i)
+-    {
+-        g.drawLine(w * static_cast<float>(i), 0.f, w * static_cast<float>(i), w, border);
+-    }
+-    g.drawRect(getLocalBounds(), static_cast<int>(border));
++    LiraSkin::drawRadio(g, getLocalBounds().toFloat(), static_cast<int>(max) + 1,
++                        static_cast<int>(getValueOriginal()), true,
++                        LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+ 
+ void GuiRadioHorizontal::mouseDown(const MouseEvent& e)
+@@ -513,21 +483,9 @@ void GuiRadioHorizontal::mouseDown(const MouseEvent& e)
+ 
+ void GuiRadioVertical::paint(Graphics& g)
+ {
+-    const float border = 1.f;
+-    const float extra  = 2.f;
+-    const float h  = static_cast<float>(getHeight()) / static_cast<float>(max + 1);
+-    const float hs = h - 2.f * (border + extra);
+-    const float w = static_cast<float>(getWidth());
+-    const float ws = w - 2.f * (border + extra);
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
+-    g.setColour(Colour(static_cast<uint32>(gui.getForegroundColor())));
+-    g.fillRect(border + extra, h * getValueOriginal() + border + extra, ws, hs);
+-    g.setColour(Colours::black);
+-    for(size_t i = 1; i < static_cast<size_t>(max) + 1; ++i)
+-    {
+-        g.drawLine(0.f, h * static_cast<float>(i), h, h * static_cast<float>(i), border);
+-    }
+-    g.drawRect(getLocalBounds(), static_cast<int>(border));
++    LiraSkin::drawRadio(g, getLocalBounds().toFloat(), static_cast<int>(max) + 1,
++                        static_cast<int>(getValueOriginal()), false,
++                        LiraSkin::pdc(gui.getBackgroundColor()), LiraSkin::pdc(gui.getForegroundColor()));
+ }
+ 
+ void GuiRadioVertical::mouseDown(const MouseEvent& e)
+@@ -550,7 +508,7 @@ GuiPanel::GuiPanel(CamomileEditorMouseManager& p, pd::Gui& g) : PluginEditorObje
+ 
+ void GuiPanel::paint(Graphics& g)
+ {
+-    g.fillAll(Colour(static_cast<uint32>(gui.getBackgroundColor())));
++    LiraSkin::drawPanel(g, getLocalBounds().toFloat(), LiraSkin::pdc(gui.getBackgroundColor()));
+ }
+ 
+ //////////////////////////////////////////////////////////////////////////////////////////
+diff --git a/Source/PluginProcessor.cpp b/Source/PluginProcessor.cpp
+index 689c044..b0260bc 100644
+--- a/Source/PluginProcessor.cpp
++++ b/Source/PluginProcessor.cpp
+@@ -308,7 +308,24 @@ void CamomileAudioProcessor::processInternal()
+ 
+ void CamomileAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+ {
+-    if(std::getenv("LIRA_SNAPSHOT")) { buffer.clear(); return; } // LIRA fork: no audio in snapshot mode
++    // LIRA fork: if the host/device buffer has fewer channels than the patch
++    // declares (e.g. standalone on a stereo device), run through a full-size
++    // scratch buffer so Pd time still advances and no OOB channel is touched.
++    {
++        const int need = std::max(getTotalNumInputChannels(), getTotalNumOutputChannels());
++        if(buffer.getNumChannels() < need)
++        {
++            const int n = buffer.getNumSamples();
++            m_scratch_buffer.setSize(need, n, false, false, true);
++            m_scratch_buffer.clear();
++            for(int ch = 0; ch < buffer.getNumChannels(); ++ch)
++                m_scratch_buffer.copyFrom(ch, 0, buffer, ch, 0, n);
++            processBlock(m_scratch_buffer, midiMessages);
++            for(int ch = 0; ch < buffer.getNumChannels(); ++ch)
++                buffer.copyFrom(ch, 0, m_scratch_buffer, ch, 0, n);
++            return;
++        }
++    }
+     ScopedNoDenormals noDenormals;
+     const int blocksize = Instance::getBlockSize();
+     const int nsamples  = buffer.getNumSamples();
+diff --git a/Source/PluginProcessor.h b/Source/PluginProcessor.h
+index cd3529b..87fe43f 100644
+--- a/Source/PluginProcessor.h
++++ b/Source/PluginProcessor.h
+@@ -116,6 +116,7 @@ private:
+     void processInternal();
+     void sendParameters();
+     std::vector<float> m_params_cache; // LIRA fork: send-on-change
++    juce::AudioBuffer<float> m_scratch_buffer; // LIRA fork: channel adapter
+     void sendPlayhead();
+     void sendMidiBuffer();
+     
+-- 
+2.39.2 (Apple Git-143)
+
