@@ -241,7 +241,7 @@ _ga="#X restore -1 746 pd gui.link;"
 assert p.count(_ga)==1
 p=p.replace(_ga,_gl+_ga)
 
-# ---- Path A hardware front: rotary knobs, centered sensors, M/V labels ----
+# ---- Path A hardware front v3: Lyra-8-style layout ----
 # Square vsl widgets render as rotary knobs in the custom editor (>=52px = silver dial).
 def _knobify(recv,X,Y,S,fs=10):
     global p
@@ -251,28 +251,99 @@ def _knobify(recv,X,Y,S,fs=10):
     ldx=S//2-int(3.4*len(lab)) if lab!="empty" else 0
     new="#X obj %d %d vsl %d %d %s %s %s %s %d %d %s %d %s%s;"%(X,Y,S,S,re.sub(r"\s+"," ",m.group(2)),m.group(3),m.group(4),lab,ldx,S+9,m.group(8),fs,re.sub(r"\s+"," ",m.group(10)),m.group(11))
     p=p[:m.start()]+new+p[m.end():]
-_KNOBS=[("f-a",18,56,46),("f-b",95,56,46),
- ("mod-1",335,34,44),("mod-2",403,34,44),("time-1",471,34,44),("time-2",539,34,44),
- ("feedback",607,34,44),("del-mix",675,34,44),
- ("drv",849,44,46),("dst-mix",920,44,46),("vol",991,44,46),
- ("hold-1234",252,250,46),("hold-5678",837,250,46),
- ("pitch-1234",252,332,46),("pitch-5678",837,332,46),
- ("mod-12",100,476,44),("sharp-12",190,476,44),("mod-34",360,476,44),("sharp-34",450,476,44),
- ("mod-56",620,476,44),("sharp-56",710,476,44),("mod-78",880,476,44),("sharp-78",970,476,44)]
+_KNOBS=[("f-a",28,88,56),("f-b",140,88,56),
+ ("mod-1",320,34,50),("mod-2",400,34,50),("time-1",320,110,50),("time-2",400,110,50),
+ ("feedback",480,110,50),("del-mix",560,110,50),
+ ("drv",720,60,56),("dst-mix",830,60,56),("vol",940,60,56),
+ ("hold-1234",247,250,56),("hold-5678",832,250,56),
+ ("pitch-1234",247,332,56),("pitch-5678",832,332,56),
+ ("mod-12",100,476,50),("sharp-12",190,476,50),("mod-34",360,476,50),("sharp-34",450,476,50),
+ ("mod-56",620,476,50),("sharp-56",710,476,50),("mod-78",880,476,50),("sharp-78",966,476,50)]
 for _r,_x,_y,_s in _KNOBS: _knobify(_r,_x,_y,_s)
-for _v,_tx in enumerate((78,208,338,468,598,728,858,980),start=1):
-    _knobify("tune-%d"%_v,_tx,636,56)
-# center sensor pads + mute toggles under each voice number plate
+for _v,_tx in enumerate((72,202,332,462,592,722,852,975),start=1):
+    _knobify("tune-%d"%_v,_tx,618,62)
+
+def _mv(pat,rep,n=1):
+    # move/rewrite one record identified by a name-keyed regex
+    global p
+    assert re.search(pat,p), pat
+    p=re.sub(pat,rep,p,count=n)
+
+# top bar: even gaps around the preset display
+_mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_prev_preset )',r'#X obj 58 4 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_next_preset )',r'#X obj 192 4 \g<1>')
+
+# HYPER-LFO cluster: spread the toggle row, knobs below
+_mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 36 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 19 50 10 0 empty \\\$0-r-led )',r'#X obj 100 46 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 134 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 176 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 218 38 \g<1>')
+
+# MOD-DELAY toggle cluster
+_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-del-mod )',r'#X obj 480 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 2 \\\$0-s-lfo-wav )',r'#X obj 480 80 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-mdlock )',r'#X obj 600 42 \g<1>')
+
+# SWITCH routing labels centered under the toggle
+_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 523 345 34 > 56;')
+_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 523 361 78 > 12;')
+
+# section label bars: full-width run 8..1040 with the sequencer launcher inline
+_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-hyp) HYPER-LFO -?\d+',r'#X obj 8 187 cnv 19 232 20 empty \g<1> HYPER-LFO 84')
+_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-md) MOD-DELAY -?\d+',r'#X obj 348 187 cnv 19 334 20 empty \g<1> MOD-DELAY 134')
+_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-di) DISTORTION -?\d+',r'#X obj 686 187 cnv 19 354 20 empty \g<1> DISTORTION 140')
+
+# FAST toggles between each TUNE pair
+for _i,_fx2 in enumerate((159,419,679,935)):
+    _mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-fast-%d%d )'%(_i*2+1,_i*2+2),r'#X obj %d 712 \g<1>'%_fx2)
+
+# voice sensor strips: taller plates, centered pads/mutes
 for _v in range(1,9):
-    _mp=re.search(r'#X obj (\d+) (\d+) cnv 19 28 46 empty \\\$0-r-mh-sn%d '%_v,p)
+    _mp=re.search(r'#X obj (\d+) (\d+) cnv 19 28 46 empty (\\\$0-r-mh-sn%d) 1?%d \d+ \d+'%(_v,_v%10),p)
     assert _mp, "no plate %d"%_v
-    _px=int(_mp.group(1))
-    p=re.sub(r'#X obj -?\d+ -?\d+ (tgl 18 0 \\\$0-s-sensor-%d )'%_v,"#X obj %d 853 \\g<1>"%(_px+5),p,count=1)
-    p=re.sub(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-iso-%d )'%_v,"#X obj %d 880 \\g<1>"%(_px+6),p,count=1)
+    _px=int(_mp.group(1))-3
+    _mv(r'#X obj \d+ \d+ cnv 19 28 46 empty (\\\$0-r-mh-sn%d) (1?%d) \d+ \d+'%(_v,_v%10),
+        r'#X obj %d 820 cnv 19 34 70 empty \g<1> \g<2> 13 12'%_px)
+    _mv(r'#X obj -?\d+ -?\d+ tgl 18 0 (\\\$0-s-sensor-%d )'%_v,r'#X obj %d 860 tgl 22 0 \g<1>'%(_px+6))
+    _mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-iso-%d )'%_v,r'#X obj %d 894 \g<1>'%(_px+9))
+
 # M/V labels on the per-voice mod/volume mini sliders (match the S/F/R style)
 for _v in range(1,9):
     p=re.sub(r'(\\\$0-s-vmod-%d\s+\\\$0-r-vmod-%d)\s+empty\s+0\s+-9'%(_v,_v),r'\g<1> M 1 -9',p,count=1)
     p=re.sub(r'(\\\$0-s-vol-%d\s+\\\$0-r-vol-%d)\s+empty\s+0\s+-9'%(_v,_v),r'\g<1> V 1 -9',p,count=1)
+
+# sidebar: bigger scale toggles spread down, uniform 18px circle buttons pulled up
+for _i in range(12):
+    _mv(r'#X obj -?\d+ -?\d+ tgl 16 1 (\\\$0-s-scale-%d )'%_i,r'#X obj 1049 %d tgl 20 1 \g<1>'%(165+_i*46))
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 51 24 empty \\\$0-r-mh-clr )',r'#X obj 1047 735 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 54 24 empty \\\$0-r-mh-sel )',r'#X obj 1100 735 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1071 767 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1126 767 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 66 24 empty \\\$0-r-mh-inp )',r'#X obj 1047 813 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 39 24 empty \\\$0-r-mh-in2 )',r'#X obj 1115 813 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1071 845 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (\\\$0-s-sq-fial )',r'#X obj 1126 845 bng 18 250 50 0 \g<1>')
+
+# sidebar note-row backing tiles follow the new 46px pitch
+_ti=[0]
+def _retile(m):
+    y=155+46*_ti[0]; _ti[0]+=1
+    return "#X obj 1047 %d cnv 15 106 42 empty empty empty "%y
+p=re.sub(r'#X obj 1047 \d+ cnv 15 106 36 empty empty empty ',_retile,p)
+assert _ti[0]==12, _ti[0]
+
+# park ALL old front line decorations (the editor draws uniform lines/arrows now)
+_lines=0
+def _parkline(m):
+    global _lines
+    x,y,w,h=int(m.group(1)),int(m.group(2)),int(m.group(4)),int(m.group(5))
+    if 0<=x<=1045 and 22<=y<=920 and ((w<=3 and h>=8) or (h<=3 and w>=8)):
+        _lines+=1
+        return "#X obj -700 %d cnv %s %d %d empty empty empty "%(y,m.group(3),w,h)
+    return m.group(0)
+p=re.sub(r'#X obj (-?\d+) (-?\d+) cnv (\d+) (\d+) (\d+) empty empty empty ',_parkline,p)
+
 # park the orphaned slider tick dots (anonymous small cnv squares on the front)
 _dots=0
 def _parkdot(m):
@@ -283,7 +354,8 @@ def _parkdot(m):
         return "#X obj -650 %d cnv 4 %s %s empty empty empty "%(y,m.group(3),m.group(4))
     return m.group(0)
 p=re.sub(r'#X obj (-?\d+) (-?\d+) cnv [1-6] ([1-6]) ([1-6]) empty empty empty ',_parkdot,p)
-print("knobified %d widgets, parked %d tick dots"%(len(_KNOBS)+8,_dots))
+print("front v3: %d knobs, parked %d lines + %d dots"%(len(_KNOBS)+8,_lines,_dots))
+
 
 mains=[]; seen=set()
 for m in re.finditer(r'#X obj (-?\d+) (-?\d+) (vsl|hsl|tgl|bng|hradio|vradio|cnv) .*?\\\$0-r-([a-z0-9-]+)', p):
@@ -517,11 +589,11 @@ def shift_page(group,dx,dy=0):
         group[gi]=(suf,x+dx,y+dy)
 # launcher (visible at home)
 launcher=[
- ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 13 -1 -262144 0;",288,187,"r-mh-seqb"),
- ("#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -1 -1 -1;",292,190,"r-sq-open"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",294,192,"r-mh-d1"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",294,196,"r-mh-d2"),
- ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",294,200,"r-mh-d3"),
+ ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 13 -1 -262144 0;",244,187,"r-mh-seqb"),
+ ("#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -1 -1 -1;",248,190,"r-sq-open"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",250,192,"r-mh-d1"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",250,196,"r-mh-d2"),
+ ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",250,200,"r-mh-d3"),
 ]
 for rec,x,y,suf in launcher:
     widgets.append(rec.format(x=x,y=y)); mains.append((suf,x,y))

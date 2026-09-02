@@ -1,7 +1,7 @@
 From 3cde1b7871a1835b503a549eeb1acc238e4e5512 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Tue, 1 Sep 2026 21:20:58 -0700
-Subject: [PATCH 3/4] LiraSkin v2: unified lit toggles (solid green when on),
+Subject: [PATCH 3/5] LiraSkin v2: unified lit toggles (solid green when on),
  true white circle bangs
 
 ---

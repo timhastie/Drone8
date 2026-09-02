@@ -1,7 +1,7 @@
 From 60a61d86d38fbd74d802d8d800eda88253624b26 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Tue, 1 Sep 2026 21:52:34 -0700
-Subject: [PATCH 4/4] LiraSkin v3: rotary knobs for square sliders, silver TUNE
+Subject: [PATCH 4/5] LiraSkin v3: rotary knobs for square sliders, silver TUNE
  dials, knob drag feel, Futura labels
 
 ---

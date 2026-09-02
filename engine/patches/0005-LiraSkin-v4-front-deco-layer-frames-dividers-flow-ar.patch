@@ -1,0 +1,91 @@
+From f0fd046140051f42022806e97cc5a4f3e706f5f8 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Tue, 1 Sep 2026 22:17:14 -0700
+Subject: [PATCH 5/5] LiraSkin v4: front deco layer (frames, dividers, flow
+ arrows), silver dials >=58px only
+
+---
+ Source/LiraSkin.hpp           | 37 +++++++++++++++++++++++++++++++++++
+ Source/PluginEditorObject.cpp |  4 ++--
+ 2 files changed, 39 insertions(+), 2 deletions(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index 9115ec3..b89438f 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -324,6 +324,42 @@ namespace LiraSkin
+         g.drawLine(cx - rad * 0.55f, cy + rad * 0.3f, cx + rad * 0.55f, cy - rad * 0.3f, 1.2f);
+     }
+ 
++    // hardware-style decoration layer, drawn on the front sage plate (plate origin
++    // is canvas (0,26); overlay pages stack above it, so this hides automatically).
++    inline void drawArrowLine(juce::Graphics& g, juce::Point<float> a, juce::Point<float> b2)
++    {
++        g.drawLine({a, b2}, 2.f);
++        auto dir = b2 - a;
++        const float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
++        if(len < 1.f) return;
++        dir /= len;
++        juce::Point<float> n(-dir.y, dir.x);
++        juce::Path head;
++        head.addTriangle(b2 + dir * 2.f, b2 - dir * 6.f + n * 4.f, b2 - dir * 6.f - n * 4.f);
++        g.fillPath(head);
++    }
++
++    inline void drawFrontDeco(juce::Graphics& g)
++    {
++        const juce::Colour ink = juce::Colour(0xff141414);
++        g.setColour(ink);
++        // top section frames
++        g.fillRect(8.f, 158.f, 1032.f, 2.f);                 // rule above the label bars
++        g.fillRect(241.f, 2.f, 2.f, 158.f);                  // hyper-lfo | sequencer gap
++        g.fillRect(683.f, 2.f, 2.f, 158.f);                  // mod-delay | distortion
++        // voice pair dividers
++        for(float x : {278.f, 540.f, 805.f})
++            g.fillRect(x, 400.f, 2.f, 466.f);
++        // signal-flow arrows: source select -> MOD knob
++        const float rcx[4] = {108.f, 368.f, 628.f, 888.f};
++        const float kcx[4] = {125.f, 385.f, 645.f, 905.f};
++        for(int i = 0; i < 4; ++i)
++            drawArrowLine(g, {rcx[i], 416.f}, {kcx[i], 446.f});
++        // waveform -> lfo mode -> mod 2 chain
++        drawArrowLine(g, {476.f, 22.f}, {456.f, 31.f});
++        drawArrowLine(g, {499.f, 52.f}, {499.f, 34.f});
++    }
++
+     inline void drawPanel(juce::Graphics& g, juce::Rectangle<float> b, juce::Colour bg)
+     {
+         const float w = b.getWidth(), h = b.getHeight();
+@@ -337,6 +373,7 @@ namespace LiraSkin
+             g.fillRect(b);
+             g.setColour(juce::Colours::black.withAlpha(0.55f));
+             g.drawRect(b, 1.f);
++            if(!isDark(bg) && w >= 1000.f && h >= 800.f) { drawFrontDeco(g); }
+             return;
+         }
+         if(h >= 7.f && h <= 30.f && w > 3.f * h)                        // label bar: subtle gloss
+diff --git a/Source/PluginEditorObject.cpp b/Source/PluginEditorObject.cpp
+index 665b69b..9c38982 100755
+--- a/Source/PluginEditorObject.cpp
++++ b/Source/PluginEditorObject.cpp
+@@ -312,7 +312,7 @@ void GuiSliderHorizontal::paint(Graphics& g)
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
+     if(LiraSkin::isKnob(getWidth(), getHeight()))
+     {
+-        if(getWidth() >= 52) LiraSkin::drawTuneDial(g, getLocalBounds().toFloat(), val);
++        if(getWidth() >= 58) LiraSkin::drawTuneDial(g, getLocalBounds().toFloat(), val);
+         else                 LiraSkin::drawKnob(g, getLocalBounds().toFloat(), val);
+     }
+     else
+@@ -395,7 +395,7 @@ void GuiSliderVertical::paint(Graphics& g)
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
+     if(LiraSkin::isKnob(getWidth(), getHeight()))
+     {
+-        if(getWidth() >= 52) LiraSkin::drawTuneDial(g, getLocalBounds().toFloat(), val);
++        if(getWidth() >= 58) LiraSkin::drawTuneDial(g, getLocalBounds().toFloat(), val);
+         else                 LiraSkin::drawKnob(g, getLocalBounds().toFloat(), val);
+     }
+     else
+-- 
+2.39.2 (Apple Git-143)
+
