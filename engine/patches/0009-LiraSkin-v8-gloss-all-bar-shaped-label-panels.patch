@@ -1,0 +1,25 @@
+From 27dbbfcb8b471036fae294cc46cf264a47e6b473 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Wed, 2 Sep 2026 17:59:11 -0700
+Subject: [PATCH 9/9] LiraSkin v8: gloss all bar-shaped label panels
+
+---
+ Source/LiraSkin.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index 4ef6ed4..d8fae34 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -369,7 +369,7 @@ namespace LiraSkin
+             if(!isDark(bg) && w >= 1000.f && h >= 800.f) { drawFrontDeco(g); }
+             return;
+         }
+-        if(h >= 7.f && h <= 30.f && w > 3.f * h)                        // label bar: subtle gloss
++        if(h >= 7.f && h <= 30.f && w > h)                             // label bar: subtle gloss
+         {
+             vgrad(g, b, bg.brighter(0.35f), bg.darker(0.25f));
+             g.fillRoundedRectangle(b, 2.f);
+-- 
+2.39.2 (Apple Git-143)
+
