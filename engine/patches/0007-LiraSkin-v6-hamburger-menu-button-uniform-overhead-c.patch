@@ -1,7 +1,7 @@
 From 8ddc2a6b713d4f448f997f78241185a5f09a317b Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Wed, 2 Sep 2026 17:27:29 -0700
-Subject: [PATCH 7/9] LiraSkin v6: hamburger menu button, uniform overhead
+Subject: [PATCH 07/10] LiraSkin v6: hamburger menu button, uniform overhead
  captions, wide-panel label centering, top rule removed
 
 ---

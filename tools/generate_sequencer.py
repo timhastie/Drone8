@@ -342,9 +342,9 @@ _mv(r'#X obj -?\d+ -?\d+ (cnv 0 54 24 empty \\\$0-r-mh-sel )',r'#X obj 1100 700 
 _mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1063 730 bng 18 250 50 0 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1118 730 bng 18 250 50 0 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-inp) INIT_PATCH -?\d+ \d+ 0 \d+ ',r'#X obj 1047 758 cnv 0 106 24 empty \g<1> INIT_PATCH 20 12 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-in2) ALL -?\d+ \d+ 0 \d+ ',r'#X obj 1047 812 cnv 0 106 20 empty \g<1> INIT_PATCH 20 10 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1082 786 bng 18 250 50 0 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (\\\$0-s-sq-fial )',r'#X obj 1082 856 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-in2) ALL -?\d+ \d+ 0 \d+ ',r'#X obj 1047 806 cnv 0 106 40 empty \g<1> INIT_PATCH 20 12 0 8 ')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1091 786 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (\\\$0-s-sq-fial )',r'#X obj 1091 852 bng 18 250 50 0 \g<1>')
 
 # sidebar note-row backing tiles follow the new 46px pitch
 _ti=[0]
@@ -368,15 +368,18 @@ p=re.sub(r'(\\\$0-r-mh-(?:lfs|rnd|rn2|scl|clr|sel|inp|in2) [A-Z_!#]+ -?\d+ \d+ 0
 # hyper-lfo toggle captions: size 11 so LINK/RESET/Q don't collide
 p=re.sub(r'((?:\\\$0-s-link \\\$0-r-link LINK|\\\$0-s-reset-lfo \\\$0-r-reset-lfo RESET|\\\$0-s-squant \\\$0-r-squant Q|\\\$0-s-andor \\\$0-r-andor OR) -?\d+ -?\d+ 0) 14 ',r'\g<1> 11 ',p)
 
-# randomize rows: stacked "RANDOM_PATCH" and "RANDOM_PATCH +SEQUENCES"
+# randomize rows: RANDOM_PATCH, then a single taller RANDOM_PATCH+SEQUENCES panel
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-rnd) RANDOMIZE -?\d+ \d+ 0 \d+ ',r'#X obj 1047 76 cnv 0 106 24 empty \g<1> RANDOM_PATCH 20 12 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 lira8rand )',r'#X obj 1082 104 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-rn2) ALL! -?\d+ \d+ 0 \d+ ',r'#X obj 1047 130 cnv 0 106 20 empty \g<1> RANDOM_PATCH 20 10 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 \\\$0-s-sq-fral )',r'#X obj 1082 174 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 lira8rand )',r'#X obj 1091 104 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-rn2) ALL! -?\d+ \d+ 0 \d+ ',r'#X obj 1047 126 cnv 0 106 40 empty \g<1> RANDOM_PATCH 20 12 0 8 ')
+_mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 \\\$0-s-sq-fral )',r'#X obj 1091 172 \g<1>')
+# second text line lives on named 1x1 holders so they park with the front
 p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;",
-  "#X obj 1047 150 cnv 0 106 20 empty empty +SEQUENCES 20 10 0 8 -20806 -262144 0;\n"
-  "#X obj 1047 832 cnv 0 106 20 empty empty +SEQUENCES 20 10 0 8 -20806 -262144 0;\n"
+  "#X obj 1066 144 cnv 0 1 1 empty \\$0-r-mh-rsq2 +SEQUENCES 0 10 0 8 -20806 -262144 0;\n"
+  "#X obj 1066 824 cnv 0 1 1 empty \\$0-r-mh-isq2 +SEQUENCES 0 10 0 8 -20806 -262144 0;\n"
   "#X coords 0 -1 1 1 1160 920 2 -1 0;")
+# 2: park the legacy 16x16 square hiding inside the RANDOM_PATCH bar
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 16 16 empty \\\$0-r-mh-rm )',r'#X obj -680 80 \g<1>')
 
 # park ALL old front line decorations (the editor draws uniform lines/arrows now)
 _lines=0
@@ -439,10 +442,10 @@ WF(chrome,"#X obj {x} {y} cnv 0 1160 920 empty \\$0-r-sq-brd empty 20 12 0 14 -1
 WF(chrome,"#X obj {x} {y} cnv 0 1152 912 empty \\$0-r-sq-bg empty 20 12 0 14 -58255 -58255 0;",4,4,"r-sq-bg")
 WF(chrome,"#X obj {x} {y} cnv 0 1152 26 empty \\$0-r-sq-tt SEQUENCER 530 13 0 13 -20806 -262144 0;",4,4,"r-sq-tt")
 WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-close \\$0-r-sq-close X 5 9 0 12 -20806 -20806 -262144;",1128,8,"r-sq-close")
-WF(chrome,"#X obj {x} {y} cnv 19 110 24 empty \\$0-r-sq-srnabg empty 0 0 0 8 -20806 -20806 0;",902,48,"r-sq-srnabg")
-WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna RND_ALL! -80 8 0 10 -216373 -1 -262144;",988,52,"r-sq-srna")
-WF(chrome,"#X obj {x} {y} cnv 19 118 24 empty \\$0-r-sq-sinibg empty 0 0 0 8 -20806 -20806 0;",1030,48,"r-sq-sinibg")
-WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini INIT_ALL! -88 8 0 10 -216373 -1 -262144;",1124,52,"r-sq-sini")
+WF(chrome,"#X obj {x} {y} cnv 19 276 24 empty \\$0-r-sq-srnabg empty 0 0 0 8 -20806 -20806 0;",872,30,"r-sq-srnabg")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna RANDOM_ALL_SEQUENCES_ON_EVERY_PAGE! -248 8 0 8 -216373 -1 -4034;",1124,34,"r-sq-srna")
+WF(chrome,"#X obj {x} {y} cnv 19 262 24 empty \\$0-r-sq-sinibg empty 0 0 0 8 -20806 -20806 0;",886,60,"r-sq-sinibg")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini INIT_ALL_SEQUENCES_ON_EVERY_PAGE! -234 8 0 8 -216373 -1 -4034;",1124,64,"r-sq-sini")
 _TABS=(("pgt","tr","TRIGGER",74),("pgp","pr","PITCH",81),("pgf","fr","FILTER",78),("pgm","mr","MOD",89),("pgm2","m2r","MOD2",85))
 for _ti,(_snd,_lb,_txt,_lx) in enumerate(_TABS):
     _tx=64+_ti*212
@@ -468,9 +471,9 @@ for i,lab in enumerate(("A","D","S","R")):
     WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-h%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),650+i*28,150,"r-sq-h%d"%i)
 WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-th4 PD 2 0 0 10 -58255 -262144 0;",762,150,"r-sq-th4")
 WF(page1,"#X obj {x} {y} cnv 19 170 24 empty \\$0-r-sq-trnabg empty 0 0 0 8 -20806 -20806 0;",734,876,"r-sq-trnabg")
-WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -140 9 0 10 -216373 -1 -4034;",880,880,"r-sq-trna")
+WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -140 9 0 10 -216373 -1 -262144;",880,880,"r-sq-trna")
 WF(page1,"#X obj {x} {y} cnv 19 170 24 empty \\$0-r-sq-tclabg empty 0 0 0 8 -20806 -20806 0;",914,876,"r-sq-tclabg")
-WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -140 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-tcla")
+WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -140 9 0 10 -216373 -1 -262144;",1060,880,"r-sq-tcla")
 WF(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -20806 -262144 -262144 0 1;",1040,134,"r-sq-menv")
 WF(page1,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-tpda \\$0-r-sq-tpda PD_ALL -64 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-tpda")
 for v in range(1,9):
@@ -538,9 +541,9 @@ for v in range(1,9):
 WF(page2,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-ppda \\$0-r-sq-ppda PD_ALL -64 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-ppda")
 WF(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-q \\$0-r-sq-q QUANTIZE 19 8 0 10 -20806 -262144 -262144 0 1;",1040,134,"r-sq-q")
 WF(page2,"#X obj {x} {y} cnv 19 153 24 empty \\$0-r-sq-rnabg empty 0 0 0 8 -20806 -20806 0;",751,876,"r-sq-rnabg")
-WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -123 9 0 10 -216373 -1 -4034;",880,880,"r-sq-rna")
+WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -123 9 0 10 -216373 -1 -262144;",880,880,"r-sq-rna")
 WF(page2,"#X obj {x} {y} cnv 19 153 24 empty \\$0-r-sq-clabg empty 0 0 0 8 -20806 -20806 0;",931,876,"r-sq-clabg")
-WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -123 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-cla")
+WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -123 9 0 10 -216373 -1 -262144;",1060,880,"r-sq-cla")
 
 # ---- page3 FILTER ----
 lane_strips(page3,"bsf")
@@ -582,9 +585,9 @@ for v in range(1,9):
       884,y0+27,"r-sq-rf-%d"%v)
 WF(page3,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-fpda \\$0-r-sq-fpda PD_ALL -64 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-fpda")
 WF(page3,"#X obj {x} {y} cnv 19 162 24 empty \\$0-r-sq-frnabg empty 0 0 0 8 -20806 -20806 0;",742,876,"r-sq-frnabg")
-WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -132 9 0 10 -216373 -1 -4034;",880,880,"r-sq-frna")
+WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -132 9 0 10 -216373 -1 -262144;",880,880,"r-sq-frna")
 WF(page3,"#X obj {x} {y} cnv 19 162 24 empty \\$0-r-sq-fclabg empty 0 0 0 8 -20806 -20806 0;",922,876,"r-sq-fclabg")
-WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -132 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-fcla")
+WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -132 9 0 10 -216373 -1 -262144;",1060,880,"r-sq-fcla")
 
 # ---- page4 MOD / page5 MOD2 ----
 _MROWS=("M12","M34","M56","M78","S12","S34","S56","S78")
@@ -614,15 +617,15 @@ for _pg,_bs,_rl,_rows,_sv,_lv,_env,_rn,_cl,_rt in (
         WF(_pg,"#X obj {x} {y} hsl 56 14 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d x1 21 26 0 9 -20806 -262144 -262144 0 1;"%(_rt,v,_rt,v),
           884,y0+27,"r-sq-%s-%d"%(_rt,v))
 WF(page4,"#X obj {x} {y} cnv 19 136 24 empty \\$0-r-sq-mrnabg empty 0 0 0 8 -20806 -20806 0;",768,876,"r-sq-mrnabg")
-WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -106 9 0 10 -216373 -1 -4034;",880,880,"r-sq-mrna")
+WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -106 9 0 10 -216373 -1 -262144;",880,880,"r-sq-mrna")
 WF(page4,"#X obj {x} {y} cnv 19 136 24 empty \\$0-r-sq-mclabg empty 0 0 0 8 -20806 -20806 0;",948,876,"r-sq-mclabg")
-WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -106 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-mcla")
+WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -106 9 0 10 -216373 -1 -262144;",1060,880,"r-sq-mcla")
 WF(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2ls \\$0-r-sq-m2ls LFO_SYNC 19 8 0 10 -20806 -262144 -262144 0 1;",650,row_y(3)+26,"r-sq-m2ls")
 WF(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2vs \\$0-r-sq-m2vs VIB_SYNC 19 8 0 10 -20806 -262144 -262144 0 1;",650,row_y(8)+26,"r-sq-m2vs")
 WF(page5,"#X obj {x} {y} cnv 19 144 24 empty \\$0-r-sq-m2rnabg empty 0 0 0 8 -20806 -20806 0;",760,876,"r-sq-m2rnabg")
-WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -114 9 0 10 -216373 -1 -4034;",880,880,"r-sq-m2rna")
+WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -114 9 0 10 -216373 -1 -262144;",880,880,"r-sq-m2rna")
 WF(page5,"#X obj {x} {y} cnv 19 144 24 empty \\$0-r-sq-m2clabg empty 0 0 0 8 -20806 -20806 0;",940,876,"r-sq-m2clabg")
-WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -114 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-m2cla")
+WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -114 9 0 10 -216373 -1 -262144;",1060,880,"r-sq-m2cla")
 # ---- per-lane shift arrows ----
 _ARROWS=((page1,"tsl","tsr",62,624,22),(page2,"psl","psr",62,620,26),
          (page3,"fsl","fsr",62,620,22),(page4,"msl","msr",62,620,26),
