@@ -1,23 +1,23 @@
-From 1c6341f425b4da97adac1826111e2cb31dee3f36 Mon Sep 17 00:00:00 2001
+From 241d5bf6b8608588cc7d86e5b0f698efca8d9e4b Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
-Date: Wed, 2 Sep 2026 18:12:23 -0700
-Subject: [PATCH 10/11] LiraSkin v9: gloss bars up to 44px tall (two-line
- panels)
+Date: Wed, 2 Sep 2026 18:22:57 -0700
+Subject: [PATCH 11/11] LiraSkin v10: gloss only bars up to 31px (note tiles
+ flat again)
 
 ---
  Source/LiraSkin.hpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
-index d8fae34..7782962 100644
+index 7782962..1db1a34 100644
 --- a/Source/LiraSkin.hpp
 +++ b/Source/LiraSkin.hpp
 @@ -369,7 +369,7 @@ namespace LiraSkin
              if(!isDark(bg) && w >= 1000.f && h >= 800.f) { drawFrontDeco(g); }
              return;
          }
--        if(h >= 7.f && h <= 30.f && w > h)                             // label bar: subtle gloss
-+        if(h >= 7.f && h <= 44.f && w > h)                             // label bar: subtle gloss
+-        if(h >= 7.f && h <= 44.f && w > h)                             // label bar: subtle gloss
++        if(h >= 7.f && h <= 31.f && w > h)                             // label bar: subtle gloss
          {
              vgrad(g, b, bg.brighter(0.35f), bg.darker(0.25f));
              g.fillRoundedRectangle(b, 2.f);

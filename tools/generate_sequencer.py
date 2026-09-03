@@ -336,21 +336,21 @@ for _v in range(1,9):
 
 # sidebar: bigger scale toggles spread down, uniform 18px circle buttons pulled up
 for _i in range(12):
-    _mv(r'#X obj -?\d+ -?\d+ tgl 16 1 (\\\$0-s-scale-%d )'%_i,r'#X obj 1049 %d tgl 20 1 \g<1>'%(232+_i*40))
-_mv(r'#X obj -?\d+ -?\d+ (cnv 0 51 24 empty \\\$0-r-mh-clr )',r'#X obj 1047 700 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (cnv 0 54 24 empty \\\$0-r-mh-sel )',r'#X obj 1100 700 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1063 730 bng 18 250 50 0 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1118 730 bng 18 250 50 0 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-inp) INIT_PATCH -?\d+ \d+ 0 \d+ ',r'#X obj 1047 758 cnv 0 106 24 empty \g<1> INIT_PATCH 20 12 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-in2) ALL -?\d+ \d+ 0 \d+ ',r'#X obj 1047 806 cnv 0 106 40 empty \g<1> INIT_PATCH 20 12 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1091 786 bng 18 250 50 0 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (\\\$0-s-sq-fial )',r'#X obj 1091 852 bng 18 250 50 0 \g<1>')
+    _mv(r'#X obj -?\d+ -?\d+ tgl 16 1 (\\\$0-s-scale-%d )'%_i,r'#X obj 1049 %d tgl 20 1 \g<1>'%(232+_i*42))
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 51 24 empty \\\$0-r-mh-clr )',r'#X obj 1047 722 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (cnv 0 54 24 empty \\\$0-r-mh-sel )',r'#X obj 1100 722 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1063 752 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1118 752 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-inp) INIT_PATCH -?\d+ \d+ 0 \d+ ',r'#X obj 1047 780 cnv 0 106 24 empty \g<1> INIT_PATCH 20 12 0 8 ')
+_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-in2) ALL -?\d+ \d+ 0 \d+ ',r'#X obj 1047 834 cnv 0 106 30 empty \g<1> INIT_PATCH 20 9 0 8 ')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1091 808 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (\\\$0-s-sq-fial )',r'#X obj 1091 878 bng 18 250 50 0 \g<1>')
 
 # sidebar note-row backing tiles follow the new 46px pitch
 _ti=[0]
 def _retile(m):
-    y=228+40*_ti[0]; _ti[0]+=1
-    return "#X obj 1047 %d cnv 15 106 32 empty empty empty "%y
+    y=228+42*_ti[0]; _ti[0]+=1
+    return "#X obj 1047 %d cnv 15 106 34 empty empty empty "%y
 p=re.sub(r'#X obj 1047 \d+ cnv 15 106 36 empty empty empty ',_retile,p)
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 106 24 empty \\\$0-r-mh-scl )',r'#X obj 1047 200 \g<1>')
 assert _ti[0]==12, _ti[0]
@@ -371,13 +371,14 @@ p=re.sub(r'((?:\\\$0-s-link \\\$0-r-link LINK|\\\$0-s-reset-lfo \\\$0-r-reset-lf
 # randomize rows: RANDOM_PATCH, then a single taller RANDOM_PATCH+SEQUENCES panel
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-rnd) RANDOMIZE -?\d+ \d+ 0 \d+ ',r'#X obj 1047 76 cnv 0 106 24 empty \g<1> RANDOM_PATCH 20 12 0 8 ')
 _mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 lira8rand )',r'#X obj 1091 104 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-rn2) ALL! -?\d+ \d+ 0 \d+ ',r'#X obj 1047 126 cnv 0 106 40 empty \g<1> RANDOM_PATCH 20 12 0 8 ')
+_mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-rn2) ALL! -?\d+ \d+ 0 \d+ ',r'#X obj 1047 130 cnv 0 106 30 empty \g<1> RANDOM_PATCH 20 9 0 8 ')
 _mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 \\\$0-s-sq-fral )',r'#X obj 1091 172 \g<1>')
 # second text line lives on named 1x1 holders so they park with the front
 p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;",
-  "#X obj 1066 144 cnv 0 1 1 empty \\$0-r-mh-rsq2 +SEQUENCES 0 10 0 8 -20806 -262144 0;\n"
-  "#X obj 1066 824 cnv 0 1 1 empty \\$0-r-mh-isq2 +SEQUENCES 0 10 0 8 -20806 -262144 0;\n"
+  "#X obj 1045 142 cnv 0 1 1 empty \\$0-r-mh-rsq2 +SEQUENCES 20 10 0 8 -58255 -262144 0;\n"
+  "#X obj 1045 846 cnv 0 1 1 empty \\$0-r-mh-isq2 +SEQUENCES 20 10 0 8 -58255 -262144 0;\n"
   "#X coords 0 -1 1 1 1160 920 2 -1 0;")
+_mv(r'#X obj -?\d+ -?\d+ (bng 1 250 50 0 lira8rand )',r'#X obj -680 82 \g<1>')
 # 2: park the legacy 16x16 square hiding inside the RANDOM_PATCH bar
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 16 16 empty \\\$0-r-mh-rm )',r'#X obj -680 80 \g<1>')
 
