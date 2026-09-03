@@ -1,7 +1,7 @@
 From f0fd046140051f42022806e97cc5a4f3e706f5f8 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Tue, 1 Sep 2026 22:17:14 -0700
-Subject: [PATCH 5/6] LiraSkin v4: front deco layer (frames, dividers, flow
+Subject: [PATCH 5/7] LiraSkin v4: front deco layer (frames, dividers, flow
  arrows), silver dials >=58px only
 
 ---

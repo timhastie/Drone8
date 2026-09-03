@@ -251,10 +251,10 @@ def _knobify(recv,X,Y,S,fs=10):
     ldx=S//2-int(3.4*len(lab)) if lab!="empty" else 0
     new="#X obj %d %d vsl %d %d %s %s %s %s %d %d %s %d %s%s;"%(X,Y,S,S,re.sub(r"\s+"," ",m.group(2)),m.group(3),m.group(4),lab,ldx,S+9,m.group(8),fs,re.sub(r"\s+"," ",m.group(10)),m.group(11))
     p=p[:m.start()]+new+p[m.end():]
-_KNOBS=[("f-a",28,88,56),("f-b",140,88,56),
- ("mod-1",320,34,50),("mod-2",400,34,50),("time-1",320,110,50),("time-2",400,110,50),
- ("feedback",480,110,50),("del-mix",560,110,50),
- ("drv",720,60,56),("dst-mix",830,60,56),("vol",940,60,56),
+_KNOBS=[("f-a",28,94,56),("f-b",140,94,56),
+ ("mod-1",320,42,50),("mod-2",400,42,50),("time-1",320,118,50),("time-2",400,118,50),
+ ("feedback",480,118,50),("del-mix",560,118,50),
+ ("drv",720,68,56),("dst-mix",830,68,56),("vol",940,68,56),
  ("hold-1234",247,250,56),("hold-5678",832,250,56),
  ("pitch-1234",247,332,56),("pitch-5678",832,332,56),
  ("mod-12",73,476,50),("sharp-12",163,476,50),("mod-34",339,476,50),("sharp-34",429,476,50),
@@ -271,23 +271,22 @@ def _mv(pat,rep,n=1):
 
 # top bar: even gaps around the preset display
 _mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_prev_preset )',r'#X obj 58 4 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_next_preset )',r'#X obj 192 4 \g<1>')
 
 # HYPER-LFO cluster: spread the toggle row, knobs below
-_mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 36 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (bng 19 50 10 0 empty \\\$0-r-led )',r'#X obj 100 46 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 122 38 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 180 38 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 214 38 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 40 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 19 50 10 0 empty \\\$0-r-led )',r'#X obj 92 47 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 122 44 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 180 44 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 214 44 \g<1>')
 
 # MOD-DELAY toggle cluster
-_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-del-mod )',r'#X obj 480 38 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 2 \\\$0-s-lfo-wav )',r'#X obj 480 80 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-mdlock )',r'#X obj 600 42 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-del-mod )',r'#X obj 480 46 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 2 \\\$0-s-lfo-wav )',r'#X obj 480 88 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-mdlock )',r'#X obj 600 50 \g<1>')
 
 # SWITCH routing labels centered under the toggle
-_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 523 345 34 > 56;')
-_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 523 361 78 > 12;')
+_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 515 345 34 > 56;')
+_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 515 361 78 > 12;')
 
 # section label bars: full-width run 8..1040 with the sequencer launcher inline
 _mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-hyp) HYPER-LFO -?\d+',r'#X obj 8 187 cnv 19 232 20 empty \g<1> HYPER-LFO 84')
@@ -305,7 +304,7 @@ for _x2,_n in ((115,"12"),(381,"34"),(644,"56"),(894,"78")):
 _mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vibrato )',r'#X obj 614 234 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vib-sync )',r'#X obj 678 234 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ hsl \d+ 12 (0 127 0 0 \\\$0-s-vib-speed )',r'#X obj 718 238 hsl 70 12 \g<1>')
-_mv(r'#X symbolatom -?\d+ -?\d+ (\d+ 0 0 0 - \\\$0-vib-div )',r'#X symbolatom 792 236 \g<1>')
+_mv(r'#X symbolatom -?\d+ -?\d+ \d+ (0 0 0 - \\\$0-vib-div )',r'#X symbolatom 792 236 5 \g<1>')
 # FAST toggles start unlit
 for _pr in ("12","34","56","78"):
     _fm=re.search(r'#X obj -?\d+ -?\d+ tgl 17 0 \\\$0-s-fast-%s (?:.|\n)*?(?<!\\);'%_pr,p)
@@ -351,17 +350,18 @@ def _retile(m):
 p=re.sub(r'#X obj 1047 \d+ cnv 15 106 36 empty empty empty ',_retile,p)
 assert _ti[0]==12, _ti[0]
 
-# Michroma is wider: pull the top-bar button captions further left
-for _fn,_dx in (("lira8_new_preset","NEW -34"),("lira8_save_preset","SAVE -42"),
-                ("lira8_saveas_preset","SAVE_AS -64"),("lira8_load_preset","LOAD -42")):
-    _lb=_dx.split(" ")[0]
-    _mv(r'(%s \\\$0-r-mh-\w+) %s -?\d+ '%(_fn,_lb),r'\g<1> %s '%_dx)
+# Michroma is wider: uniform caption gap, vertical centering, size 10
+for _fn,_lb,_off in (("lira8_new_preset","NEW","-40 9"),("lira8_save_preset","SAVE","-44 9"),
+                     ("lira8_saveas_preset","SAVE_AS","-70 9"),("lira8_load_preset","LOAD","-44 9")):
+    _mv(r'(%s \\\$0-r-mh-\w+ %s) -?\d+ -?\d+ 0 \d+ '%(_fn,_lb),r'\g<1> %s 0 10 '%_off)
+# preset arrows: even gaps, glyph centered in the circle (#14)
+_mv(r'#X obj -?\d+ -?\d+ (bng 16 250 50 0 lira8_next_preset )',r'#X obj 186 4 \g<1>')
+_mv(r'(lira8_prev_preset \\\$0-r-mh-pv <) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
+_mv(r'(lira8_next_preset \\\$0-r-mh-nx >) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
 # sidebar bars: smaller caption size so labels fit their narrow bars
 p=re.sub(r'(\\\$0-r-mh-(?:lfs|rnd|rn2|scl|clr|sel|inp|in2) [A-Z_!#]+ -?\d+ \d+ 0) 11 ',r'\g<1> 8 ',p)
 # hyper-lfo toggle captions: size 11 so LINK/RESET/Q don't collide
 p=re.sub(r'((?:\\\$0-s-link \\\$0-r-link LINK|\\\$0-s-reset-lfo \\\$0-r-reset-lfo RESET|\\\$0-s-squant \\\$0-r-squant Q|\\\$0-s-andor \\\$0-r-andor OR) -?\d+ -?\d+ 0) 14 ',r'\g<1> 11 ',p)
-# top-bar buttons: caption size 10
-p=re.sub(r'((?:NEW -34|SAVE -42|SAVE_AS -64|LOAD -42) -?\d+ 0) 11 ',r'\g<1> 10 ',p)
 
 # park ALL old front line decorations (the editor draws uniform lines/arrows now)
 _lines=0
@@ -383,7 +383,7 @@ def _parkdot(m):
         _dots+=1
         return "#X obj -650 %d cnv 4 %s %s empty empty empty "%(y,m.group(3),m.group(4))
     return m.group(0)
-p=re.sub(r'#X obj (-?\d+) (-?\d+) cnv [1-6] ([1-6]) ([1-6]) empty empty empty ',_parkdot,p)
+p=re.sub(r'#X obj (-?\d+) (-?\d+) cnv \d+ ([1-8]) ([1-8]) empty empty empty ',_parkdot,p)
 print("front v3: %d knobs, parked %d lines + %d dots"%(len(_KNOBS)+8,_lines,_dots))
 
 
@@ -424,8 +424,8 @@ WF(chrome,"#X obj {x} {y} cnv 0 1160 920 empty \\$0-r-sq-brd empty 20 12 0 14 -1
 WF(chrome,"#X obj {x} {y} cnv 0 1152 912 empty \\$0-r-sq-bg empty 20 12 0 14 -58255 -58255 0;",4,4,"r-sq-bg")
 WF(chrome,"#X obj {x} {y} cnv 0 1152 26 empty \\$0-r-sq-tt SEQUENCER 530 13 0 13 -20806 -262144 0;",4,4,"r-sq-tt")
 WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-close \\$0-r-sq-close X 5 9 0 12 -20806 -20806 -262144;",1128,8,"r-sq-close")
-WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna RND_ALL! -72 8 0 10 -216373 -1 -262144;",988,52,"r-sq-srna")
-WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini INIT_ALL! -80 8 0 10 -216373 -1 -262144;",1124,52,"r-sq-sini")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-arna \\$0-r-sq-srna RND_ALL! -80 8 0 10 -216373 -1 -262144;",988,52,"r-sq-srna")
+WF(chrome,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-aini \\$0-r-sq-sini INIT_ALL! -88 8 0 10 -216373 -1 -262144;",1124,52,"r-sq-sini")
 _TABS=(("pgt","tr","TRIGGER",74),("pgp","pr","PITCH",81),("pgf","fr","FILTER",78),("pgm","mr","MOD",89),("pgm2","m2r","MOD2",85))
 for _ti,(_snd,_lb,_txt,_lx) in enumerate(_TABS):
     _tx=64+_ti*212
@@ -450,10 +450,10 @@ tick_rows(page1,"tkt",646,130,(20,32,44,56))
 for i,lab in enumerate(("A","D","S","R")):
     WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-h%d %s 2 0 0 10 -58255 -262144 0;"%(i,lab),650+i*28,150,"r-sq-h%d"%i)
 WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-th4 PD 2 0 0 10 -58255 -262144 0;",762,150,"r-sq-th4")
-WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",880,880,"r-sq-trna")
-WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -111 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-tcla")
+WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-trna \\$0-r-sq-trna RND_ALL_TRIGGER -140 9 0 10 -216373 -1 -4034;",880,880,"r-sq-trna")
+WF(page1,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-tcla \\$0-r-sq-tcla CLR_ALL_TRIGGER -140 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-tcla")
 WF(page1,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-menv \\$0-r-sq-menv MIDI_ENV 19 8 0 10 -20806 -262144 -262144 0 1;",1040,134,"r-sq-menv")
-WF(page1,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-tpda \\$0-r-sq-tpda PD_ALL -54 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-tpda")
+WF(page1,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-tpda \\$0-r-sq-tpda PD_ALL -64 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-tpda")
 for v in range(1,9):
     y0=row_y(v)
     WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-rl-%d %d 0 8 0 13 %s -262144 0;"%(v,v,_BSCOL),36,y0+26,"r-sq-rl-%d"%v)
@@ -516,10 +516,10 @@ for v in range(1,9):
       1075,y0+24,"r-sq-cl-%d"%v)
     WF(page2,"#X obj {x} {y} hsl 56 14 0 127 0 0 \\$0-s-sq-rp-%d \\$0-r-sq-rp-%d x1 21 26 0 9 -20806 -262144 -262144 0 1;"%(v,v),
       884,y0+27,"r-sq-rp-%d"%v)
-WF(page2,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-ppda \\$0-r-sq-ppda PD_ALL -54 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-ppda")
+WF(page2,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-ppda \\$0-r-sq-ppda PD_ALL -64 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-ppda")
 WF(page2,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-q \\$0-r-sq-q QUANTIZE 19 8 0 10 -20806 -262144 -262144 0 1;",1040,134,"r-sq-q")
-WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",880,880,"r-sq-rna")
-WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -97 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-cla")
+WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-rna \\$0-r-sq-rna RND_ALL_PITCH -123 9 0 10 -216373 -1 -4034;",880,880,"r-sq-rna")
+WF(page2,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-cla \\$0-r-sq-cla CLR_ALL_PITCH -123 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-cla")
 
 # ---- page3 FILTER ----
 lane_strips(page3,"bsf")
@@ -559,9 +559,9 @@ for v in range(1,9):
       1075,y0+24,"r-sq-fcl-%d"%v)
     WF(page3,"#X obj {x} {y} hsl 56 14 0 127 0 0 \\$0-s-sq-rf-%d \\$0-r-sq-rf-%d x1 21 26 0 9 -20806 -262144 -262144 0 1;"%(v,v),
       884,y0+27,"r-sq-rf-%d"%v)
-WF(page3,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-fpda \\$0-r-sq-fpda PD_ALL -54 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-fpda")
-WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",880,880,"r-sq-frna")
-WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -104 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-fcla")
+WF(page3,"#X obj {x} {y} hsl 70 14 0 127 0 0 \\$0-s-sq-fpda \\$0-r-sq-fpda PD_ALL -64 4 0 10 -20806 -262144 -262144 0 1;",950,134,"r-sq-fpda")
+WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-frna \\$0-r-sq-frna RND_ALL_FILTER -132 9 0 10 -216373 -1 -4034;",880,880,"r-sq-frna")
+WF(page3,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-fcla \\$0-r-sq-fcla CLR_ALL_FILTER -132 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-fcla")
 
 # ---- page4 MOD / page5 MOD2 ----
 _MROWS=("M12","M34","M56","M78","S12","S34","S56","S78")
@@ -590,12 +590,12 @@ for _pg,_bs,_rl,_rows,_sv,_lv,_env,_rn,_cl,_rt in (
           1075,y0+24,"r-sq-%s-%d"%(_cl,v))
         WF(_pg,"#X obj {x} {y} hsl 56 14 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d x1 21 26 0 9 -20806 -262144 -262144 0 1;"%(_rt,v,_rt,v),
           884,y0+27,"r-sq-%s-%d"%(_rt,v))
-WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -83 9 0 10 -216373 -1 -4034;",880,880,"r-sq-mrna")
-WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -83 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-mcla")
+WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mrna \\$0-r-sq-mrna RND_ALL_MOD -106 9 0 10 -216373 -1 -4034;",880,880,"r-sq-mrna")
+WF(page4,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-mcla \\$0-r-sq-mcla CLR_ALL_MOD -106 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-mcla")
 WF(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2ls \\$0-r-sq-m2ls LFO_SYNC 19 8 0 10 -20806 -262144 -262144 0 1;",650,row_y(3)+26,"r-sq-m2ls")
 WF(page5,"#X obj {x} {y} tgl 15 0 \\$0-s-sq-m2vs \\$0-r-sq-m2vs VIB_SYNC 19 8 0 10 -20806 -262144 -262144 0 1;",650,row_y(8)+26,"r-sq-m2vs")
-WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",880,880,"r-sq-m2rna")
-WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -90 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-m2cla")
+WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2rna \\$0-r-sq-m2rna RND_ALL_MOD2 -114 9 0 10 -216373 -1 -4034;",880,880,"r-sq-m2rna")
+WF(page5,"#X obj {x} {y} bng 16 250 50 0 \\$0-s-sq-m2cla \\$0-r-sq-m2cla CLR_ALL_MOD2 -114 9 0 10 -216373 -1 -4034;",1060,880,"r-sq-m2cla")
 # ---- per-lane shift arrows ----
 _ARROWS=((page1,"tsl","tsr",62,624,22),(page2,"psl","psr",62,620,26),
          (page3,"fsl","fsr",62,620,22),(page4,"msl","msr",62,620,26),
@@ -619,8 +619,8 @@ def shift_page(group,dx,dy=0):
         group[gi]=(suf,x+dx,y+dy)
 # launcher (visible at home)
 launcher=[
- ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 11 -1 -262144 0;",244,187,"r-mh-seqb"),
- ("#X obj {x} {y} bng 15 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -1 -1 -1;",248,190,"r-sq-open"),
+ ("#X obj {x} {y} cnv 19 78 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 10 -1 -262144 0;",266,187,"r-mh-seqb"),
+ ("#X obj {x} {y} bng 18 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -4034 -4034 -1;",245,188,"r-sq-open"),
  ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",-700,192,"r-mh-d1"),
  ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",-700,196,"r-mh-d2"),
  ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",-700,200,"r-mh-d3"),

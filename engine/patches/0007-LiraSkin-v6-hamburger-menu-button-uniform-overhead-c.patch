@@ -1,0 +1,84 @@
+From 8ddc2a6b713d4f448f997f78241185a5f09a317b Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Wed, 2 Sep 2026 17:27:29 -0700
+Subject: [PATCH 7/7] LiraSkin v6: hamburger menu button, uniform overhead
+ captions, wide-panel label centering, top rule removed
+
+---
+ Source/LiraSkin.hpp           | 16 +++++++++++++++-
+ Source/PluginEditorObject.cpp | 14 +++++++++-----
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index ca98536..fdeff6c 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -260,6 +260,21 @@ namespace LiraSkin
+             g.drawEllipse(d, 1.f);
+             return;
+         }
++        if(bg == fg && bg.getSaturation() > 0.25f) // menu-button marker colors
++        {
++            auto r = b.reduced(1.f);
++            vgrad(g, r, juce::Colour(0xff343434), juce::Colour(0xff1b1b1b));
++            g.fillRoundedRectangle(r, 3.f);
++            g.setColour(juce::Colours::black.withAlpha(0.8f));
++            g.drawRoundedRectangle(r, 3.f, 1.f);
++            g.setColour(juce::Colours::white.withAlpha(flash ? 1.f : 0.9f));
++            for(int i = 0; i < 3; ++i)
++            {
++                const float yy = r.getY() + r.getHeight() * (0.30f + 0.20f * i);
++                g.fillRoundedRectangle(r.getX() + 3.5f, yy, r.getWidth() - 7.f, 1.8f, 0.9f);
++            }
++            return;
++        }
+         juce::Colour accent = accentFor(fg);
+         // white circle push button
+         g.setColour(juce::Colours::black.withAlpha(0.35f));
+@@ -331,7 +346,6 @@ namespace LiraSkin
+         const juce::Colour ink = juce::Colour(0xff141414);
+         g.setColour(ink);
+         // top section frames
+-        g.fillRect(8.f, 158.f, 1032.f, 2.f);                 // rule above the label bars
+         g.fillRect(241.f, 2.f, 2.f, 158.f);                  // hyper-lfo | sequencer gap
+         g.fillRect(683.f, 2.f, 2.f, 158.f);                  // mod-delay | distortion
+         // voice pair dividers
+diff --git a/Source/PluginEditorObject.cpp b/Source/PluginEditorObject.cpp
+index 57863c8..1ab2545 100755
+--- a/Source/PluginEditorObject.cpp
++++ b/Source/PluginEditorObject.cpp
+@@ -231,6 +231,7 @@ std::unique_ptr<Label> PluginEditorObject::getLabel()
+         const int height = ft.getHeight();
+         const std::array<int, 2> position = lbl.getPosition();
+         int lx = position[0];
++        int ly = position[1] - height / 2;
+         {   // LIRA fork: center labels where the layout intends centering, so the
+             // typeface's metrics never skew them (knob captions, bar titles,
+             // captions sitting above a toggle/radio).
+@@ -238,15 +239,18 @@ std::unique_ptr<Label> PluginEditorObject::getLabel()
+             auto const ty = gui.getType();
+             const bool knob = (ty == pd::Gui::Type::VerticalSlider || ty == pd::Gui::Type::HorizontalSlider)
+                               && std::abs(wb[2] - wb[3]) <= 6 && std::min(wb[2], wb[3]) >= 24;
+-            const bool bar = ty == pd::Gui::Type::Panel && text.length() >= 4;
+-            const bool overhead = (ty == pd::Gui::Type::Toggle || ty == pd::Gui::Type::HorizontalRadio
+-                                   || ty == pd::Gui::Type::VerticalRadio) && position[1] < wb[1];
++            const bool bar = ty == pd::Gui::Type::Panel && wb[2] >= 20;
++            const bool overhead = !knob && ty != pd::Gui::Type::Panel && position[1] < wb[1];
+             if(knob || bar || overhead)
+             {
+-                lx = wb[0] + (wb[2] - width) / 2;
++                lx = wb[0] + (wb[2] - width + 1) / 2;
++            }
++            if(overhead)
++            {
++                ly = wb[1] - 2 - height; // uniform air between caption and control
+             }
+         }
+-        label->setBounds(lx, position[1] - height / 2, width, height);
++        label->setBounds(lx, ly, width, height);
+         label->setFont(ft);
+         label->setJustificationType(Justification::centredLeft);
+         label->setBorderSize(BorderSize<int>(0, 0, 0, 0));
+-- 
+2.39.2 (Apple Git-143)
+
