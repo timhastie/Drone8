@@ -1,0 +1,31 @@
+From d6ba635a77f51f67f57dcd54edf5a0acf208b69c Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Wed, 2 Sep 2026 17:42:47 -0700
+Subject: [PATCH 8/8] LiraSkin v7: deco divider ranges follow relayout
+
+---
+ Source/LiraSkin.hpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index fdeff6c..4ef6ed4 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -346,11 +346,11 @@ namespace LiraSkin
+         const juce::Colour ink = juce::Colour(0xff141414);
+         g.setColour(ink);
+         // top section frames
+-        g.fillRect(241.f, 2.f, 2.f, 158.f);                  // hyper-lfo | sequencer gap
+-        g.fillRect(683.f, 2.f, 2.f, 158.f);                  // mod-delay | distortion
++        g.fillRect(241.f, 2.f, 2.f, 182.f);                  // hyper-lfo | sequencer gap
++        g.fillRect(683.f, 2.f, 2.f, 182.f);                  // mod-delay | distortion
+         // voice pair dividers
+         for(float x : {278.f, 540.f, 805.f})
+-            g.fillRect(x, 400.f, 2.f, 466.f);
++            g.fillRect(x, 436.f, 2.f, 430.f);
+     }
+ 
+     inline void drawPanel(juce::Graphics& g, juce::Rectangle<float> b, juce::Colour bg)
+-- 
+2.39.2 (Apple Git-143)
+

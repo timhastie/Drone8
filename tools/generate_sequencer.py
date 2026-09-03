@@ -251,17 +251,17 @@ def _knobify(recv,X,Y,S,fs=10):
     ldx=S//2-int(3.4*len(lab)) if lab!="empty" else 0
     new="#X obj %d %d vsl %d %d %s %s %s %s %d %d %s %d %s%s;"%(X,Y,S,S,re.sub(r"\s+"," ",m.group(2)),m.group(3),m.group(4),lab,ldx,S+9,m.group(8),fs,re.sub(r"\s+"," ",m.group(10)),m.group(11))
     p=p[:m.start()]+new+p[m.end():]
-_KNOBS=[("f-a",28,94,56),("f-b",140,94,56),
- ("mod-1",320,42,50),("mod-2",400,42,50),("time-1",320,118,50),("time-2",400,118,50),
- ("feedback",480,118,50),("del-mix",560,118,50),
- ("drv",720,68,56),("dst-mix",830,68,56),("vol",940,68,56),
- ("hold-1234",247,250,56),("hold-5678",832,250,56),
- ("pitch-1234",247,332,56),("pitch-5678",832,332,56),
- ("mod-12",73,476,50),("sharp-12",163,476,50),("mod-34",339,476,50),("sharp-34",429,476,50),
- ("mod-56",602,476,50),("sharp-56",692,476,50),("mod-78",852,476,50),("sharp-78",942,476,50)]
+_KNOBS=[("f-a",28,104,56),("f-b",140,104,56),
+ ("mod-1",320,56,50),("mod-2",400,56,50),("time-1",320,132,50),("time-2",400,132,50),
+ ("feedback",480,132,50),("del-mix",560,132,50),
+ ("drv",720,80,56),("dst-mix",830,80,56),("vol",940,80,56),
+ ("hold-1234",247,288,56),("hold-5678",832,288,56),
+ ("pitch-1234",247,372,56),("pitch-5678",832,372,56),
+ ("mod-12",73,512,50),("sharp-12",163,512,50),("mod-34",339,512,50),("sharp-34",429,512,50),
+ ("mod-56",602,512,50),("sharp-56",692,512,50),("mod-78",852,512,50),("sharp-78",942,512,50)]
 for _r,_x,_y,_s in _KNOBS: _knobify(_r,_x,_y,_s)
 for _v,_tx in enumerate((72,202,332,462,592,722,852,975),start=1):
-    _knobify("tune-%d"%_v,_tx,618,62)
+    _knobify("tune-%d"%_v,_tx,640,62)
 
 def _mv(pat,rep,n=1):
     # move/rewrite one record identified by a name-keyed regex
@@ -273,38 +273,42 @@ def _mv(pat,rep,n=1):
 _mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_prev_preset )',r'#X obj 58 4 \g<1>')
 
 # HYPER-LFO cluster: spread the toggle row, knobs below
-_mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 40 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (bng 19 50 10 0 empty \\\$0-r-led )',r'#X obj 92 47 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 122 44 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 180 44 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 214 44 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 48 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 19 50 10 0 empty \\\$0-r-led )',r'#X obj 92 55 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-link )',r'#X obj 122 52 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-reset-lfo )',r'#X obj 180 52 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 19 0 \\\$0-s-squant )',r'#X obj 214 52 \g<1>')
 
 # MOD-DELAY toggle cluster
-_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-del-mod )',r'#X obj 480 46 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 2 \\\$0-s-lfo-wav )',r'#X obj 480 88 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-mdlock )',r'#X obj 600 50 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-del-mod )',r'#X obj 480 58 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 2 \\\$0-s-lfo-wav )',r'#X obj 480 100 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-mdlock )',r'#X obj 600 62 \g<1>')
 
 # SWITCH routing labels centered under the toggle
-_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 515 345 34 > 56;')
-_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 515 361 78 > 12;')
+_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 515 372 34 > 56;')
+_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 515 388 78 > 12;')
 
 # section label bars: full-width run 8..1040 with the sequencer launcher inline
-_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-hyp) HYPER-LFO -?\d+',r'#X obj 8 187 cnv 19 232 20 empty \g<1> HYPER-LFO 84')
-_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-md) MOD-DELAY -?\d+',r'#X obj 348 187 cnv 19 334 20 empty \g<1> MOD-DELAY 134')
-_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-di) DISTORTION -?\d+',r'#X obj 686 187 cnv 19 354 20 empty \g<1> DISTORTION 140')
+_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-hyp) HYPER-LFO -?\d+',r'#X obj 8 210 cnv 19 232 20 empty \g<1> HYPER-LFO 84')
+_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-md) MOD-DELAY -?\d+',r'#X obj 348 210 cnv 19 334 20 empty \g<1> MOD-DELAY 134')
+_mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-di) DISTORTION -?\d+',r'#X obj 686 210 cnv 19 354 20 empty \g<1> DISTORTION 140')
 
 # FAST toggles between each TUNE pair
 for _i,_fx2 in enumerate((159,419,679,935)):
-    _mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-fast-%d%d )'%(_i*2+1,_i*2+2),r'#X obj %d 712 \g<1>'%_fx2)
+    _mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-fast-%d%d )'%(_i*2+1,_i*2+2),r'#X obj %d 740 \g<1>'%_fx2)
 
+_mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-switch )',r'#X obj 535 340 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-total-fb )',r'#X obj 455 256 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-quantize )',r'#X obj 68 256 \g<1>')
+p=re.sub(r'#X obj (\d+) 620 (vsl 9 38 0 127 0 0 \\\$0-s-(?:sharpv|cut|res)-\d+ )',lambda m:"#X obj %s 645 %s"%(m.group(1),m.group(2)),p)
 # center the source-select switches in their pair zones
 for _x2,_n in ((115,"12"),(381,"34"),(644,"56"),(894,"78")):
-    _mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-source-%s )'%_n,r'#X obj %d 420 \g<1>'%_x2)
+    _mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-source-%s )'%_n,r'#X obj %d 462 \g<1>'%_x2)
 # vibrato cluster pulled together: toggle, sync, speed, divider display
-_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vibrato )',r'#X obj 614 234 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vib-sync )',r'#X obj 678 234 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ hsl \d+ 12 (0 127 0 0 \\\$0-s-vib-speed )',r'#X obj 718 238 hsl 70 12 \g<1>')
-_mv(r'#X symbolatom -?\d+ -?\d+ \d+ (0 0 0 - \\\$0-vib-div )',r'#X symbolatom 792 236 5 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vibrato )',r'#X obj 614 256 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vib-sync )',r'#X obj 678 256 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ hsl \d+ 12 (0 127 0 0 \\\$0-s-vib-speed )',r'#X obj 718 260 hsl 70 12 \g<1>')
+_mv(r'#X symbolatom -?\d+ -?\d+ \d+ (0 0 0 - \\\$0-vib-div )',r'#X symbolatom 792 258 5 \g<1>')
 # FAST toggles start unlit
 for _pr in ("12","34","56","78"):
     _fm=re.search(r'#X obj -?\d+ -?\d+ tgl 17 0 \\\$0-s-fast-%s (?:.|\n)*?(?<!\\);'%_pr,p)
@@ -335,8 +339,8 @@ for _i in range(12):
     _mv(r'#X obj -?\d+ -?\d+ tgl 16 1 (\\\$0-s-scale-%d )'%_i,r'#X obj 1049 %d tgl 20 1 \g<1>'%(165+_i*46))
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 51 24 empty \\\$0-r-mh-clr )',r'#X obj 1047 735 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 54 24 empty \\\$0-r-mh-sel )',r'#X obj 1100 735 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1071 767 bng 18 250 50 0 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1126 767 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1063 767 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1118 767 bng 18 250 50 0 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 66 24 empty \\\$0-r-mh-inp )',r'#X obj 1047 813 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 39 24 empty \\\$0-r-mh-in2 )',r'#X obj 1115 813 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1071 845 bng 18 250 50 0 \g<1>')
@@ -355,7 +359,7 @@ for _fn,_lb,_off in (("lira8_new_preset","NEW","-40 9"),("lira8_save_preset","SA
                      ("lira8_saveas_preset","SAVE_AS","-70 9"),("lira8_load_preset","LOAD","-44 9")):
     _mv(r'(%s \\\$0-r-mh-\w+ %s) -?\d+ -?\d+ 0 \d+ '%(_fn,_lb),r'\g<1> %s 0 10 '%_off)
 # preset arrows: even gaps, glyph centered in the circle (#14)
-_mv(r'#X obj -?\d+ -?\d+ (bng 16 250 50 0 lira8_next_preset )',r'#X obj 186 4 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 16 250 50 0 lira8_next_preset )',r'#X obj 180 4 \g<1>')
 _mv(r'(lira8_prev_preset \\\$0-r-mh-pv <) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
 _mv(r'(lira8_next_preset \\\$0-r-mh-nx >) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
 # sidebar bars: smaller caption size so labels fit their narrow bars
@@ -370,7 +374,7 @@ def _parkline(m):
     x,y,w,h=int(m.group(1)),int(m.group(2)),int(m.group(4)),int(m.group(5))
     if 0<=x<=1045 and 22<=y<=920 and ((w<=3 and h>=8) or (h<=3 and w>=8)):
         _lines+=1
-        return "#X obj -700 %d cnv %s %d %d empty empty empty "%(y,m.group(3),w,h)
+        return "#X obj -1600 %d cnv %s %d %d empty empty empty "%(y,m.group(3),w,h)
     return m.group(0)
 p=re.sub(r'#X obj (-?\d+) (-?\d+) cnv (\d+) (\d+) (\d+) empty empty empty ',_parkline,p)
 
@@ -619,8 +623,8 @@ def shift_page(group,dx,dy=0):
         group[gi]=(suf,x+dx,y+dy)
 # launcher (visible at home)
 launcher=[
- ("#X obj {x} {y} cnv 19 78 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 10 -1 -262144 0;",266,187,"r-mh-seqb"),
- ("#X obj {x} {y} bng 18 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -4034 -4034 -1;",245,188,"r-sq-open"),
+ ("#X obj {x} {y} cnv 19 100 20 empty \\$0-r-mh-seqb SEQUENCER 22 11 0 10 -1 -262144 0;",244,210,"r-mh-seqb"),
+ ("#X obj {x} {y} bng 18 250 50 0 \\$0-s-sq-open \\$0-r-sq-open empty 17 7 0 10 -4034 -4034 -1;",285,238,"r-sq-open"),
  ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d1 empty 0 0 0 7 -262144 -262144 0;",-700,192,"r-mh-d1"),
  ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d2 empty 0 0 0 7 -262144 -262144 0;",-700,196,"r-mh-d2"),
  ("#X obj {x} {y} cnv 1 11 2 empty \\$0-r-mh-d3 empty 0 0 0 7 -262144 -262144 0;",-700,200,"r-mh-d3"),
