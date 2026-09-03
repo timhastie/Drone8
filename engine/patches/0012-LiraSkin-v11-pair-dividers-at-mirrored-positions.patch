@@ -1,0 +1,25 @@
+From 64a39b87b78b1fd71a90f46a4611e56228bff318 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Wed, 2 Sep 2026 18:34:15 -0700
+Subject: [PATCH 12/12] LiraSkin v11: pair dividers at mirrored positions
+
+---
+ Source/LiraSkin.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index 1db1a34..bbf9476 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -349,7 +349,7 @@ namespace LiraSkin
+         g.fillRect(241.f, 2.f, 2.f, 182.f);                  // hyper-lfo | sequencer gap
+         g.fillRect(683.f, 2.f, 2.f, 182.f);                  // mod-delay | distortion
+         // voice pair dividers
+-        for(float x : {278.f, 540.f, 805.f})
++        for(float x : {265.f, 522.f, 779.f})
+             g.fillRect(x, 436.f, 2.f, 430.f);
+     }
+ 
+-- 
+2.39.2 (Apple Git-143)
+

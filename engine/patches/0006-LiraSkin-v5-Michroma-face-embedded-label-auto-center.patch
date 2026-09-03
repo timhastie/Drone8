@@ -1,7 +1,7 @@
 From 3766319fcbae240ffbed2146a7765fe663446653 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Tue, 1 Sep 2026 22:43:24 -0700
-Subject: [PATCH 06/11] LiraSkin v5: Michroma face embedded, label
+Subject: [PATCH 06/12] LiraSkin v5: Michroma face embedded, label
  auto-centering, single-line comments, arrows removed
 
 ---

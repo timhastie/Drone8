@@ -1,7 +1,7 @@
 From 27dbbfcb8b471036fae294cc46cf264a47e6b473 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Wed, 2 Sep 2026 17:59:11 -0700
-Subject: [PATCH 09/11] LiraSkin v8: gloss all bar-shaped label panels
+Subject: [PATCH 09/12] LiraSkin v8: gloss all bar-shaped label panels
 
 ---
  Source/LiraSkin.hpp | 2 +-

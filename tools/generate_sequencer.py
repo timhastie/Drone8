@@ -255,12 +255,12 @@ _KNOBS=[("f-a",28,104,56),("f-b",140,104,56),
  ("mod-1",320,56,50),("mod-2",400,56,50),("time-1",320,132,50),("time-2",400,132,50),
  ("feedback",480,132,50),("del-mix",560,132,50),
  ("drv",720,80,56),("dst-mix",830,80,56),("vol",940,80,56),
- ("hold-1234",247,288,56),("hold-5678",832,288,56),
- ("pitch-1234",247,372,56),("pitch-5678",832,372,56),
- ("mod-12",73,512,50),("sharp-12",163,512,50),("mod-34",339,512,50),("sharp-34",429,512,50),
- ("mod-56",602,512,50),("sharp-56",692,512,50),("mod-78",852,512,50),("sharp-78",942,512,50)]
+ ("hold-1234",202,288,56),("hold-5678",787,288,56),
+ ("pitch-1234",202,372,56),("pitch-5678",787,372,56),
+ ("mod-12",66,512,50),("sharp-12",156,512,50),("mod-34",324,512,50),("sharp-34",414,512,50),
+ ("mod-56",580,512,50),("sharp-56",670,512,50),("mod-78",838,512,50),("sharp-78",928,512,50)]
 for _r,_x,_y,_s in _KNOBS: _knobify(_r,_x,_y,_s)
-for _v,_tx in enumerate((72,202,332,462,592,722,852,975),start=1):
+for _v,_tx in enumerate((60,190,318,448,574,704,832,962),start=1):
     _knobify("tune-%d"%_v,_tx,640,62)
 
 def _mv(pat,rep,n=1):
@@ -285,8 +285,8 @@ _mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 2 \\\$0-s-lfo-wav )',r'#X obj 480 100 \g
 _mv(r'#X obj -?\d+ -?\d+ (tgl 15 0 \\\$0-s-mdlock )',r'#X obj 600 62 \g<1>')
 
 # SWITCH routing labels centered under the toggle
-_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 515 372 34 > 56;')
-_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 515 388 78 > 12;')
+_mv(r'#X text -?\d+ -?\d+ 34 > 56;',r'#X text 492 372 34 > 56;')
+_mv(r'#X text -?\d+ -?\d+ 78 > 12;',r'#X text 492 388 78 > 12;')
 
 # section label bars: full-width run 8..1040 with the sequencer launcher inline
 _mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-hyp) HYPER-LFO -?\d+',r'#X obj 8 210 cnv 19 232 20 empty \g<1> HYPER-LFO 84')
@@ -294,15 +294,18 @@ _mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-md) MOD-DELAY -?\d+',r'
 _mv(r'#X obj -?\d+ -?\d+ cnv 19 \d+ 20 empty (\\\$0-r-mh-di) DISTORTION -?\d+',r'#X obj 686 210 cnv 19 354 20 empty \g<1> DISTORTION 140')
 
 # FAST toggles between each TUNE pair
-for _i,_fx2 in enumerate((159,419,679,935)):
+for _i,_fx2 in enumerate((147,405,661,919)):
     _mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-fast-%d%d )'%(_i*2+1,_i*2+2),r'#X obj %d 740 \g<1>'%_fx2)
 
-_mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-switch )',r'#X obj 535 340 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-switch )',r'#X obj 512 340 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (tgl 17 0 \\\$0-s-total-fb )',r'#X obj 455 256 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-quantize )',r'#X obj 68 256 \g<1>')
-p=re.sub(r'#X obj (\d+) 620 (vsl 9 38 0 127 0 0 \\\$0-s-(?:sharpv|cut|res)-\d+ )',lambda m:"#X obj %s 645 %s"%(m.group(1),m.group(2)),p)
+# S/F/R minis follow the mirrored TUNE columns
+for _v,_tx3 in enumerate((60,190,318,448,574,704,832,962),start=1):
+    for _mn,_dx in (("sharpv",-33),("cut",-21),("res",-9)):
+        _mv(r'#X obj -?\d+ -?\d+ (vsl 9 38 0 127 0 0 \\\$0-s-%s-%d )'%(_mn,_v),r'#X obj %d 645 \g<1>'%(_tx3+_dx))
 # center the source-select switches in their pair zones
-for _x2,_n in ((115,"12"),(381,"34"),(644,"56"),(894,"78")):
+for _x2,_n in ((108,"12"),(366,"34"),(622,"56"),(880,"78")):
     _mv(r'#X obj -?\d+ -?\d+ (hradio 19 1 0 3 \\\$0-s-source-%s )'%_n,r'#X obj %d 462 \g<1>'%_x2)
 # vibrato cluster pulled together: toggle, sync, speed, divider display
 _mv(r'#X obj -?\d+ -?\d+ (tgl \d+ 0 \\\$0-s-vibrato )',r'#X obj 614 256 \g<1>')
