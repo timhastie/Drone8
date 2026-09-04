@@ -1,7 +1,7 @@
 From d6ba635a77f51f67f57dcd54edf5a0acf208b69c Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Wed, 2 Sep 2026 17:42:47 -0700
-Subject: [PATCH 08/12] LiraSkin v7: deco divider ranges follow relayout
+Subject: [PATCH 08/13] LiraSkin v7: deco divider ranges follow relayout
 
 ---
  Source/LiraSkin.hpp | 6 +++---

@@ -1,7 +1,7 @@
 From 241d5bf6b8608588cc7d86e5b0f698efca8d9e4b Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Wed, 2 Sep 2026 18:22:57 -0700
-Subject: [PATCH 11/12] LiraSkin v10: gloss only bars up to 31px (note tiles
+Subject: [PATCH 11/13] LiraSkin v10: gloss only bars up to 31px (note tiles
  flat again)
 
 ---

@@ -1,7 +1,7 @@
 From 64a39b87b78b1fd71a90f46a4611e56228bff318 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Wed, 2 Sep 2026 18:34:15 -0700
-Subject: [PATCH 12/12] LiraSkin v11: pair dividers at mirrored positions
+Subject: [PATCH 12/13] LiraSkin v11: pair dividers at mirrored positions
 
 ---
  Source/LiraSkin.hpp | 2 +-

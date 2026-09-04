@@ -1,0 +1,64 @@
+From 80f27402d7f357996d29720f81c3a5e1b4366604 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Thu, 3 Sep 2026 20:58:37 -0700
+Subject: [PATCH 13/13] LiraSkin v12: ghost click-strip sliders (bg==fg),
+ skin-drawn close chip
+
+- Sliders declaring identical bg/fg paint nothing: they are invisible click
+  strips under a cnv bar (sequencer page tabs). Kills the 1px fader-cap
+  sliver poking out left of each tab.
+- bng with bg==fg==#141414 draws a neat circular close chip with centered
+  X strokes (green on flash); the Pd X label is dropped from the patch.
+---
+ Source/LiraSkin.hpp           | 12 ++++++++++++
+ Source/PluginEditorObject.cpp |  4 ++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index bbf9476..96f5595 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -253,6 +253,18 @@ namespace LiraSkin
+         const float w = juce::jmin(b.getWidth(), b.getHeight());
+         juce::Rectangle<float> d(b.getX() + (b.getWidth() - w) * 0.5f, b.getY() + (b.getHeight() - w) * 0.5f, w, w);
+         d = d.reduced(1.f);
++        if(bg == fg && bg == juce::Colour(0xff141414)) // title-bar close chip: skin-drawn X, no Pd label
++        {
++            vgrad(g, d, juce::Colour(0xff303030), juce::Colour(0xff181818));
++            g.fillEllipse(d);
++            const float in = d.getWidth() * 0.30f;
++            g.setColour(flash ? juce::Colour(0xff57d465) : juce::Colour(0xffe6e6e6));
++            g.drawLine(d.getX() + in, d.getY() + in, d.getRight() - in, d.getBottom() - in, 1.8f);
++            g.drawLine(d.getRight() - in, d.getY() + in, d.getX() + in, d.getBottom() - in, 1.8f);
++            g.setColour(juce::Colours::black.withAlpha(0.7f));
++            g.drawEllipse(d, 1.f);
++            return;
++        }
+         const bool ghost = isDark(bg) && isDark(fg); // invisible arrow-style bangs keep their painted label
+         if(ghost)
+         {
+diff --git a/Source/PluginEditorObject.cpp b/Source/PluginEditorObject.cpp
+index 1ab2545..5528918 100755
+--- a/Source/PluginEditorObject.cpp
++++ b/Source/PluginEditorObject.cpp
+@@ -331,6 +331,8 @@ void GuiToggle::mouseDown(const MouseEvent& e)
+ 
+ void GuiSliderHorizontal::paint(Graphics& g)
+ {
++    if(gui.getBackgroundColor() == gui.getForegroundColor())
++        return; // ghost click strip (sequencer page tabs): a cnv bar on top provides the visuals
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
+     if(LiraSkin::isKnob(getWidth(), getHeight()))
+     {
+@@ -414,6 +416,8 @@ void GuiSliderHorizontal::mouseUp(const MouseEvent& e)
+     
+ void GuiSliderVertical::paint(Graphics& g)
+ {
++    if(gui.getBackgroundColor() == gui.getForegroundColor())
++        return; // ghost click strip: a cnv bar on top provides the visuals
+     const float val = gui.isLogScale() ? log(getValueOriginal() / min) / log(max / min) : getValueScaled();
+     if(LiraSkin::isKnob(getWidth(), getHeight()))
+     {
+-- 
+2.39.2 (Apple Git-143)
+
