@@ -523,8 +523,8 @@ for v in range(1,9):
           92+s*33,y0+6,"r-sq-p-%d"%idx)
     for s in range(16):
         idx=(v-1)*16+s
-        WF(page2,"#X obj {x} {y} tgl 14 0 empty \\$0-r-sq-pfl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
-          96+s*33,y0+66,"r-sq-pfl-%d"%idx)
+        WF(page2,"#X obj {x} {y} tgl 8 0 empty \\$0-r-sq-pfl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
+          99+s*33,y0+70,"r-sq-pfl-%d"%idx)
     for _i,_pn in enumerate(("pea","ped","pes","per")):
         WF(page2,"#X obj {x} {y} vsl 16 60 0 127 0 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d empty 0 -9 0 10 -20806 -262144 -1 0 1;"%(_pn,v,_pn,v),
           648+_i*28,y0+8,"r-sq-%s-%d"%(_pn,v))
@@ -610,8 +610,8 @@ for _pg,_bs,_rl,_rows,_sv,_lv,_env,_rn,_cl,_rt in (
               130+s*33,y0+6,"r-sq-%s-%d"%(_sv,idx))
         for s in range(16):
             idx=(v-1)*16+s
-            WF(_pg,"#X obj {x} {y} tgl 14 0 empty \\$0-r-sq-%s-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(_lv,idx,_BSCOL),
-              134+s*33,y0+66,"r-sq-%s-%d"%(_lv,idx))
+            WF(_pg,"#X obj {x} {y} tgl 8 0 empty \\$0-r-sq-%s-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(_lv,idx,_BSCOL),
+              137+s*33,y0+70,"r-sq-%s-%d"%(_lv,idx))
         WF(_pg,"#X obj {x} {y} tgl 20 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d ON 23 10 0 10 -20806 -262144 -262144 0 1;"%(_env,v,_env,v),
           820,y0+24,"r-sq-%s-%d"%(_env,v))
         WF(_pg,"#X obj {x} {y} bng 14 250 50 0 \\$0-s-sq-%s-%d \\$0-r-sq-%s-%d RND 17 8 0 10 -216373 -1 -262144;"%(_rn,v,_rn,v),
