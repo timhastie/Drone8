@@ -1,7 +1,7 @@
 From 80f27402d7f357996d29720f81c3a5e1b4366604 Mon Sep 17 00:00:00 2001
 From: timhastie <timhastie@gmail.com>
 Date: Thu, 3 Sep 2026 20:58:37 -0700
-Subject: [PATCH 13/13] LiraSkin v12: ghost click-strip sliders (bg==fg),
+Subject: [PATCH 13/14] LiraSkin v12: ghost click-strip sliders (bg==fg),
  skin-drawn close chip
 
 - Sliders declaring identical bg/fg paint nothing: they are invisible click

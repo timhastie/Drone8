@@ -1,0 +1,59 @@
+From c24b1af3df603da14733eaef9a3b3f3246d241d5 Mon Sep 17 00:00:00 2001
+From: timhastie <timhastie@gmail.com>
+Date: Thu, 3 Sep 2026 21:34:47 -0700
+Subject: [PATCH 14/14] LiraSkin v12: tint fader caps from saturated fg colors
+
+---
+ Source/LiraSkin.hpp | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/Source/LiraSkin.hpp b/Source/LiraSkin.hpp
+index 96f5595..736a2a1 100644
+--- a/Source/LiraSkin.hpp
++++ b/Source/LiraSkin.hpp
+@@ -105,7 +105,7 @@ namespace LiraSkin
+     }
+ 
+     // ------------------------------------------------------------------ faders
+-    inline void drawVFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour /*fg*/)
++    inline void drawVFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour fg)
+     {
+         const bool front = !isDark(bg); // white-bg sliders live on the mint front panel
+         const float w = b.getWidth(), h = b.getHeight();
+@@ -138,9 +138,11 @@ namespace LiraSkin
+             g.setColour(juce::Colours::white);
+             g.fillRect(cap.getX() + 1.5f, cap.getCentreY() - 1.f, cap.getWidth() - 3.f, 2.f);
+         }
+-        else      // silver ridged cap on dark sections
++        else      // silver ridged cap on dark sections (tinted when fg is a color)
+         {
+-            vgrad(g, cap, juce::Colour(0xffe2e2e2), juce::Colour(0xff8f8f8f));
++            const bool tinted = fg.getSaturation() > 0.25f && fg.getPerceivedBrightness() > 0.30f;
++            vgrad(g, cap, tinted ? fg.brighter(0.30f) : juce::Colour(0xffe2e2e2),
++                          tinted ? fg.darker(0.10f)   : juce::Colour(0xff8f8f8f));
+             g.fillRoundedRectangle(cap, 2.f);
+             g.setColour(juce::Colours::black.withAlpha(0.28f));
+             for(int i = 1; i <= 2; ++i)
+@@ -157,7 +159,7 @@ namespace LiraSkin
+         g.drawRoundedRectangle(cap, 2.f, 1.f);
+     }
+ 
+-    inline void drawHFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour /*fg*/)
++    inline void drawHFader(juce::Graphics& g, juce::Rectangle<float> b, float pos, juce::Colour bg, juce::Colour fg)
+     {
+         const bool front = !isDark(bg);
+         const float w = b.getWidth(), h = b.getHeight();
+@@ -181,7 +183,9 @@ namespace LiraSkin
+         }
+         else
+         {
+-            vgrad(g, cap, juce::Colour(0xffe2e2e2), juce::Colour(0xff8f8f8f));
++            const bool tinted = fg.getSaturation() > 0.25f && fg.getPerceivedBrightness() > 0.30f;
++            vgrad(g, cap, tinted ? fg.brighter(0.30f) : juce::Colour(0xffe2e2e2),
++                          tinted ? fg.darker(0.10f)   : juce::Colour(0xff8f8f8f));
+             g.fillRoundedRectangle(cap, 2.f);
+             g.setColour(juce::Colours::black.withAlpha(0.28f));
+         }
+-- 
+2.39.2 (Apple Git-143)
+
