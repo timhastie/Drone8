@@ -485,8 +485,8 @@ for v in range(1,9):
     WF(page1,"#X obj {x} {y} cnv 1 1 1 empty \\$0-r-sq-rl-%d %d 0 8 0 13 %s -262144 0;"%(v,v,_BSCOL),36,y0+26,"r-sq-rl-%d"%v)
     for s in range(16):
         idx=(v-1)*16+s
-        WF(page1,"#X obj {x} {y} tgl 30 0 empty \\$0-r-sq-fl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
-          88+s*33,y0+14,"r-sq-fl-%d"%idx)
+        WF(page1,"#X obj {x} {y} tgl 8 0 empty \\$0-r-sq-fl-%d empty 17 7 0 10 %s -4034 -1 0 1;"%(idx,_BSCOL),
+          99+s*33,y0+50,"r-sq-fl-%d"%idx)
     for s in range(16):
         idx=(v-1)*16+s
         WF(page1,"#X obj {x} {y} tgl 24 0 \\$0-s-sq-t-%d \\$0-r-sq-t-%d empty 17 7 0 10 -20806 -4034 -1 0 1;"%(idx,idx),
