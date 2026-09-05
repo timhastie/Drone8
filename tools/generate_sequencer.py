@@ -17,8 +17,8 @@ base_geo = [
   "#X symbolatom 540 234 4 0 0 0 - \\$0-vib-div empty;"),
  ("#X obj 583 658 cnv 0 106 24 empty empty INIT_PATCH 17 12 0 11 -20806 -262144 0;",
   "#X obj 583 658 cnv 0 106 24 empty \\$0-r-mh-inp INIT_PATCH 17 12 0 11 -20806 -262144 0;"),
- ("#X obj 626 683 bng 16 250 50 0 lira8init empty empty 0 0 0 10 -216373 -1 -1;",
-  "#X obj 626 683 bng 16 250 50 0 lira8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;"),
+ ("#X obj 626 683 bng 16 250 50 0 pelagos8init empty empty 0 0 0 10 -216373 -1 -1;",
+  "#X obj 626 683 bng 16 250 50 0 pelagos8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;"),
 ]
 for old_,new_ in base_geo:
     if p.count(old_)==1:
@@ -38,11 +38,11 @@ deco_edits = [
  ("#X obj 636 613 cnv 0 54 24 empty empty SEL_ALL",      "#X obj 636 613 cnv 0 54 24 empty \\$0-r-mh-sel SEL_ALL"),
  ("#X obj 0 0 cnv 24 580 24 empty empty LYRA", "#X obj 0 0 cnv 24 580 24 empty \\$0-r-mh-top LYRA"),
  ("#X obj 583 0 cnv 0 106 24 empty empty LFO_SYNC", "#X obj 583 0 cnv 0 106 24 empty \\$0-r-mh-lfs LFO_SYNC"),
- ("#X obj 24 4 bng 16 250 50 0 lira8_prev_preset empty", "#X obj 24 4 bng 16 250 50 0 lira8_prev_preset \\$0-r-mh-pv"),
- ("#X obj 148 4 bng 16 250 50 0 lira8_next_preset empty", "#X obj 148 4 bng 16 250 50 0 lira8_next_preset \\$0-r-mh-nx"),
- ("#X obj 403 4 bng 16 250 50 0 lira8_save_preset empty", "#X obj 403 4 bng 16 250 50 0 lira8_save_preset \\$0-r-mh-sv"),
- ("#X obj 484 4 bng 16 250 50 0 lira8_saveas_preset empty", "#X obj 484 4 bng 16 250 50 0 lira8_saveas_preset \\$0-r-mh-sa"),
- ("#X obj 558 4 bng 16 250 50 0 lira8_load_preset empty", "#X obj 558 4 bng 16 250 50 0 lira8_load_preset \\$0-r-mh-ld"),
+ ("#X obj 24 4 bng 16 250 50 0 pelagos8_prev_preset empty", "#X obj 24 4 bng 16 250 50 0 pelagos8_prev_preset \\$0-r-mh-pv"),
+ ("#X obj 148 4 bng 16 250 50 0 pelagos8_next_preset empty", "#X obj 148 4 bng 16 250 50 0 pelagos8_next_preset \\$0-r-mh-nx"),
+ ("#X obj 403 4 bng 16 250 50 0 pelagos8_save_preset empty", "#X obj 403 4 bng 16 250 50 0 pelagos8_save_preset \\$0-r-mh-sv"),
+ ("#X obj 484 4 bng 16 250 50 0 pelagos8_saveas_preset empty", "#X obj 484 4 bng 16 250 50 0 pelagos8_saveas_preset \\$0-r-mh-sa"),
+ ("#X obj 558 4 bng 16 250 50 0 pelagos8_load_preset empty", "#X obj 558 4 bng 16 250 50 0 pelagos8_load_preset \\$0-r-mh-ld"),
  ("#X obj 583 80 cnv 0 16 16 empty empty empty",         "#X obj 583 80 cnv 0 16 16 empty \\$0-r-mh-rm empty"),
  ("#X obj 35 648 cnv 19 28 46 empty empty 1 10 12 0 14 -1 -262144", "#X obj 35 648 cnv 19 28 46 empty \\$0-r-mh-sn1 1 10 12 0 14 -1 -262144"),
  ("#X obj 99 648 cnv 19 28 46 empty empty 2 10 12 0 14 -1 -262144", "#X obj 99 648 cnv 19 28 46 empty \\$0-r-mh-sn2 2 10 12 0 14 -1 -262144"),
@@ -52,9 +52,9 @@ deco_edits = [
  ("#X obj 379 648 cnv 19 28 46 empty empty 6 10 12 0 14 -1 -262144", "#X obj 379 648 cnv 19 28 46 empty \\$0-r-mh-sn6 6 10 12 0 14 -1 -262144"),
  ("#X obj 455 648 cnv 19 28 46 empty empty 7 10 12 0 14 -1 -262144", "#X obj 455 648 cnv 19 28 46 empty \\$0-r-mh-sn7 7 10 12 0 14 -1 -262144"),
  ("#X obj 519 648 cnv 19 28 46 empty empty 8 10 12 0 14 -1 -262144", "#X obj 519 648 cnv 19 28 46 empty \\$0-r-mh-sn8 8 10 12 0 14 -1 -262144"),
- ("#X obj 627 106 bng 18 250 50 0 lira8rand lira8rand",  "#X obj 627 106 bng 18 250 50 0 lira8rand \\$0-r-mh-rndb"),
- ("#X obj 599 638 bng 18 250 50 0 lira8clear empty",     "#X obj 599 638 bng 18 250 50 0 lira8clear \\$0-r-mh-clrb"),
- ("#X obj 653 638 bng 18 250 50 0 lira8selall empty",    "#X obj 653 638 bng 18 250 50 0 lira8selall \\$0-r-mh-selb"),
+ ("#X obj 627 106 bng 18 250 50 0 pelagos8rand pelagos8rand",  "#X obj 627 106 bng 18 250 50 0 pelagos8rand \\$0-r-mh-rndb"),
+ ("#X obj 599 638 bng 18 250 50 0 pelagos8clear empty",     "#X obj 599 638 bng 18 250 50 0 pelagos8clear \\$0-r-mh-clrb"),
+ ("#X obj 653 638 bng 18 250 50 0 pelagos8selall empty",    "#X obj 653 638 bng 18 250 50 0 pelagos8selall \\$0-r-mh-selb"),
 ]
 for old,new in deco_edits:
     assert p.count(old)==1, old
@@ -123,7 +123,7 @@ def _xflow(line):
         for bx in (403,484,558):
             if bx<=x<=bx+16:
                 return "#X %s %d %d %s"%(kind,_fx(bx)+(x-bx),y,rest)
-    if y==4 and rest.startswith('bng 16 250 50 0 lira8_next_preset'):
+    if y==4 and rest.startswith('bng 16 250 50 0 pelagos8_next_preset'):
         return "#X %s %d %d %s"%(kind,180,y,rest)
     if y==714 and rest.startswith('tgl 18 '):
         for bx in (35,99,175,239,315,379,455,519):
@@ -180,8 +180,8 @@ assert p.count(_oldb)==1
 p=p.replace(_oldb,"#X obj 1047 80 cnv 0 66 24 empty \\$0-r-mh-rnd RANDOMIZE 2 12 0 11 -20806 -262144 0;")
 # align sidebar action rows on shared circle columns
 for _o,_n in (
-  ("#X obj 1063 825 bng 18 250 50 0 lira8clear","#X obj 1071 825 bng 18 250 50 0 lira8clear"),
-  ("#X obj 1117 825 bng 18 250 50 0 lira8selall","#X obj 1126 825 bng 18 250 50 0 lira8selall"),
+  ("#X obj 1063 825 bng 18 250 50 0 pelagos8clear","#X obj 1071 825 bng 18 250 50 0 pelagos8clear"),
+  ("#X obj 1117 825 bng 18 250 50 0 pelagos8selall","#X obj 1126 825 bng 18 250 50 0 pelagos8selall"),
 ):
     assert p.count(_o)==1,_o
     p=p.replace(_o,_n)
@@ -199,13 +199,13 @@ def _movemasks(offs,ox,oy,nx,ny,col):
     # corner masks are obsolete (real circle buttons); park off-canvas, keep object count/indices
     for _dx,_dy,_w,_h in offs:
         _move("#X obj %d %d cnv 1 "+str(_w)+" "+str(_h)+" empty empty empty 0 0 0 7 "+col+" 0;",ox+_dx,oy+_dy,-600+_dx,ny+_dy)
-_move("#X obj %d %d bng 18 250 50 0 lira8rand \\$0-r-mh-rndb empty 0 0 0 10 -216373 -1 -1;",1091,106,1071,106)
+_move("#X obj %d %d bng 18 250 50 0 pelagos8rand \\$0-r-mh-rndb empty 0 0 0 10 -216373 -1 -1;",1091,106,1071,106)
 _movemasks(_M18,1091,106,1071,106,"-58255 -58255")
-_move("#X obj %d %d bng 16 250 50 0 lira8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;",1090,884,1072,884)
+_move("#X obj %d %d bng 16 250 50 0 pelagos8init \\$0-r-mh-inb empty 0 0 0 10 -216373 -1 -1;",1090,884,1072,884)
 _movemasks(_M16,1090,884,1072,884,"-58255 -58255")
-_move("#X obj %d %d bng 16 250 50 0 lira8_save_preset \\$0-r-mh-sv SAVE -34 7 0 11 -216373 -1 -262144;",_fx(403),4,850,4)
+_move("#X obj %d %d bng 16 250 50 0 pelagos8_save_preset \\$0-r-mh-sv SAVE -34 7 0 11 -216373 -1 -262144;",_fx(403),4,850,4)
 _movemasks(_M16,_fx(403),4,850,4,"-1 -1")
-_move("#X obj %d %d bng 16 250 50 0 lira8_saveas_preset \\$0-r-mh-sa SAVE_AS -52 7 0 11 -216373 -1 -262144;",_fx(484),4,945,4)
+_move("#X obj %d %d bng 16 250 50 0 pelagos8_saveas_preset \\$0-r-mh-sa SAVE_AS -52 7 0 11 -216373 -1 -262144;",_fx(484),4,945,4)
 _movemasks(_M16,_fx(484),4,945,4,"-1 -1")
 _fb=["#X obj 1115 80 cnv 0 39 24 empty \\$0-r-mh-rn2 ALL! 6 12 0 11 -20806 -262144 0;",
      "#X obj 1115 855 cnv 0 39 24 empty \\$0-r-mh-in2 ALL 9 12 0 11 -20806 -262144 0;",
@@ -214,7 +214,7 @@ _fb.append("#X obj 1127 884 bng 16 250 50 0 \\$0-s-sq-fial \\$0-r-mh-inab empty 
 p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_fb)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- NEW PATCH button in the top bar (left of SAVE) ----
-_np=["#X obj 773 4 bng 16 250 50 0 lira8_new_preset \\$0-r-mh-nw NEW -28 7 0 11 -216373 -1 -262144;"]
+_np=["#X obj 773 4 bng 16 250 50 0 pelagos8_new_preset \\$0-r-mh-nw NEW -28 7 0 11 -216373 -1 -262144;"]
 p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;","\n".join(_np)+"\n#X coords 0 -1 1 1 1160 920 2 -1 0;")
 
 # ---- Q-LFO toggle in the HYPER-LFO section ----
@@ -270,7 +270,7 @@ def _mv(pat,rep,n=1):
     p=re.sub(pat,rep,p,count=n)
 
 # top bar: even gaps around the preset display
-_mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 lira8_prev_preset )',r'#X obj 58 4 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 16 0? ?250 50 0 pelagos8_prev_preset )',r'#X obj 58 4 \g<1>')
 
 # HYPER-LFO cluster: spread the toggle row, knobs below
 _mv(r'#X obj -?\d+ -?\d+ (vradio 19 1 0 2 \\\$0-s-andor )',r'#X obj 56 48 \g<1>')
@@ -342,11 +342,11 @@ for _i in range(12):
     _mv(r'#X obj -?\d+ -?\d+ tgl 16 1 (\\\$0-s-scale-%d )'%_i,r'#X obj 1049 %d tgl 20 1 \g<1>'%(232+_i*42))
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 51 24 empty \\\$0-r-mh-clr )',r'#X obj 1047 722 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 54 24 empty \\\$0-r-mh-sel )',r'#X obj 1100 722 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8clear )',r'#X obj 1063 752 bng 18 250 50 0 \g<1>')
-_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (lira8selall )',r'#X obj 1118 752 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (pelagos8clear )',r'#X obj 1063 752 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 18 250 50 0 (pelagos8selall )',r'#X obj 1118 752 bng 18 250 50 0 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-inp) INIT_PATCH -?\d+ \d+ 0 \d+ ',r'#X obj 1047 780 cnv 0 106 24 empty \g<1> INIT_PATCH 20 12 0 8 ')
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-in2) ALL -?\d+ \d+ 0 \d+ ',r'#X obj 1047 834 cnv 0 106 30 empty \g<1> INIT_PATCH 20 9 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (lira8init )',r'#X obj 1091 808 bng 18 250 50 0 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (pelagos8init )',r'#X obj 1091 808 bng 18 250 50 0 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ bng 16 250 50 0 (\\\$0-s-sq-fial )',r'#X obj 1091 878 bng 18 250 50 0 \g<1>')
 
 # sidebar note-row backing tiles follow the new 46px pitch
@@ -359,13 +359,13 @@ _mv(r'#X obj -?\d+ -?\d+ (cnv 0 106 24 empty \\\$0-r-mh-scl )',r'#X obj 1047 200
 assert _ti[0]==12, _ti[0]
 
 # Michroma is wider: uniform caption gap, vertical centering, size 10
-for _fn,_lb,_off in (("lira8_new_preset","NEW","-40 9"),("lira8_save_preset","SAVE","-44 9"),
-                     ("lira8_saveas_preset","SAVE_AS","-70 9"),("lira8_load_preset","LOAD","-44 9")):
+for _fn,_lb,_off in (("pelagos8_new_preset","NEW","-40 9"),("pelagos8_save_preset","SAVE","-44 9"),
+                     ("pelagos8_saveas_preset","SAVE_AS","-70 9"),("pelagos8_load_preset","LOAD","-44 9")):
     _mv(r'(%s \\\$0-r-mh-\w+ %s) -?\d+ -?\d+ 0 \d+ '%(_fn,_lb),r'\g<1> %s 0 10 '%_off)
 # preset arrows: even gaps, glyph centered in the circle (#14)
-_mv(r'#X obj -?\d+ -?\d+ (bng 16 250 50 0 lira8_next_preset )',r'#X obj 180 4 \g<1>')
-_mv(r'(lira8_prev_preset \\\$0-r-mh-pv <) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
-_mv(r'(lira8_next_preset \\\$0-r-mh-nx >) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
+_mv(r'#X obj -?\d+ -?\d+ (bng 16 250 50 0 pelagos8_next_preset )',r'#X obj 180 4 \g<1>')
+_mv(r'(pelagos8_prev_preset \\\$0-r-mh-pv <) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
+_mv(r'(pelagos8_next_preset \\\$0-r-mh-nx >) -?\d+ -?\d+ 0 \d+ ',r'\g<1> 4 8 0 12 ')
 # sidebar bars: smaller caption size so labels fit their narrow bars
 p=re.sub(r'(\\\$0-r-mh-(?:lfs|rnd|rn2|scl|clr|sel|inp|in2) [A-Z_!#]+ -?\d+ \d+ 0) 11 ',r'\g<1> 8 ',p)
 # hyper-lfo toggle captions: size 11 so LINK/RESET/Q don't collide
@@ -373,7 +373,7 @@ p=re.sub(r'((?:\\\$0-s-link \\\$0-r-link LINK|\\\$0-s-reset-lfo \\\$0-r-reset-lf
 
 # randomize rows: RANDOM_PATCH, then a single taller RANDOM_PATCH+SEQUENCES panel
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 66 24 empty (\\\$0-r-mh-rnd) RANDOMIZE -?\d+ \d+ 0 \d+ ',r'#X obj 1047 76 cnv 0 106 24 empty \g<1> RANDOM_PATCH 20 12 0 8 ')
-_mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 lira8rand )',r'#X obj 1091 104 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 pelagos8rand )',r'#X obj 1091 104 \g<1>')
 _mv(r'#X obj -?\d+ -?\d+ cnv 0 39 24 empty (\\\$0-r-mh-rn2) ALL! -?\d+ \d+ 0 \d+ ',r'#X obj 1047 130 cnv 0 106 30 empty \g<1> RANDOM_PATCH 20 9 0 8 ')
 _mv(r'#X obj -?\d+ -?\d+ (bng 18 250 50 0 \\\$0-s-sq-fral )',r'#X obj 1091 172 \g<1>')
 # second text line lives on named 1x1 holders so they park with the front
@@ -381,7 +381,7 @@ p=p.replace("#X coords 0 -1 1 1 1160 920 2 -1 0;",
   "#X obj 1045 142 cnv 0 1 1 empty \\$0-r-mh-rsq2 +SEQUENCES 20 10 0 8 -58255 -262144 0;\n"
   "#X obj 1045 846 cnv 0 1 1 empty \\$0-r-mh-isq2 +SEQUENCES 20 10 0 8 -58255 -262144 0;\n"
   "#X coords 0 -1 1 1 1160 920 2 -1 0;")
-_mv(r'#X obj -?\d+ -?\d+ (bng 1 250 50 0 lira8rand )',r'#X obj -680 82 \g<1>')
+_mv(r'#X obj -?\d+ -?\d+ (bng 1 250 50 0 pelagos8rand )',r'#X obj -680 82 \g<1>')
 # 2: park the legacy 16x16 square hiding inside the RANDOM_PATCH bar
 _mv(r'#X obj -?\d+ -?\d+ (cnv 0 16 16 empty \\\$0-r-mh-rm )',r'#X obj -680 80 \g<1>')
 
@@ -1504,7 +1504,7 @@ _SPAN=(109.0,109.0,102.0,98.0,96.54,96.54,93.24,98.22)
 nin=add("#X obj 20000 6000 notein;")
 mpk=add("#X obj 20000 6040 pack f f;")
 c(nin,0,mpk,0); c(nin,1,mpk,1)
-tst=add("#X obj 20400 6000 r lira8midi;")
+tst=add("#X obj 20400 6000 r pelagos8midi;")
 tup=add("#X obj 20400 6030 unpack f f f;")
 c(tst,0,tup,0)
 c(tup,0,mpk,0); c(tup,1,mpk,1)
@@ -1824,19 +1824,19 @@ for _st,_vals in ((0,[d for _,d in SCAL]),(144,[d for _,d in EXTRA[0:16]]),(162,
     c(t_aini,1,_mm,0); c(_mm,0,s_scw,0)
 r_fral=add("#X obj 33400 5000 r \\$0-s-sq-fral;")
 t_fral=add("#X obj 33400 5030 t b b;")
-s_fr1=add("#X obj 33400 5060 s lira8rand;")
+s_fr1=add("#X obj 33400 5060 s pelagos8rand;")
 s_fr2=add("#X obj 33500 5060 s \\$0-s-sq-arna;")
 c(r_fral,0,t_fral,0); c(t_fral,1,s_fr1,0); c(t_fral,0,s_fr2,0)
-r_new=add("#X obj 34000 5000 r lira8_new_preset;")
+r_new=add("#X obj 34000 5000 r pelagos8_new_preset;")
 t_new=add("#X obj 34000 5030 t b b;")
 m_nsym=add("#X msg 34100 5060 symbol;")
-s_nnam=add("#X obj 34100 5090 s lira8_preset_name;")
+s_nnam=add("#X obj 34100 5090 s pelagos8_preset_name;")
 s_nini=add("#X obj 34000 5060 s \\$0-s-sq-fial;")
 c(r_new,0,t_new,0); c(t_new,1,s_nini,0)
 c(t_new,0,m_nsym,0); c(m_nsym,0,s_nnam,0)
 r_fial=add("#X obj 33700 5000 r \\$0-s-sq-fial;")
 t_fial=add("#X obj 33700 5030 t b b;")
-s_fi1=add("#X obj 33700 5060 s lira8init;")
+s_fi1=add("#X obj 33700 5060 s pelagos8init;")
 s_fi2=add("#X obj 33800 5060 s \\$0-s-sq-aini;")
 c(r_fial,0,t_fial,0); c(t_fial,1,s_fi1,0); c(t_fial,0,s_fi2,0)
 add("#N canvas 0 0 200 140 (subpatch) 0;\n#X array \\$0-sq-scal 238 float 3;\n#A 0 "+" ".join(str(d) for _,d in SCAL+PANEL+EXTRA)+";\n#X coords 0 127 112 0 200 60 1;\n#X restore 9000 1300 graph;")

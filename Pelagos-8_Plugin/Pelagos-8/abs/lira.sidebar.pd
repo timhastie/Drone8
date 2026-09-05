@@ -1,6 +1,6 @@
 #N canvas 100 100 1200 900 lira.sidebar 10;
-#X obj 50 30 r lira8clear;
-#X obj 50 45 print lira8_clear_clicked;
+#X obj 50 30 r pelagos8clear;
+#X obj 50 45 print pelagos8_clear_clicked;
 #X msg 50 60 0;
 #X obj 50 90 s \$1-s-scale-0;
 #X obj 50 110 s \$1-s-scale-1;
@@ -26,8 +26,8 @@
 #X obj 50 510 s \$1-r-scale-9;
 #X obj 50 530 s \$1-r-scale-10;
 #X obj 50 550 s \$1-r-scale-11;
-#X obj 200 30 r lira8selall;
-#X obj 200 45 print lira8_selall_clicked;
+#X obj 200 30 r pelagos8selall;
+#X obj 200 45 print pelagos8_selall_clicked;
 #X msg 200 60 1;
 #X obj 200 90 s \$1-s-scale-0;
 #X obj 200 110 s \$1-s-scale-1;
@@ -83,7 +83,7 @@
 #X msg 540 330 symbol 1/32;
 #X obj 540 350 makefilename %d;
 #X obj 540 375 spigot 0;
-#X obj 540 400 s lira8_div1_sym;
+#X obj 540 400 s pelagos8_div1_sym;
 #X msg 650 25 64;
 #X obj 650 45 r \$1-s-f-b;
 #X obj 650 60 r \$1-f-b;
@@ -106,7 +106,7 @@
 #X msg 730 330 symbol 1/32;
 #X obj 730 350 makefilename %d;
 #X obj 730 375 spigot 0;
-#X obj 730 400 s lira8_div2_sym;
+#X obj 730 400 s pelagos8_div2_sym;
 #X connect 0 0 1 0;
 #X connect 0 0 2 0;
 #X connect 2 0 3 0;

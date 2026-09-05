@@ -5,10 +5,10 @@
 #X obj 10 85 textfile;
 #X obj 10 110 textfile;
 #X obj 100 10 loadbang;
-#X obj 100 35 r lira8_prev_preset;
-#X obj 100 60 r lira8_next_preset;
-#X obj 100 85 r lira8_load_preset;
-#X obj 100 110 r lira8_save_preset;
+#X obj 100 35 r pelagos8_prev_preset;
+#X obj 100 60 r pelagos8_next_preset;
+#X obj 100 85 r pelagos8_load_preset;
+#X obj 100 110 r pelagos8_save_preset;
 #X msg 200 60 1;
 #X msg 200 35 9;
 #X obj 250 50 + 0;
@@ -17,10 +17,10 @@
 #X obj 250 140 f 0;
 #X msg 100 140 0;
 #X obj 250 180 route 0 1 2 3 4 5 6 7 8 9;
-#X obj 50 250 s lira8_preset_name;
+#X obj 50 250 s pelagos8_preset_name;
 #X obj 400 210 until;
 #X msg 400 180 rewind;
-#X obj 500 280 print lira8_preset_loaded;
+#X obj 500 280 print pelagos8_preset_loaded;
 #X msg 50 220 symbol 01_Default_Drone;
 #X msg 50 240 read /Users/timothyhastie/Music/LIRA-8/Presets/01_Default_Drone.lira;
 #X obj 130 240 t b b a;
@@ -596,7 +596,7 @@
 #X msg 950 230 write /tmp/lira_prev_req.token;
 #X obj 950 260 t b b b b b;
 #X msg 950 290 write /tmp/lira_next_req.token;
-#X obj 100 135 r lira8_saveas_preset;
+#X obj 100 135 r pelagos8_saveas_preset;
 #X obj 950 320 t b b b b b;
 #X msg 950 350 write /tmp/lira_saveas_req.token;
 #X connect 10 0 12 0;
@@ -2004,7 +2004,7 @@
 #X connect 847 0 848 0;
 #X connect 848 0 0 0;
 #X connect 732 47 849 0;
-#X obj 100 160 r lira8_new_preset;
+#X obj 100 160 r pelagos8_new_preset;
 #X obj 950 380 t b b;
 #X msg 950 410 write /tmp/lira_new_req.token;
 #X connect 850 0 851 0;

@@ -48,7 +48,7 @@
 #X obj 250 485 * 120;
 #X obj 250 515 spigot 0;
 
-#X obj 150 630 print lira8_\$3_active_hz;
+#X obj 150 630 print pelagos8_\$3_active_hz;
 
 #X connect 2 0 3 0;
 #X connect 3 0 6 0;
