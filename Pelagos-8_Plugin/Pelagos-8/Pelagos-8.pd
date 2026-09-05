@@ -108,7 +108,7 @@
 #X obj 1042 672 gui.link 121 \$0 sharpv-8;
 #X restore -1 746 pd gui.link;
 #X obj 0 0 bng 1 250 50 0 empty empty empty 17 7 0 10 -1 -1 -1;
-#X obj 0 0 cnv 24 1044 24 empty \$0-r-mh-top LIRA-8_V2 430 13 0 22 -1 -262144
+#X obj 0 0 cnv 24 1044 24 empty \$0-r-mh-top PELAGOS-8 430 13 0 22 -1 -262144
 0;
 ;
 #X obj 0 26 cnv 19 1044 894 empty empty empty 20 12 0 14 -199852
