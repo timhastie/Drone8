@@ -1,5 +1,7 @@
 # Pelagos-8
 
+![Pelagos-8 front panel](docs/images/pelagos8-front.png)
+
 Pelagos-8 is an 8-voice drone/percussive synthesizer plugin (VST3) with a
 five-page step sequencer (triggers, quantized pitch, filter, and two
 modulation lanes), per-voice envelopes and outputs, scale quantization,
@@ -10,6 +12,17 @@ It began as a heavily extended derivative of
 (BSD license — see [License.txt](License.txt)), a Pure Data emulation
 inspired by the SOMA Laboratory Lyra-8. Pelagos-8 is not affiliated with,
 and does not represent, SOMA Laboratory or Mike Moreno DSP.
+
+## The sequencer
+
+Five pages drive the eight voices: triggers with per-lane envelopes,
+scale-quantized pitch, filter, and two modulation lanes — each with per-lane
+clock multipliers, step shifting, randomize/clear, and ALL macro sliders for
+ping-to-drone envelope morphing.
+
+![Trigger page](docs/images/pelagos8-seq-trigger.png)
+
+![Pitch page](docs/images/pelagos8-seq-pitch.png)
 
 ## Structure
 
