@@ -1,13 +1,13 @@
 /*
- * LIRA-8 preset dialog helper - Windows port of Helper/lira_dialog_helper.m
+ * Pelagos-8 preset dialog helper - Windows port of Helper/lira_dialog_helper.m
  *
  * Watches <drive>:\tmp on every fixed drive for the token files the Pd patch
  * writes (the patch's "/tmp/..." paths resolve to \tmp on the DAW's current
  * drive), shows native Open/Save dialogs, and manages the preset library in
- * %USERPROFILE%\Music\LIRA-8\Presets.
+ * %USERPROFILE%\Music\Pelagos-8\Presets.
  *
  * Build (cross-compile from macOS/Linux):
- *   x86_64-w64-mingw32-gcc -O2 -municode -mwindows -o LIRA-8-helper.exe \
+ *   x86_64-w64-mingw32-gcc -O2 -municode -mwindows -o Pelagos-8-helper.exe \
  *       lira_helper_win.c -lcomdlg32 -lshlwapi
  */
 #include <windows.h>
@@ -22,7 +22,7 @@
 static WCHAR g_tmp[MAX_PATH];        /* active \tmp dir for this transaction */
 static WCHAR g_drives[26][8];        /* fixed-drive \tmp dirs, e.g. C:\tmp   */
 static int   g_ndrives;
-static WCHAR g_presets[MAX_PATH];    /* %USERPROFILE%\Music\LIRA-8\Presets   */
+static WCHAR g_presets[MAX_PATH];    /* %USERPROFILE%\Music\Pelagos-8\Presets   */
 static WCHAR g_current[MAX_PATH];    /* current preset base name, "" = none  */
 static HWND  g_owner;                /* hidden topmost owner for dialogs     */
 
@@ -182,7 +182,7 @@ static void step_preset(int offset)
 }
 
 /* --- dialogs ----------------------------------------------------------- */
-static const WCHAR FILTER[] = L"LIRA-8 Presets (*.lira)\0*.lira\0All Files\0*.*\0";
+static const WCHAR FILTER[] = L"Pelagos-8 Presets (*.lira)\0*.lira\0All Files\0*.*\0";
 static WCHAR g_dlgfile[DLGBUF];
 
 static void after_dialog(void)
@@ -218,7 +218,7 @@ static void handle_load_dialog(void)
     ofn.lpstrFile = g_dlgfile;
     ofn.nMaxFile = DLGBUF;
     ofn.lpstrInitialDir = g_presets;
-    ofn.lpstrTitle = L"Select a LIRA-8 Preset (.lira)";
+    ofn.lpstrTitle = L"Select a Pelagos-8 Preset (.lira)";
     ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     prep_dialog();
     BOOL ok = GetOpenFileNameW(&ofn);
@@ -250,7 +250,7 @@ static void handle_saveas_dialog(void)
     ofn.lpstrFile = g_dlgfile;
     ofn.nMaxFile = DLGBUF - 8;      /* leave room to force ".lira" */
     ofn.lpstrInitialDir = g_presets;
-    ofn.lpstrTitle = L"Save LIRA-8 Preset As";
+    ofn.lpstrTitle = L"Save Pelagos-8 Preset As";
     ofn.lpstrDefExt = L"lira";
     ofn.Flags = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
     prep_dialog();
@@ -268,8 +268,8 @@ static void handle_saveas_dialog(void)
     WCHAR src[MAX_PATH];
     tmp_path(src, L"lira_current_save.lira");
     if (!put_copy(src, g_dlgfile)) {
-        MessageBoxW(g_owner, L"LIRA-8: saving the preset FAILED. See C:\\tmp\\lira_helper.log",
-                    L"LIRA-8", MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
+        MessageBoxW(g_owner, L"Pelagos-8: saving the preset FAILED. See C:\\tmp\\lira_helper.log",
+                    L"Pelagos-8", MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
         after_dialog();
         return;
     }
@@ -285,16 +285,16 @@ static void handle_quick_save(void)
     WCHAR src[MAX_PATH], dst[MAX_PATH + MAX_PATH];
     tmp_path(src, L"lira_current_save.lira");
     if (!file_exists(src)) {
-        MessageBoxW(g_owner, L"LIRA-8: save FAILED (no capture file found). See C:\\tmp\\lira_helper.log",
-                    L"LIRA-8", MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
+        MessageBoxW(g_owner, L"Pelagos-8: save FAILED (no capture file found). See C:\\tmp\\lira_helper.log",
+                    L"Pelagos-8", MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
         log_msg("quick save: lira_current_save.lira missing", 0);
         return;
     }
     _snwprintf(dst, MAX_PATH + MAX_PATH, L"%ls\\%ls.lira", g_presets, g_current);
     dst[MAX_PATH + MAX_PATH - 1] = 0;
     if (!put_copy(src, dst))
-        MessageBoxW(g_owner, L"LIRA-8: saving the preset FAILED. See C:\\tmp\\lira_helper.log",
-                    L"LIRA-8", MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
+        MessageBoxW(g_owner, L"Pelagos-8: saving the preset FAILED. See C:\\tmp\\lira_helper.log",
+                    L"Pelagos-8", MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND);
 }
 
 /* --- polling ----------------------------------------------------------- */
@@ -375,7 +375,7 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hPrev, PWSTR cmd, int show)
     wc.lpszClassName = L"Lira8HelperOwner";
     RegisterClassW(&wc);
     g_owner = CreateWindowExW(WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
-                              L"Lira8HelperOwner", L"LIRA-8", WS_POPUP,
+                              L"Lira8HelperOwner", L"Pelagos-8", WS_POPUP,
                               0, 0, 0, 0, NULL, NULL, hInst, NULL);
 
     /* a \tmp dir on every fixed drive (Pd's "/tmp" is drive-relative) */
@@ -394,13 +394,13 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hPrev, PWSTR cmd, int show)
     }
     if (g_ndrives == 0) { wcscpy(g_drives[0], L"C:\\tmp"); g_ndrives = 1; }
 
-    /* %USERPROFILE%\Music\LIRA-8\Presets */
+    /* %USERPROFILE%\Music\Pelagos-8\Presets */
     WCHAR home[MAX_PATH] = L"";
     GetEnvironmentVariableW(L"USERPROFILE", home, MAX_PATH);
     WCHAR d[MAX_PATH];
     _snwprintf(d, MAX_PATH, L"%ls\\Music", home);          d[MAX_PATH-1]=0; CreateDirectoryW(d, NULL);
-    _snwprintf(d, MAX_PATH, L"%ls\\Music\\LIRA-8", home);  d[MAX_PATH-1]=0; CreateDirectoryW(d, NULL);
-    _snwprintf(g_presets, MAX_PATH, L"%ls\\Music\\LIRA-8\\Presets", home);
+    _snwprintf(d, MAX_PATH, L"%ls\\Music\\Pelagos-8", home);  d[MAX_PATH-1]=0; CreateDirectoryW(d, NULL);
+    _snwprintf(g_presets, MAX_PATH, L"%ls\\Music\\Pelagos-8\\Presets", home);
     g_presets[MAX_PATH - 1] = 0;
     CreateDirectoryW(g_presets, NULL);
 
@@ -426,7 +426,7 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hPrev, PWSTR cmd, int show)
     }
     wcscpy(g_tmp, g_drives[0]);
     SetCurrentDirectoryW(g_tmp);
-    log_msg("[LIRA-8 Helper] watching (Save, Save As, Load, Prev, Next, New)", 0);
+    log_msg("[Pelagos-8 Helper] watching (Save, Save As, Load, Prev, Next, New)", 0);
 
     for (;;) {
         for (int i = 0; i < g_ndrives; i++) {

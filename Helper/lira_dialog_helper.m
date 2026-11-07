@@ -35,11 +35,11 @@
                                                 userInfo:nil
                                                  repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-    NSLog(@"[LIRA-8 Helper] Watching triggers (Save, Save As, Load, Prev, Next)...");
+    NSLog(@"[Pelagos-8 Helper] Watching triggers (Save, Save As, Load, Prev, Next)...");
 }
 
 - (NSArray<NSString *> *)allPresetPathsSorted {
-    NSString *presetDir = [@"~/Music/LIRA-8/Presets" stringByExpandingTildeInPath];
+    NSString *presetDir = [@"~/Music/Pelagos-8/Presets" stringByExpandingTildeInPath];
     NSFileManager *fm = [NSFileManager defaultManager];
     [fm createDirectoryAtPath:presetDir withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -85,7 +85,7 @@
         
         NSString *readyFlag = @"/tmp/lira_load_ready.token";
         [@"ready 1;\n" writeToFile:readyFlag atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        NSLog(@"[LIRA-8 Helper] Stepped to preset [%ld/%lu]: %@", (long)nextIndex + 1, (unsigned long)[presets count], baseName);
+        NSLog(@"[Pelagos-8 Helper] Stepped to preset [%ld/%lu]: %@", (long)nextIndex + 1, (unsigned long)[presets count], baseName);
     }
 }
 
@@ -158,18 +158,18 @@
 }
 
 - (void)handleQuickOverwriteSave {
-    NSString *presetDir = [@"~/Music/LIRA-8/Presets" stringByExpandingTildeInPath];
+    NSString *presetDir = [@"~/Music/Pelagos-8/Presets" stringByExpandingTildeInPath];
     NSString *filePath = [presetDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.lira", self.currentPresetName]];
     NSString *srcTemp = @"/tmp/lira_current_save.lira";
     NSString *content = [NSString stringWithContentsOfFile:srcTemp encoding:NSUTF8StringEncoding error:nil];
     if (content) {
         [content writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        NSLog(@"[LIRA-8 Helper] Overwrote existing preset: %@", filePath);
+        NSLog(@"[Pelagos-8 Helper] Overwrote existing preset: %@", filePath);
     }
 }
 
 - (void)handleLoadDialog {
-    NSString *presetDir = [@"~/Music/LIRA-8/Presets" stringByExpandingTildeInPath];
+    NSString *presetDir = [@"~/Music/Pelagos-8/Presets" stringByExpandingTildeInPath];
     [[NSFileManager defaultManager] createDirectoryAtPath:presetDir withIntermediateDirectories:YES attributes:nil error:nil];
     
     NSString *scriptSource = [NSString stringWithFormat:
@@ -179,7 +179,7 @@
         @"        set frontApp to name of first application process whose frontmost is true\n"
         @"    end tell\n"
         @"    tell application frontApp\n"
-        @"        set chosenFile to choose file with prompt \"Select a LIRA-8 Preset (.lira):\" default location presetDir\n"
+        @"        set chosenFile to choose file with prompt \"Select a Pelagos-8 Preset (.lira):\" default location presetDir\n"
         @"    end tell\n"
         @"    return POSIX path of chosenFile\n"
         @"on error errStr number errNum\n"
@@ -195,7 +195,7 @@
     NSAppleEventDescriptor *descriptor = [appleScript executeAndReturnError:&errorDict];
     
     NSString *resultPath = [descriptor stringValue];
-    NSLog(@"[LIRA-8 Helper] Load result: %@", resultPath);
+    NSLog(@"[Pelagos-8 Helper] Load result: %@", resultPath);
     
     if (resultPath && ![resultPath isEqualToString:@"CANCELLED"] && ![resultPath hasPrefix:@"ERROR:"] && [resultPath length] > 0) {
         NSURL *url = [NSURL fileURLWithPath:resultPath];
@@ -213,14 +213,14 @@
             
             NSString *readyFlag = @"/tmp/lira_load_ready.token";
             [@"ready 1;\n" writeToFile:readyFlag atomically:YES encoding:NSUTF8StringEncoding error:nil];
-            NSLog(@"[LIRA-8 Helper] Loaded preset %@ successfully.", baseName);
+            NSLog(@"[Pelagos-8 Helper] Loaded preset %@ successfully.", baseName);
         }
     }
     self.isBusy = NO;
 }
 
 - (void)handleSaveAsDialog {
-    NSString *presetDir = [@"~/Music/LIRA-8/Presets" stringByExpandingTildeInPath];
+    NSString *presetDir = [@"~/Music/Pelagos-8/Presets" stringByExpandingTildeInPath];
     [[NSFileManager defaultManager] createDirectoryAtPath:presetDir withIntermediateDirectories:YES attributes:nil error:nil];
     
     NSString *defaultName = [self.currentPresetName length] > 0 ? [NSString stringWithFormat:@"%@.lira", self.currentPresetName] : @"MyPreset.lira";
@@ -232,7 +232,7 @@
         @"        set frontApp to name of first application process whose frontmost is true\n"
         @"    end tell\n"
         @"    tell application frontApp\n"
-        @"        set chosenFile to choose file name with prompt \"Save LIRA-8 Preset As:\" default name \"%@\" default location presetDir\n"
+        @"        set chosenFile to choose file name with prompt \"Save Pelagos-8 Preset As:\" default name \"%@\" default location presetDir\n"
         @"    end tell\n"
         @"    return POSIX path of (chosenFile as text)\n"
         @"on error errStr number errNum\n"
@@ -248,7 +248,7 @@
     NSAppleEventDescriptor *descriptor = [appleScript executeAndReturnError:&errorDict];
     
     NSString *resultPath = [descriptor stringValue];
-    NSLog(@"[LIRA-8 Helper] Save As result: %@", resultPath);
+    NSLog(@"[Pelagos-8 Helper] Save As result: %@", resultPath);
     
     if (resultPath && ![resultPath isEqualToString:@"CANCELLED"] && ![resultPath hasPrefix:@"ERROR:"] && [resultPath length] > 0) {
         if (![resultPath hasSuffix:@".lira"]) {
@@ -273,7 +273,7 @@
             
             NSString *readyFlag = @"/tmp/lira_load_ready.token";
             [@"ready 1;\n" writeToFile:readyFlag atomically:YES encoding:NSUTF8StringEncoding error:nil];
-            NSLog(@"[LIRA-8 Helper] Saved As & Loaded preset %@ successfully to %@", baseName, resultPath);
+            NSLog(@"[Pelagos-8 Helper] Saved As & Loaded preset %@ successfully to %@", baseName, resultPath);
         }
     }
     self.isBusy = NO;

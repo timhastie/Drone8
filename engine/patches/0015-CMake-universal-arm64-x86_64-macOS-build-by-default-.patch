@@ -1,0 +1,26 @@
+From 33ceefbe80a2f5308b94a041c6d39ca70ae23461 Mon Sep 17 00:00:00 2001
+From: lira <lira@local>
+Date: Fri, 6 Nov 2026 15:02:12 -0800
+Subject: [PATCH] CMake: universal arm64+x86_64 macOS build by default
+ (overridable, no FORCE)
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 68f6c65..3b6638d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.12)
+ 
+ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum OS X deployment version")
+-set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "" FORCE)
++set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Target architectures (universal by default)")
+ set(JUCE_ENABLE_MODULE_SOURCE_GROUPS ON CACHE BOOL "" FORCE)
+ set_property(GLOBAL PROPERTY USE_FOLDERS YES)
+ 
+-- 
+2.50.1 (Apple Git-155)
+

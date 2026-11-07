@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pelagos-8 Manual</title>
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm 16mm; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1d1f1a; }
+  h1 { font-size: 26pt; letter-spacing: 0.08em; margin: 0 0 4pt 0; text-transform: uppercase; }
+  h2 { font-size: 15pt; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 8pt 0; padding-bottom: 4pt; border-bottom: 2px solid #1d1f1a; }
+  h3 { font-size: 11.5pt; letter-spacing: 0.04em; text-transform: uppercase; margin: 14pt 0 4pt 0; }
+  p { margin: 0 0 7pt 0; }
+  ul, ol { margin: 0 0 8pt 0; padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  code { font-family: Menlo, Consolas, monospace; font-size: 9pt; background: #eef0ea; padding: 1px 4px; border-radius: 3px; }
+  pre { font-family: Menlo, Consolas, monospace; font-size: 9pt; background: #eef0ea; padding: 6pt 8pt; border-radius: 4px; margin: 0 0 8pt 0; white-space: pre-wrap; }
+  .chapter { page-break-before: always; }
+  .cover { page-break-after: always; display: flex; flex-direction: column; justify-content: center; min-height: 240mm; }
+  .cover .sub { font-size: 13pt; letter-spacing: 0.2em; text-transform: uppercase; color: #5a6050; margin-bottom: 18pt; }
+  .cover img { width: 100%; border: 1px solid #b9bdb0; border-radius: 4px; }
+  .cover .foot { margin-top: 18pt; font-size: 9.5pt; color: #5a6050; }
+  img.shot { width: 100%; border: 1px solid #b9bdb0; border-radius: 4px; margin: 4pt 0 10pt 0; page-break-inside: avoid; }
+  .cap { font-size: 9pt; color: #5a6050; margin: -6pt 0 10pt 0; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 10pt 0; page-break-inside: auto; font-size: 9.8pt; }
+  th, td { text-align: left; vertical-align: top; padding: 4pt 6pt; border-bottom: 1px solid #d3d6cc; }
+  th { background: #e4e7de; font-size: 9pt; letter-spacing: 0.06em; text-transform: uppercase; }
+  td.k { width: 26%; font-weight: 600; white-space: nowrap; }
+  tr { page-break-inside: avoid; }
+  .box { border: 1px solid #b9bdb0; border-left: 4px solid #4c9a3a; background: #f4f6f0; padding: 7pt 10pt; margin: 0 0 10pt 0; page-break-inside: avoid; }
+  .box.warn { border-left-color: #c8882a; }
+  .two { display: flex; gap: 14pt; }
+  .two > div { flex: 1; }
+  .pg { page-break-before: always; page-break-inside: avoid; }
+  .pg img.shot { width: 92%; display: block; margin-left: auto; margin-right: auto; }
+  .small { font-size: 9pt; color: #5a6050; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="sub">User manual</div>
+  <h1>Pelagos-8</h1>
+  <p style="font-size:12pt;margin-bottom:14pt;">Eight-voice drone and percussion synthesizer plugin with a five-page step sequencer.</p>
+  <img src="../images/pelagos8-front.png" alt="Pelagos-8 front panel">
+  <p class="foot">VST3 for macOS (Apple Silicon and Intel), Windows (64-bit) and Linux (64-bit). Download from <strong>github.com/timhastie/Drone8/releases</strong>.<br>
+  Pelagos-8 is a derivative of LIRA-8 by Mike Moreno DSP and is inspired by the SOMA Laboratory Lyra-8. It is not affiliated with SOMA Laboratory or Mike Moreno DSP.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 class="chapter">1. Install</h2>
+<p>Everything you need is in one zip file for your system. Download it from the Releases page, unzip it, and double-click the installer. It copies the plugin into the right folder and installs the small preset helper. The whole thing takes a couple of minutes.</p>
+<pre>https://github.com/timhastie/Drone8/releases</pre>
+<p>Pick the file for your computer. Do not use the green "Code" button on the main page. That gives you the source files, not a working plugin. Close your DAW before you install.</p>
+<table>
+  <tr><th>Your computer</th><th>Download</th><th>Installer inside the zip</th></tr>
+  <tr><td class="k">Mac (Apple Silicon or Intel)</td><td>Pelagos-8-…-macos-….zip</td><td>Install Pelagos-8.command</td></tr>
+  <tr><td class="k">Windows 10 / 11 (64-bit)</td><td>Pelagos-8-…-windows-x64.zip</td><td>Install Pelagos-8.bat</td></tr>
+  <tr><td class="k">Linux (64-bit)</td><td>Pelagos-8-…-linux-x64.zip</td><td>install-pelagos-8.sh</td></tr>
+</table>
+<div class="box warn">
+<strong>Your computer will warn you.</strong> Pelagos-8 is a free, independent plugin and is not signed with an Apple or Microsoft developer certificate. macOS and Windows therefore show a warning the first time you open the installer. This is normal for unsigned software and the steps below show how to allow it. Nothing is installed anywhere except the plugin folder, the helper and your presets folder.
+</div>
+
+<h3>Mac</h3>
+<ol>
+  <li>Open the downloaded zip. You get a folder called <strong>Pelagos-8</strong>.</li>
+  <li>Double-click <strong>Install Pelagos-8.command</strong> inside it.</li>
+  <li>macOS says it could not verify the file is free of malware. Click <strong>Done</strong>. Do not click Move to Trash.</li>
+  <li>Straight away, open <strong>System Settings</strong>, click <strong>Privacy &amp; Security</strong> and scroll down to the <strong>Security</strong> section. Next to the line saying Install Pelagos-8.command was blocked, click <strong>Open Anyway</strong>.</li>
+  <li>Enter your Mac login password or use Touch ID. A second warning appears. Click <strong>Open</strong>.</li>
+  <li>A Terminal window opens and runs the installer. If macOS asks whether Terminal may access your Downloads folder, click <strong>Allow</strong>.</li>
+  <li>When it says Done, press Return and close the Terminal window.</li>
+  <li>macOS shows a notification that an item was added that can run in the background. That is the preset helper. Leave it switched on.</li>
+  <li>Open your DAW and find Pelagos-8 under VST3 instruments.</li>
+</ol>
+<p class="small">The Open Anyway button only stays in System Settings for about an hour after the block. If it is not there, double-click the installer again and go back. On macOS 14 and older you can instead right-click the installer, choose Open and click Open in the dialog. The installer clears the quarantine flag from the plugin, so your DAW shows no second warning. If a DAW ever refuses Pelagos-8.vst3 anyway, open Terminal and run the line below, then restart the DAW.</p>
+<pre>xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/Pelagos-8.vst3</pre>
+
+<h3>Windows</h3>
+<ol>
+  <li>Right-click the downloaded zip and choose <strong>Extract All</strong>. Open the <strong>Pelagos-8</strong> folder it creates.</li>
+  <li>Double-click <strong>Install Pelagos-8.bat</strong>.</li>
+  <li>If a blue window says <strong>Windows protected your PC</strong>, click the small <strong>More info</strong> link, then <strong>Run anyway</strong>. If you see a smaller box called Open File - Security Warning instead, click <strong>Run</strong>.</li>
+  <li>A dialog titled Windows Command Processor asks whether to allow changes to your device. Click <strong>Yes</strong>. This is needed to copy the plugin into the shared VST3 folder.</li>
+  <li>A black window shows the progress and says when it is done. Press any key to close it. If the blue warning appears once more for Pelagos-8-helper.exe, click More info and Run anyway again.</li>
+  <li>Start your DAW and rescan plugins if it does not show Pelagos-8 on its own.</li>
+</ol>
+<p class="small">If there is no Run anyway button, right-click Install Pelagos-8.bat, choose Properties, tick <strong>Unblock</strong> at the bottom and click OK, then double-click it again. If Microsoft Defender reports Pelagos-8-helper.exe as a threat, that is a false positive on an unsigned program: open Windows Security, go to Virus &amp; threat protection, open Protection history, choose the entry and click Restore or Allow. Then under Manage settings add a folder exclusion for %APPDATA%\Pelagos-8 and run the installer again. If the installer says it cannot replace the plugin, your DAW is still open. Close it and run the installer again.</p>
+
+<h3>Linux</h3>
+<ol>
+  <li>Unzip the download and open a terminal in the <strong>Pelagos-8</strong> folder.</li>
+  <li>Run <code>bash install-pelagos-8.sh</code>. Linux shows no security prompt.</li>
+  <li>The script copies the plugin into <code>~/.vst3</code>, starts the preset helper and sets it to start with your desktop session. It needs python3 with Tk and tells you the package to install if that is missing (python3-tk on Debian and Ubuntu).</li>
+  <li>Start your DAW and rescan plugins.</li>
+</ol>
+<p class="small">If your DAW is installed as a Flatpak or Snap, it runs in a sandbox that cannot see the helper, so the preset buttons do nothing and it may not find ~/.vst3. Use the DAW's normal download instead.</p>
+
+<h3>What the installer puts on your computer</h3>
+<table>
+  <tr><th></th><th>Plugin</th><th>Preset helper</th><th>Your presets</th></tr>
+  <tr><td class="k">Mac</td><td>~/Library/Audio/Plug-Ins/VST3</td><td>~/Library/Application Support/Pelagos-8 (starts at login)</td><td>Music/Pelagos-8/Presets</td></tr>
+  <tr><td class="k">Windows</td><td>C:\Program Files\Common Files\VST3</td><td>%APPDATA%\Pelagos-8 (starts with Windows)</td><td>Music\Pelagos-8\Presets</td></tr>
+  <tr><td class="k">Linux</td><td>~/.vst3</td><td>~/.local/share/pelagos-8 (autostart)</td><td>~/Music/Pelagos-8/Presets</td></tr>
+</table>
+<p>The preset helper is a tiny program that shows the Save and Load dialogs, because a plugin cannot open file windows by itself. It uses no noticeable CPU. The zip also contains an uninstaller that removes everything except your presets.</p>
+
+<!-- ============================================================ -->
+<h2 class="chapter">2. What Pelagos-8 is</h2>
+<p>Pelagos-8 has eight voices arranged in four pairs. Each voice is a tunable oscillator with its own envelope, filter and output. The pairs can frequency-modulate each other, run through a modulated dual delay and a distortion stage, and the whole instrument can be driven by a step sequencer that follows your DAW's transport.</p>
+<p>You can play it three ways, and mix them freely:</p>
+<ul>
+  <li><strong>By hand.</strong> Click the numbered pads at the bottom of the panel to hold a voice, exactly like touching the sensors on the hardware it is modelled on.</li>
+  <li><strong>From MIDI.</strong> Play notes from a keyboard or a clip. Each MIDI channel plays one voice.</li>
+  <li><strong>From the sequencer.</strong> Open the SEQUENCER window and draw triggers, pitches, filter movements and modulation across sixteen steps per voice.</li>
+</ul>
+
+<h3>Outputs</h3>
+<p>Pelagos-8 has eleven stereo outputs: <strong>Main</strong>, <strong>Voice 1</strong> to <strong>Voice 8</strong>, <strong>Voices 1234</strong> and <strong>Voices 5678</strong>. You only hear Main by default. To process a single voice separately, enable the extra outputs in your DAW's track routing. The small toggle under each pad on the front panel removes that voice from Main so it only appears on its own output.</p>
+
+<h3>Requirements</h3>
+<ul>
+  <li>A DAW that hosts VST3 plugins (Ableton Live, Bitwig, Cubase, Reaper, Studio One, FL Studio and others).</li>
+  <li>macOS 12 or newer on an Apple Silicon or Intel Mac, Windows 10/11 64-bit, or a 64-bit Linux desktop.</li>
+  <li>The plugin is an instrument. Load it on an instrument or MIDI track, not an audio track.</li>
+</ul>
+
+<h3>Credits and licence</h3>
+<p class="small">Pelagos-8 is a heavily extended derivative of LIRA-8 by Mike Moreno DSP (BSD licence), a Pure Data emulation inspired by the SOMA Laboratory Lyra-8. Plugin engine: Camomile by Pierre Guillot (GPLv3) and Pure Data by Miller Puckette and contributors (BSD). UI typeface: Michroma (SIL Open Font License). Pelagos-8 is not affiliated with SOMA Laboratory or Mike Moreno DSP. Source and licence texts: github.com/timhastie/Drone8.</p>
+
+<!-- ============================================================ -->
+<h2 class="chapter">3. Quick start</h2>
+<ol>
+  <li>Load Pelagos-8 on a MIDI track and open its window.</li>
+  <li>Click pad <strong>1</strong> at the bottom left. Voice 1 drones while the pad is lit. Click it again to release it.</li>
+  <li>Turn the <strong>TUNE</strong> dial next to the pad to change its pitch. Hold a second pad and tune it against the first.</li>
+  <li>Turn up <strong>MOD</strong> for a pair to make its two voices frequency-modulate each other. Flip the rocker above the pair out of OFF to choose the modulation source.</li>
+  <li>Raise <strong>MIX</strong> in MOD-DELAY to hear the delay, and <strong>DRV</strong> and <strong>MIX</strong> in DISTORTION for grit.</li>
+  <li>Press the small <strong>SEQUENCER</strong> button under the section bar, click a few pads on the TRIGGER page, close the window with the × and press play in your DAW.</li>
+  <li>Like what you hear? Press <strong>SAVE_AS</strong> in the top bar and name the preset.</li>
+</ol>
+<div class="box">
+<strong>Lost?</strong> <strong>INIT_PATCH</strong> in the right sidebar resets every knob. <strong>INIT_PATCH +SEQUENCES</strong> also clears the sequencer. <strong>RANDOM_PATCH</strong> is a good way to find new starting points.
+</div>
+
+<!-- ============================================================ -->
+<h2 class="chapter">4. Front panel</h2>
+<img class="shot" src="../images/pelagos8-front.png" alt="Front panel">
+
+<h3>Top bar</h3>
+<table>
+  <tr><td class="k">&lt; name &gt;</td><td>Shows the current preset. The arrows step to the previous or next preset in your preset folder.</td></tr>
+  <tr><td class="k">NEW</td><td>Starts a fresh, unnamed preset at the default settings.</td></tr>
+  <tr><td class="k">SAVE / SAVE_AS</td><td>Saves the current sound, including all sequences, to the current preset file or to a new file.</td></tr>
+  <tr><td class="k">LOAD</td><td>Opens a file dialog to load a preset.</td></tr>
+</table>
+
+<h3>Voices (bottom half)</h3>
+<p>The eight voices sit in four pairs: 1-2, 3-4, 5-6 and 7-8. Some controls belong to one voice, some to a pair and some to a group of four.</p>
+<table>
+  <tr><td class="k">Pad 1 to 8</td><td>Holds the voice while lit. Click to hold, click again to release. The sequencer and MIDI light the same pads.</td></tr>
+  <tr><td class="k">TUNE</td><td>The pitch of the voice. The sequencer's PITCH page and MIDI notes override it while they play.</td></tr>
+  <tr><td class="k">S F R</td><td>Three small sliders per voice. <strong>S</strong> trims the voice's sharpness, <strong>F</strong> is the voice filter cutoff and <strong>R</strong> its resonance.</td></tr>
+  <tr><td class="k">M V</td><td>Per-voice <strong>M</strong>odulation depth and <strong>V</strong>olume.</td></tr>
+  <tr><td class="k">Toggle under the pad</td><td>Isolates the voice: it leaves the Main output and plays only on its own output.</td></tr>
+  <tr><td class="k">MOD (pair)</td><td>How much the pair is frequency-modulated. At zero the pair is clean.</td></tr>
+  <tr><td class="k">SHARP (pair)</td><td>Waveform sharpness for the pair, from soft to harsh. It also acts as a master for the two S trims.</td></tr>
+  <tr><td class="k">Rocker above the pair</td><td>Chooses the pair's modulation source. OFF in the centre, with the neighbouring pair or the HYPER-LFO on either side.</td></tr>
+  <tr><td class="k">FAST</td><td>Makes the pair's attack and release fast and percussive instead of slow and droning.</td></tr>
+  <tr><td class="k">HOLD (1234 / 5678)</td><td>How long the group's voices keep sounding after a pad is released.</td></tr>
+  <tr><td class="k">PITCH (1234 / 5678)</td><td>Shifts the pitch of all four voices in the group.</td></tr>
+  <tr><td class="k">SWITCH</td><td>Rewires the cross-modulation between pairs (34 feeds 56, 78 feeds 12).</td></tr>
+  <tr><td class="k">TOTAL-FB</td><td>Feeds the whole mix back into the voices. Wild, use with care.</td></tr>
+  <tr><td class="k">VIBRATO / SYNC / SPEED</td><td>Adds vibrato to all voices. SYNC locks the vibrato speed to your DAW tempo and the box shows the division.</td></tr>
+  <tr><td class="k">QUANTIZE</td><td>Snaps voice tuning to the notes enabled in the SCALE sidebar.</td></tr>
+</table>
+
+<h3>HYPER-LFO</h3>
+<table>
+  <tr><td class="k">F-A / F-B</td><td>Rates of the two LFOs. They are combined into one modulation signal.</td></tr>
+  <tr><td class="k">AND / OR</td><td>How the two LFOs are combined. The rocker label shows the current mode.</td></tr>
+  <tr><td class="k">LINK</td><td>Links the two LFO rates so one knob moves both.</td></tr>
+  <tr><td class="k">RESET</td><td>Restarts the LFOs from the beginning of their cycle.</td></tr>
+  <tr><td class="k">Q</td><td>Quantized LFO: steps the LFO rates in musical ratios instead of sweeping them freely.</td></tr>
+  <tr><td class="k">LFO_SYNC (sidebar)</td><td>Locks the LFO rates to your DAW tempo. The two boxes show the divisions for A and B.</td></tr>
+</table>
+
+<h3>MOD-DELAY</h3>
+<table>
+  <tr><td class="k">TIME-1 / TIME-2</td><td>Delay time of the two delay lines.</td></tr>
+  <tr><td class="k">MOD-1 / MOD-2</td><td>How much each delay time is modulated.</td></tr>
+  <tr><td class="k">FEEDBACK / MIX</td><td>Delay regeneration and dry/wet balance.</td></tr>
+  <tr><td class="k">Upper rocker (SELF / LFO)</td><td>Source of the delay modulation: the delay's own output, off, or the HYPER-LFO.</td></tr>
+  <tr><td class="k">Lower rocker (TRI)</td><td>Waveform used for the delay modulation.</td></tr>
+  <tr><td class="k">LOCK</td><td>Keeps the MOD-DELAY settings as they are when you press RANDOM_PATCH.</td></tr>
+</table>
+
+<h3>DISTORTION</h3>
+<table>
+  <tr><td class="k">DRV / MIX</td><td>Drive amount and dry/wet balance of the distortion.</td></tr>
+  <tr><td class="k">VOL</td><td>Master output volume.</td></tr>
+</table>
+
+<h3>Right sidebar</h3>
+<table>
+  <tr><td class="k">RANDOM_PATCH</td><td>Randomizes the front panel. Add <strong>+SEQUENCES</strong> to randomize the sequencer too.</td></tr>
+  <tr><td class="k">SCALE C to B</td><td>The notes that QUANTIZE is allowed to use. <strong>CLEAR</strong> turns them all off, <strong>SEL_ALL</strong> turns them all on.</td></tr>
+  <tr><td class="k">INIT_PATCH</td><td>Resets the front panel to the default sound. <strong>+SEQUENCES</strong> also clears every sequencer page.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 class="chapter">5. The sequencer</h2>
+<p>Press the <strong>SEQUENCER</strong> button on the front panel to open it. The sequencer runs whenever your DAW transport is playing and stops when it stops. Close the window with the × in the top right. The sound keeps running either way.</p>
+<p>Five pages share the same layout: eight lanes with sixteen steps, and the same lane controls on the right. Learn them once on the TRIGGER page and the rest follows.</p>
+
+<h3>Controls found on every page</h3>
+<table>
+  <tr><td class="k">Steps 1 to 16</td><td>The pads or sliders in the lane. The small dot under each step lights as the playhead passes.</td></tr>
+  <tr><td class="k">&lt; &gt;</td><td>Rotates the lane one step left or right. Step 16 wraps round to step 1.</td></tr>
+  <tr><td class="k">ON / OFF</td><td>Enables the lane. A lane that is off keeps its data but does nothing.</td></tr>
+  <tr><td class="k">x1 slider</td><td>Clock multiplier for the lane, from 1/8 of the base speed to 8 times it. Different lanes at different speeds give long evolving patterns.</td></tr>
+  <tr><td class="k">RND / CLR</td><td>Randomizes or clears that lane.</td></tr>
+  <tr><td class="k">RND_ALL / CLR_ALL</td><td>Same, for every lane on the page.</td></tr>
+  <tr><td class="k">RANDOM_ALL_SEQUENCES_ON_EVERY_PAGE</td><td>Randomizes all five pages at once. <strong>INIT_ALL_SEQUENCES_ON_EVERY_PAGE</strong> clears all five.</td></tr>
+  <tr><td class="k">A D S R</td><td>Envelope attack, decay, sustain and release for the lane, where the page has an envelope.</td></tr>
+  <tr><td class="k">ALL (purple slider)</td><td>A one-slider morph for the lane's envelope: low is a short percussive ping, high is a long drone. <strong>CNTRL_ALL</strong> at the top moves the ALL slider of every lane together.</td></tr>
+</table>
+
+<div class="pg"><h3 style="margin-top:0">TRIGGER page</h3>
+<img class="shot" src="../images/pelagos8-seq-trigger.png" alt="Trigger page">
+<p>Lanes 1 to 8 are voices 1 to 8. Each lit pad fires that voice's envelope on that step. Shape the envelope with A D S R or just pull the purple ALL slider. <strong>MIDI_ENV</strong> makes incoming MIDI notes use these envelopes as well, so a keyboard plays the same shapes as the sequencer.</p>
+
+</div>
+<div class="pg"><h3 style="margin-top:0">PITCH page</h3>
+<img class="shot" src="../images/pelagos8-seq-pitch.png" alt="Pitch page">
+<p>Each slider sets the pitch of that voice on that step. Switch the lane <strong>ON</strong> to let it take over from the TUNE dial. With <strong>QUANTIZE</strong> on, the sliders snap to the notes chosen in the SCALE sidebar, so random patterns stay in key.</p>
+<p><strong>P_ENV_ON</strong> adds a pitch envelope to every trigger of that voice. A D S R shape it and <strong>AMT</strong> sets how far it sweeps, up to several octaves for drum-style zaps.</p>
+
+</div>
+<div class="pg"><h3 style="margin-top:0">FILTER page</h3>
+<img class="shot" src="../images/pelagos8-seq-filter.png" alt="Filter page">
+<p>The slider above each step sets the voice's filter cutoff on that step. The pad below it fires the filter envelope on that step. A D S R shape the envelope, <strong>AMT</strong> sets how far it opens the filter. Clearing a lane sets the cutoff fully open.</p>
+
+</div>
+<div class="pg"><h3 style="margin-top:0">MOD page</h3>
+<img class="shot" src="../images/pelagos8-seq-mod.png" alt="Mod page">
+<p>Sequences the pair knobs of the front panel. <strong>M12</strong> to <strong>M78</strong> move the four MOD knobs and <strong>S12</strong> to <strong>S78</strong> the four SHARP knobs, one value per step.</p>
+
+</div>
+<div class="pg"><h3 style="margin-top:0">MOD2 page</h3>
+<img class="shot" src="../images/pelagos8-seq-mod2.png" alt="Mod2 page">
+<p>Sequences the global controls:</p>
+<table>
+  <tr><td class="k">P12 / P56</td><td>The PITCH knobs of groups 1234 and 5678.</td></tr>
+  <tr><td class="k">LFA / LFB</td><td>HYPER-LFO rates A and B. With <strong>LFO_SYNC</strong> on, the steps become tempo divisions from x16 down to 1/32.</td></tr>
+  <tr><td class="k">DL1 / DL2</td><td>The two delay times.</td></tr>
+  <tr><td class="k">FBK</td><td>Delay feedback.</td></tr>
+  <tr><td class="k">VIB</td><td>Vibrato speed. With <strong>VIB_SYNC</strong> on, the steps become tempo divisions.</td></tr>
+</table>
+
+</div>
+<!-- ============================================================ -->
+<h2 class="chapter">6. Presets</h2>
+<p>A preset stores the whole front panel and all five sequencer pages. Preset files have the extension <code>.lira</code> and are plain text, so you can copy them between Mac and Windows or share them.</p>
+<table>
+  <tr><td class="k">Where they live</td><td>In a <strong>Pelagos-8/Presets</strong> folder inside your Music folder. The installer creates it.</td></tr>
+  <tr><td class="k">SAVE_AS</td><td>Asks for a name and writes a new file.</td></tr>
+  <tr><td class="k">SAVE</td><td>Overwrites the preset shown in the top bar. If none is shown it behaves like SAVE_AS.</td></tr>
+  <tr><td class="k">LOAD</td><td>Picks a file. The &lt; &gt; arrows then walk through the folder in name order.</td></tr>
+</table>
+<div class="box warn">
+<strong>Save your sequences.</strong> Your DAW project recalls the knobs through plugin parameters. To be safe with sequences, save a preset before you close the project and load it again if anything looks reset.
+</div>
+
+<h2 style="margin-top:18pt;">7. MIDI</h2>
+<table>
+  <tr><td class="k">Channels 1 to 8</td><td>Play voices 1 to 8. The note sets the voice pitch and the voice holds while the key is down. With QUANTIZE on, notes snap to the scale.</td></tr>
+  <tr><td class="k">Channel 9</td><td>Classic mode: C1 to G1 hold pads 1 to 8 regardless of the note's pitch.</td></tr>
+  <tr><td class="k">MIDI_ENV</td><td>On the TRIGGER page. When on, MIDI notes play through that voice's sequencer envelope.</td></tr>
+  <tr><td class="k">Automation</td><td>Every front-panel control is a plugin parameter and can be automated or mapped from your DAW.</td></tr>
+</table>
+<p class="small">In Ableton Live, set the clip or track's MIDI channel in the track's I/O section to pick the voice.</p>
+
+<h2 style="margin-top:18pt;">8. Troubleshooting</h2>
+<table>
+  <tr><td class="k">The DAW does not list the plugin</td><td>Run the installer again and read its last lines. Quit the DAW fully, reopen it and rescan plugins. On a Mac the installer must be allowed in System Settings first, see section 1.</td></tr>
+  <tr><td class="k">No sound</td><td>The track must be armed or monitoring, and the plugin's VOL knob up. Hold a pad to test without MIDI.</td></tr>
+  <tr><td class="k">Preset buttons do nothing</td><td>The preset helper is not running. Run the installer from the download again (it restarts the helper), then try SAVE_AS. On Windows check that Defender has not quarantined Pelagos-8-helper.exe.</td></tr>
+  <tr><td class="k">Sequencer does not move</td><td>It follows the DAW transport. Press play in the DAW. Also check the lane is ON.</td></tr>
+  <tr><td class="k">Everything sounds chaotic</td><td>Press INIT_PATCH +SEQUENCES and start again. Turn TOTAL-FB off and lower FEEDBACK.</td></tr>
+</table>
+
+
+
+</body>
+</html>

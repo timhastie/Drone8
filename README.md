@@ -13,6 +13,19 @@ It began as a heavily extended derivative of
 inspired by the SOMA Laboratory Lyra-8. Pelagos-8 is not affiliated with,
 and does not represent, SOMA Laboratory or Mike Moreno DSP.
 
+## Download and install
+
+Get the zip for your system from the
+[Releases page](https://github.com/timhastie/Drone8/releases), unzip it and
+double-click the installer inside. The
+[manual](docs/Pelagos-8_Manual.pdf) starts with the install steps, including
+the security prompts macOS and Windows show for an unsigned plugin.
+
+- macOS 12 or newer, Apple Silicon and Intel: tested.
+- Windows 10/11 64-bit and Linux 64-bit: built automatically by CI, less
+  tested. Please report problems in
+  [Issues](https://github.com/timhastie/Drone8/issues).
+
 ## The sequencer
 
 Five pages drive the eight voices: triggers with per-lane envelopes,
