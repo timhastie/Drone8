@@ -39,7 +39,9 @@ jobs:
             # Friendlier zip name than the lipo output "x86_64-arm64".
             arch_label: universal
           - platform: windows
-            os: windows-latest
+            # windows-latest moved to Windows Server 2025 with Visual Studio
+            # 2026 (Nov 2026); the 2022 image still carries VS 2022.
+            os: windows-2022
             generator: Visual Studio 17 2022
           - platform: linux
             os: ubuntu-22.04
