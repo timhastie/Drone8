@@ -96,6 +96,6 @@ fi
 
 ZIP="$OUT/Pelagos-8-$VERSION-$PLATFORM-$ARCH.zip"
 rm -f "$ZIP"
-(cd "$WORK" && zip -qry "$ZIP" Pelagos-8)
+(cd "$WORK" && zip -qr "$ZIP" Pelagos-8)
 echo "Wrote $ZIP"
 unzip -l "$ZIP" | tail -1
